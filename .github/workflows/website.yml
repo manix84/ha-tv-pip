@@ -1,12 +1,29 @@
 name: Website 🌐
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - "website/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/website.yml"
   pull_request:
     paths:
       - "website/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/website.yml"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -30,3 +47,23 @@ jobs:
 
       - name: Build website
         run: npm run website:build
+
+      - name: Upload Pages artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: website/dist
+
+  deploy:
+    name: Deploy website to GitHub Pages
+    needs: build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -33,6 +33,10 @@ npm run build
 
 The site is static and ready for future GitHub Pages deployment.
 
+## Deployment 🌍
+
+The GitHub Actions website workflow builds the site on pull requests and deploys `website/dist` to GitHub Pages on pushes to `main`.
+
 ## Version 📌
 
 The displayed version comes from the root `package.json` at build time through `vite.config.ts`.
