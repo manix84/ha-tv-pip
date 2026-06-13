@@ -17,9 +17,10 @@
     "ha:build:dry-run": "npm run package:integration",
     "ha:lint": "npm --prefix ha-integration run lint",
     "ha:typecheck": "npm --prefix ha-integration run typecheck",
+    "hooks:install": "node scripts/install-git-hooks.mjs",
     "lint": "npm run android:lint && npm run ha:lint && npm run website:lint",
     "package:integration": "node scripts/package-integration.mjs",
-    "prepare": "husky",
+    "prepare": "npm run hooks:install",
     "typecheck": "npm run android:typecheck && npm run ha:typecheck && npm run website:typecheck",
     "version:check": "node scripts/check-version.mjs",
     "version:major": "node scripts/bump-version.mjs major",
@@ -33,9 +34,6 @@
     "website:lint": "npm --prefix website run lint",
     "website:preview": "npm --prefix website run preview",
     "website:typecheck": "npm --prefix website run typecheck"
-  },
-  "devDependencies": {
-    "husky": "^9.1.7"
   },
   "engines": {
     "node": ">=20"

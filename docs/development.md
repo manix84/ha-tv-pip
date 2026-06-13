@@ -284,7 +284,15 @@ During Phase 1, the Home Assistant integration is only a placeholder. The versio
 
 ## Pre-Commit Version Bumps 🔢
 
-The repo uses a Husky pre-commit hook to keep runtime commits versioned automatically.
+The repo uses a native Git pre-commit hook to keep runtime commits versioned automatically.
+
+Install the hook path after cloning:
+
+```sh
+npm run hooks:install
+```
+
+`npm install` also runs the same setup through the root `prepare` script.
 
 The hook runs:
 
