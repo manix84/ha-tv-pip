@@ -130,8 +130,8 @@
 
 .solutionShowcase,
 .flowShowcase {
-  align-items: stretch;
-  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
+  align-items: center;
+  grid-template-columns: minmax(240px, 0.55fr) minmax(360px, 1.45fr);
 }
 
 .solutionSteps {
@@ -149,8 +149,32 @@
   font-weight: 800;
   line-height: 1.4;
   margin: 0;
-  min-height: 130px;
-  padding: 1.2rem;
+  min-height: auto;
+  padding: 0.85rem 1rem;
+}
+
+.solutionShowcase .solutionSteps {
+  align-content: center;
+  grid-template-columns: 1fr;
+}
+
+.flowShowcase :global(.flow) {
+  align-content: center;
+  grid-template-columns: 1fr;
+  margin: 0;
+}
+
+.flowShowcase :global(.flow li) {
+  min-height: auto;
+  padding: 0.85rem 1rem;
+}
+
+.flowShowcase :global(.flow li:not(:last-child)::after) {
+  bottom: -1.1rem;
+  left: 1rem;
+  right: auto;
+  top: auto;
+  transform: rotate(90deg);
 }
 
 .imageCard,
