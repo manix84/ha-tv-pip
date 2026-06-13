@@ -6,6 +6,8 @@
   "license": "MIT",
   "scripts": {
     "assemble": "./gradlew assembleDebug",
+    "assemble:debug": "./gradlew assembleDebug",
+    "assemble:release": "./gradlew assembleRelease",
     "clean": "./gradlew clean",
     "lint": "./gradlew lintDebug"
   }

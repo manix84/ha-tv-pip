@@ -1,0 +1,54 @@
+import { cpSync, existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { resolve, join } from "node:path";
+import { spawnSync } from "node:child_process";
+
+const rootPackage = JSON.parse(readFileSync("package.json", "utf8"));
+const version = rootPackage.version;
+
+if (!version || typeof version !== "string") {
+  throw new Error("Root package.json must contain a version string");
+}
+
+const sourceDir = resolve("ha-integration/custom_components/ha_tv_pip");
+const distDir = resolve("dist");
+const outputPath = join(distDir, `ha-tv-pip-integration-v${version}.zip`);
+
+if (!existsSync(sourceDir)) {
+  throw new Error(`Integration source directory does not exist: ${sourceDir}`);
+}
+
+mkdirSync(distDir, { recursive: true });
+rmSync(outputPath, { force: true });
+
+const tempRoot = await mkdtemp(join(tmpdir(), "ha-tv-pip-integration-"));
+const targetDir = join(tempRoot, "custom_components/ha_tv_pip");
+
+try {
+  mkdirSync(join(tempRoot, "custom_components"), { recursive: true });
+  cpSync(sourceDir, targetDir, {
+    recursive: true,
+    filter: (source) => {
+      const ignored = [".git", "node_modules", "dist", "__pycache__"];
+      return !ignored.some((segment) => source.split(/[\\/]/).includes(segment));
+    }
+  });
+
+  const zip = spawnSync("zip", ["-r", outputPath, "custom_components/ha_tv_pip"], {
+    cwd: tempRoot,
+    stdio: "inherit"
+  });
+
+  if (zip.error) {
+    throw new Error(`Failed to run zip: ${zip.error.message}`);
+  }
+
+  if (zip.status !== 0) {
+    throw new Error(`zip exited with status ${zip.status}`);
+  }
+
+  console.log(`Created ${outputPath}`);
+} finally {
+  await rm(tempRoot, { recursive: true, force: true });
+}

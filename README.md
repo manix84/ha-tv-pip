@@ -57,6 +57,17 @@ npm run android:lint
 npm run android:clean
 ```
 
+## Releases 📦
+
+GitHub Releases are the distribution target for now. When a GitHub Release is published, the release workflow reads the version from the root `package.json`, builds the Android TV APK, packages the Home Assistant integration, and uploads both assets:
+
+```txt
+ha-tv-pip-android-vX.Y.Z.apk
+ha-tv-pip-integration-vX.Y.Z.zip
+```
+
+Play Store deployment is not implemented yet.
+
 ## Future Home Assistant Plan 🏠
 
 Future phases will add a Home Assistant custom integration and Android TV receiver control features:

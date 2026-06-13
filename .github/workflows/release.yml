@@ -1,0 +1,67 @@
+name: Release 📦
+
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: write
+
+jobs:
+  package-release:
+    name: Package release assets 🚀
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Read release version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check version consistency
+        run: npm run version:check
+
+      - name: Build Android release APK
+        run: npm run android:assemble:release
+
+      - name: Prepare Android release asset
+        run: |
+          mkdir -p dist
+          cp android-tv-app/app/build/outputs/apk/release/app-release-unsigned.apk "dist/ha-tv-pip-android-v${{ steps.version.outputs.version }}.apk"
+
+      - name: Package Home Assistant integration
+        run: npm run package:integration
+
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" \
+            "dist/ha-tv-pip-android-v${{ steps.version.outputs.version }}.apk" \
+            "dist/ha-tv-pip-integration-v${{ steps.version.outputs.version }}.zip" \
+            --clobber

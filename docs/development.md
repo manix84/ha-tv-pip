@@ -142,11 +142,93 @@ Common repo scripts:
 ```sh
 npm run check
 npm run android:assemble
+npm run android:assemble:release
 npm run android:lint
 npm run android:clean
+npm run package:integration
 ```
 
 The root `package.json` is the monorepo version source. Android app version metadata should stay aligned with it.
+
+---
+
+# Versioning and Releases 📦
+
+## Version Source
+
+The root `package.json` version is the source of truth for the monorepo.
+
+Files that should stay aligned:
+
+- Root `package.json`.
+- `android-tv-app/package.json`.
+- Android `versionName` in `android-tv-app/app/build.gradle.kts`.
+- Home Assistant `manifest.json` version once the integration is implemented.
+
+Check version consistency with:
+
+```sh
+npm run version:check
+```
+
+During Phase 1, the Home Assistant integration is only a placeholder. The version check warns when `ha-integration/custom_components/ha_tv_pip/manifest.json` does not exist instead of failing.
+
+## Android Local Build
+
+Build the debug APK:
+
+```sh
+npm run android:assemble
+```
+
+Build the release APK:
+
+```sh
+npm run android:assemble:release
+```
+
+The release build currently produces an unsigned APK. Play Store deployment and signing automation are intentionally out of scope.
+
+## Integration Local Packaging
+
+Package the Home Assistant integration:
+
+```sh
+npm run package:integration
+```
+
+This creates:
+
+```txt
+dist/ha-tv-pip-integration-vX.Y.Z.zip
+```
+
+The zip preserves the Home Assistant install path:
+
+```txt
+custom_components/ha_tv_pip/
+```
+
+It does not include the monorepo wrapper path `ha-integration/custom_components/ha_tv_pip/`.
+
+## GitHub Release Assets
+
+When a GitHub Release is published, `.github/workflows/release.yml`:
+
+1. Checks out the repo.
+2. Sets up Java, Android SDK, Gradle, and Node.
+3. Reads the release version from root `package.json`.
+4. Runs the version consistency check.
+5. Builds the Android release APK.
+6. Packages the Home Assistant integration zip.
+7. Uploads both files to the GitHub Release.
+
+For version `1.2.3`, expected release assets are:
+
+```txt
+ha-tv-pip-android-v1.2.3.apk
+ha-tv-pip-integration-v1.2.3.zip
+```
 
 ---
 

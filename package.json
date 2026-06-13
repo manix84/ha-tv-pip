@@ -6,10 +6,13 @@
   "license": "MIT",
   "scripts": {
     "android:assemble": "npm --prefix android-tv-app run assemble",
+    "android:assemble:debug": "npm --prefix android-tv-app run assemble:debug",
+    "android:assemble:release": "npm --prefix android-tv-app run assemble:release",
     "android:clean": "npm --prefix android-tv-app run clean",
     "android:lint": "npm --prefix android-tv-app run lint",
     "check": "npm run version:check",
-    "version:check": "node scripts/check-versions.mjs"
+    "package:integration": "node scripts/package-integration.mjs",
+    "version:check": "node scripts/check-version.mjs"
   },
   "engines": {
     "node": ">=20"

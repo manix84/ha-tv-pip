@@ -8,3 +8,8 @@ app/build/
 android-tv-app/.gradle/
 android-tv-app/build/
 android-tv-app/app/build/
+dist/
+*.apk
+*.aab
+*.zip
+node_modules/
