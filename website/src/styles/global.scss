@@ -3,6 +3,12 @@
   --accent-2: #56daa8;
   --bg: #07131c;
   --bg-elevated: #0b1821;
+  --badge-future-bg: #5d3f00;
+  --badge-future-text: #fff2d4;
+  --badge-phase-bg: #034d75;
+  --badge-phase-text: #dff6ff;
+  --badge-planned-bg: #0c5a43;
+  --badge-planned-text: #dbffef;
   --border: rgba(255, 255, 255, 0.12);
   --code-bg: #06141d;
   --code-text: #d8f4ff;
@@ -20,6 +26,21 @@
   --text: #f5fbff;
   --text-muted: #b8c9d6;
   --text-soft: #c2d3df;
+  --tv-bezel: #1c313d;
+  --tv-feed-a: rgba(3, 169, 244, 0.65);
+  --tv-feed-b: rgba(13, 35, 48, 0.15);
+  --tv-feed-c: #132f3e;
+  --tv-feed-d: #10232e;
+  --tv-frame-bg: #071016;
+  --tv-frame-glint: rgba(255, 255, 255, 0.1);
+  --tv-frame-outline: rgba(255, 255, 255, 0.08);
+  --tv-label-bg: rgba(0, 0, 0, 0.4);
+  --tv-label-text: #f5fbff;
+  --tv-pip-bg: #0d2531;
+  --tv-pip-border: rgba(255, 255, 255, 0.72);
+  --tv-pip-glint: rgba(255, 255, 255, 0.16);
+  --tv-pip-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  --tv-stand: #274653;
   color: #f5fbff;
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -32,6 +53,12 @@
   --accent-2: #008c72;
   --bg: #f5fbff;
   --bg-elevated: #e9f4fa;
+  --badge-future-bg: #6a4700;
+  --badge-future-text: #ffffff;
+  --badge-phase-bg: #005f8f;
+  --badge-phase-text: #ffffff;
+  --badge-planned-bg: #006346;
+  --badge-planned-text: #ffffff;
   --border: rgba(5, 47, 68, 0.14);
   --code-bg: #f7fcff;
   --code-text: #173245;
@@ -49,6 +76,21 @@
   --text: #07131c;
   --text-muted: #425766;
   --text-soft: #243b4a;
+  --tv-bezel: #24485b;
+  --tv-feed-a: rgba(0, 126, 189, 0.56);
+  --tv-feed-b: rgba(255, 255, 255, 0.2);
+  --tv-feed-c: #cdeaf6;
+  --tv-feed-d: #9fd5ec;
+  --tv-frame-bg: #e7f4fa;
+  --tv-frame-glint: rgba(255, 255, 255, 0.5);
+  --tv-frame-outline: rgba(5, 47, 68, 0.14);
+  --tv-label-bg: rgba(7, 19, 28, 0.76);
+  --tv-label-text: #ffffff;
+  --tv-pip-bg: #d3eaf5;
+  --tv-pip-border: rgba(7, 19, 28, 0.62);
+  --tv-pip-glint: rgba(255, 255, 255, 0.58);
+  --tv-pip-shadow: 0 16px 36px rgba(18, 71, 94, 0.22);
+  --tv-stand: #63889a;
 }
 
 @media (prefers-color-scheme: light) {
@@ -57,6 +99,12 @@
     --accent-2: #008c72;
     --bg: #f5fbff;
     --bg-elevated: #e9f4fa;
+    --badge-future-bg: #6a4700;
+    --badge-future-text: #ffffff;
+    --badge-phase-bg: #005f8f;
+    --badge-phase-text: #ffffff;
+    --badge-planned-bg: #006346;
+    --badge-planned-text: #ffffff;
     --border: rgba(5, 47, 68, 0.14);
     --code-bg: #f7fcff;
     --code-text: #173245;
@@ -74,6 +122,21 @@
     --text: #07131c;
     --text-muted: #425766;
     --text-soft: #243b4a;
+    --tv-bezel: #24485b;
+    --tv-feed-a: rgba(0, 126, 189, 0.56);
+    --tv-feed-b: rgba(255, 255, 255, 0.2);
+    --tv-feed-c: #cdeaf6;
+    --tv-feed-d: #9fd5ec;
+    --tv-frame-bg: #e7f4fa;
+    --tv-frame-glint: rgba(255, 255, 255, 0.5);
+    --tv-frame-outline: rgba(5, 47, 68, 0.14);
+    --tv-label-bg: rgba(7, 19, 28, 0.76);
+    --tv-label-text: #ffffff;
+    --tv-pip-bg: #d3eaf5;
+    --tv-pip-border: rgba(7, 19, 28, 0.62);
+    --tv-pip-glint: rgba(255, 255, 255, 0.58);
+    --tv-pip-shadow: 0 16px 36px rgba(18, 71, 94, 0.22);
+    --tv-stand: #63889a;
   }
 }
 

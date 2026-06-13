@@ -57,13 +57,13 @@
 .tvFrame {
   aspect-ratio: 16 / 10;
   background:
-    linear-gradient(130deg, rgba(255, 255, 255, 0.1), transparent 44%),
-    #071016;
-  border: 12px solid #1c313d;
+    linear-gradient(130deg, var(--tv-frame-glint), transparent 44%),
+    var(--tv-frame-bg);
+  border: 12px solid var(--tv-bezel);
   border-radius: 8px;
   box-shadow:
     var(--shadow),
-    0 0 0 1px rgba(255, 255, 255, 0.08);
+    0 0 0 1px var(--tv-frame-outline);
   max-width: 500px;
   min-width: 300px;
   padding: 1rem;
@@ -72,7 +72,7 @@
 }
 
 .tvFrame::after {
-  background: #274653;
+  background: var(--tv-stand);
   border-radius: 0 0 8px 8px;
   bottom: -32px;
   content: "";
@@ -85,8 +85,8 @@
 .cameraFeed {
   align-items: flex-end;
   background:
-    linear-gradient(160deg, rgba(3, 169, 244, 0.65), rgba(13, 35, 48, 0.15)),
-    linear-gradient(45deg, #132f3e, #10232e);
+    linear-gradient(160deg, var(--tv-feed-a), var(--tv-feed-b)),
+    linear-gradient(45deg, var(--tv-feed-c), var(--tv-feed-d));
   border-radius: 6px;
   display: flex;
   height: 100%;
@@ -95,9 +95,9 @@
 
 .cameraFeed span,
 .pipWindow span {
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--tv-label-bg);
   border-radius: 999px;
-  color: #f5fbff;
+  color: var(--tv-label-text);
   font-size: 0.82rem;
   font-weight: 800;
   padding: 0.4rem 0.65rem;
@@ -106,12 +106,12 @@
 .pipWindow {
   align-items: flex-end;
   background:
-    linear-gradient(140deg, rgba(255, 255, 255, 0.16), transparent),
-    #0d2531;
-  border: 2px solid rgba(255, 255, 255, 0.72);
+    linear-gradient(140deg, var(--tv-pip-glint), transparent),
+    var(--tv-pip-bg);
+  border: 2px solid var(--tv-pip-border);
   border-radius: 6px;
   bottom: 2rem;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--tv-pip-shadow);
   display: flex;
   height: 30%;
   justify-content: flex-start;

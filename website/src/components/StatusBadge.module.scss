@@ -7,16 +7,16 @@
 }
 
 .phase1 {
-  background: rgba(3, 169, 244, 0.18);
-  color: #7adaff;
+  background: var(--badge-phase-bg);
+  color: var(--badge-phase-text);
 }
 
 .planned {
-  background: rgba(86, 218, 168, 0.16);
-  color: #9df3cf;
+  background: var(--badge-planned-bg);
+  color: var(--badge-planned-text);
 }
 
 .future {
-  background: rgba(255, 199, 95, 0.15);
-  color: #ffd890;
+  background: var(--badge-future-bg);
+  color: var(--badge-future-text);
 }
