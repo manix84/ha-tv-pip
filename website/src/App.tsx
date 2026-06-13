@@ -12,11 +12,11 @@ import tvPipMockup from "./assets/tv-pip-promo.png";
 import styles from "./App.module.scss";
 
 const githubUrl = "https://github.com/manix84/hassio-pip";
-const roadmapUrl = "../docs/roadmap.md";
-const architectureUrl = "../docs/architecture.md";
-const developmentUrl = "../docs/development.md";
+const roadmapUrl = "https://github.com/manix84/hassio-pip/blob/main/docs/roadmap.md";
+const architectureUrl = "https://github.com/manix84/hassio-pip/blob/main/docs/architecture.md";
+const developmentUrl = "https://github.com/manix84/hassio-pip/blob/main/docs/development.md";
 const releasesUrl = "https://github.com/manix84/hassio-pip/releases";
-const licenseUrl = "../LICENSE";
+const licenseUrl = "https://github.com/manix84/hassio-pip/blob/main/LICENSE";
 
 const automationExample = `
 alias: Show front door on TV

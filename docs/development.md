@@ -189,6 +189,8 @@ npm run website:preview
 
 The website is a static promotional landing page. It should not contain a backend, analytics, authentication, or release generation logic.
 
+The website workflow builds on pull requests and deploys `website/dist` to GitHub Pages on pushes to `main`.
+
 The root `package.json` is the monorepo version source. Android app version metadata should stay aligned with it.
 
 ---
