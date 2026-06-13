@@ -12,7 +12,15 @@
     "android:lint": "npm --prefix android-tv-app run lint",
     "check": "npm run version:check",
     "package:integration": "node scripts/package-integration.mjs",
-    "version:check": "node scripts/check-version.mjs"
+    "prepare": "husky",
+    "version:check": "node scripts/check-version.mjs",
+    "version:major": "node scripts/bump-version.mjs major",
+    "version:minor": "node scripts/bump-version.mjs minor",
+    "version:patch": "node scripts/bump-version.mjs patch",
+    "version:precommit": "node scripts/precommit-version-bump.mjs"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
   },
   "engines": {
     "node": ">=20"

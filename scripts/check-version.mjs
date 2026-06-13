@@ -1,51 +1,67 @@
 import { existsSync, readFileSync } from "node:fs";
+import {
+  ANDROID_BUILD_PATH,
+  ANDROID_PACKAGE_PATH,
+  HA_MANIFEST_PATH,
+  ROOT_PACKAGE_PATH,
+  parseSemver,
+  readJson
+} from "./version-utils.mjs";
 
-const rootPackage = JSON.parse(readFileSync("package.json", "utf8"));
-const androidPackage = JSON.parse(readFileSync("android-tv-app/package.json", "utf8"));
-const androidBuild = readFileSync("android-tv-app/app/build.gradle.kts", "utf8");
-const whatsNew = readFileSync("WHATSNEW.md", "utf8");
-
+const rootPackage = readJson(ROOT_PACKAGE_PATH);
 const expectedVersion = rootPackage.version;
-const versionNameMatch = androidBuild.match(/versionName\s*=\s*"([^"]+)"/);
-const haManifestPath = "ha-integration/custom_components/ha_tv_pip/manifest.json";
 
 const failures = [];
 const warnings = [];
 
-if (!expectedVersion || typeof expectedVersion !== "string") {
-  failures.push("Root package.json must contain a string version");
-} else if (!/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(expectedVersion)) {
-  failures.push(`Root package.json version '${expectedVersion}' is not valid semver`);
+try {
+  parseSemver(expectedVersion);
+} catch (error) {
+  failures.push(`Root package.json version is invalid: ${error.message}`);
 }
 
-if (androidPackage.version !== expectedVersion) {
-  failures.push(
-    `android-tv-app/package.json version ${androidPackage.version} does not match root ${expectedVersion}`
-  );
+if (existsSync(ANDROID_PACKAGE_PATH)) {
+  const androidPackage = readJson(ANDROID_PACKAGE_PATH);
+  if (androidPackage.version !== expectedVersion) {
+    failures.push(
+      `${ANDROID_PACKAGE_PATH} version ${androidPackage.version} does not match root ${expectedVersion}`
+    );
+  }
+} else {
+  warnings.push(`TODO: ${ANDROID_PACKAGE_PATH} does not exist yet`);
 }
 
-if (!versionNameMatch) {
-  failures.push("Could not find Android versionName in android-tv-app/app/build.gradle.kts");
-} else if (versionNameMatch[1] !== expectedVersion) {
-  failures.push(
-    `Android versionName ${versionNameMatch[1]} does not match root ${expectedVersion}`
-  );
+if (existsSync(ANDROID_BUILD_PATH)) {
+  const androidBuild = readFileSync(ANDROID_BUILD_PATH, "utf8");
+  const versionNameMatch = androidBuild.match(/versionName\s*=\s*"([^"]+)"/);
+  if (!versionNameMatch) {
+    failures.push(`Could not find Android versionName in ${ANDROID_BUILD_PATH}`);
+  } else if (versionNameMatch[1] !== expectedVersion) {
+    failures.push(
+      `Android versionName ${versionNameMatch[1]} does not match root ${expectedVersion}`
+    );
+  }
+} else {
+  warnings.push(`TODO: ${ANDROID_BUILD_PATH} does not exist yet`);
 }
 
-if (!whatsNew.includes(`## ${expectedVersion} `)) {
-  warnings.push(`WHATSNEW.md does not contain an entry for ${expectedVersion}`);
+if (existsSync("WHATSNEW.md")) {
+  const whatsNew = readFileSync("WHATSNEW.md", "utf8");
+  if (!whatsNew.includes(`## ${expectedVersion} `)) {
+    warnings.push(`WHATSNEW.md does not contain an entry for ${expectedVersion}`);
+  }
 }
 
-if (existsSync(haManifestPath)) {
-  const haManifest = JSON.parse(readFileSync(haManifestPath, "utf8"));
+if (existsSync(HA_MANIFEST_PATH)) {
+  const haManifest = readJson(HA_MANIFEST_PATH);
   if (haManifest.version !== expectedVersion) {
     failures.push(
-      `${haManifestPath} version ${haManifest.version ?? "<missing>"} does not match root ${expectedVersion}`
+      `${HA_MANIFEST_PATH} version ${haManifest.version ?? "<missing>"} does not match root ${expectedVersion}`
     );
   }
 } else {
   warnings.push(
-    `TODO: ${haManifestPath} does not exist yet; Home Assistant integration version sync will be enforced once the integration is implemented`
+    `TODO: ${HA_MANIFEST_PATH} does not exist yet; Home Assistant integration version sync will be enforced once the integration is implemented`
   );
 }
 

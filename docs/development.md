@@ -173,6 +173,155 @@ npm run version:check
 
 During Phase 1, the Home Assistant integration is only a placeholder. The version check warns when `ha-integration/custom_components/ha_tv_pip/manifest.json` does not exist instead of failing.
 
+## Pre-Commit Version Bumps 🔢
+
+The repo uses a Husky pre-commit hook to keep runtime commits versioned automatically.
+
+The hook runs:
+
+```sh
+npm run version:precommit
+```
+
+The root `package.json` version remains the source of truth. When a bump happens, the hook syncs:
+
+- `package.json`
+- `package-lock.json`, if present
+- `android-tv-app/package.json`
+- Android `versionName` in `android-tv-app/app/build.gradle.kts`
+- Home Assistant `manifest.json`, once it exists
+
+### PATCH Bumps 🩹
+
+PATCH bumps are automatic for normal runtime implementation changes under:
+
+```txt
+android-tv-app/app/src/
+android-tv-app/src/
+android-tv-app/build.gradle.kts
+android-tv-app/settings.gradle.kts
+ha-integration/custom_components/ha_tv_pip/
+```
+
+Example:
+
+```txt
+0.2.4 -> 0.2.5
+```
+
+### MINOR Bumps 🚦
+
+MINOR bumps are best-effort and are used for likely API, protocol, discovery, pairing, service schema, or compatibility changes.
+
+Explicit markers in staged diffs trigger MINOR:
+
+```txt
+[minor]
+[api]
+[breaking]
+[protocol]
+[service-schema]
+[pairing]
+[discovery]
+[compatibility]
+```
+
+Likely contract files also trigger MINOR:
+
+```txt
+ha-integration/custom_components/ha_tv_pip/services.yaml
+ha-integration/custom_components/ha_tv_pip/config_flow.py
+ha-integration/custom_components/ha_tv_pip/manifest.json
+ha-integration/custom_components/ha_tv_pip/const.py
+android-tv-app/app/src/**/models/**
+android-tv-app/app/src/**/receiver/**
+android-tv-app/app/src/**/pairing/**
+android-tv-app/app/src/**/discovery/**
+android-tv-app/app/src/**/api/**
+```
+
+When MINOR is bumped, PATCH resets to `0`:
+
+```txt
+0.2.4 -> 0.3.0
+```
+
+### MAJOR Protection 🛡️
+
+MAJOR bumps are never automatic.
+
+Use MAJOR only for extreme changes such as a complete rewrite, incompatible architecture replacement, or abandoning the existing receiver protocol.
+
+To force a MAJOR bump:
+
+```sh
+VERSION_BUMP=major ALLOW_MAJOR_BUMP=true git commit -m "Rewrite receiver architecture"
+```
+
+Without `ALLOW_MAJOR_BUMP=true`, the hook fails clearly.
+
+### No Version Bump 🧘
+
+Support-only changes do not bump versions:
+
+```txt
+docs/
+examples/
+scripts/
+.github/
+README.md
+LICENSE
+.gitignore
+package.json-only metadata changes
+release packaging scripts
+documentation-only changes
+```
+
+The hook also skips when only version files are staged, which avoids bump loops after a failed commit retry.
+
+### Manual Overrides 🎛️
+
+Use `VERSION_BUMP` when the automatic decision needs help:
+
+```sh
+VERSION_BUMP=minor git commit -m "Update receiver command payload"
+VERSION_BUMP=patch git commit -m "Fix playback lifecycle"
+VERSION_BUMP=none git commit -m "Update docs"
+VERSION_BUMP=major ALLOW_MAJOR_BUMP=true git commit -m "Rewrite architecture"
+```
+
+Allowed values:
+
+```txt
+auto
+none
+patch
+minor
+major
+```
+
+If unset, the hook behaves as `VERSION_BUMP=auto`.
+
+### Manual Version Bump Commands 🛠️
+
+You can bump versions without committing:
+
+```sh
+npm run version:patch
+npm run version:minor
+ALLOW_MAJOR_BUMP=true npm run version:major
+```
+
+### Emergency Bypass 🚨
+
+Bypass hooks only when necessary:
+
+```sh
+git commit --no-verify
+```
+
+Bypassing hooks should be rare. Run `npm run version:check` afterward when possible.
+
 ## Android Local Build
 
 Build the debug APK:

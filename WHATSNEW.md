@@ -14,6 +14,7 @@ Initial Android TV Picture-in-Picture proof of concept.
 - Added placeholder Home Assistant integration directory 🚧
 - Added package metadata and version consistency checks 📌
 - Added GitHub Release packaging for Android APK and Home Assistant integration zip 📦
+- Added pre-commit semantic version bump automation 🔢
 
 ## Not Included Yet 🛑
 
