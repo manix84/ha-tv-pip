@@ -179,6 +179,7 @@ function App() {
       <Section eyebrow="How it works" title="A local-first path from event to PiP popup.">
         <div className={styles.flowShowcase}>
           <FlowDiagram
+            className={styles.compactFlow}
             steps={[
               "Home Assistant event",
               "HA TV PiP integration",

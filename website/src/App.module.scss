@@ -131,7 +131,7 @@
 .solutionShowcase,
 .flowShowcase {
   align-items: center;
-  grid-template-columns: minmax(240px, 0.55fr) minmax(360px, 1.45fr);
+  grid-template-columns: minmax(300px, 0.65fr) minmax(420px, 1.35fr);
 }
 
 .solutionSteps {
@@ -158,18 +158,18 @@
   grid-template-columns: 1fr;
 }
 
-.flowShowcase :global(.flow) {
+.compactFlow {
   align-content: center;
   grid-template-columns: 1fr;
   margin: 0;
 }
 
-.flowShowcase :global(.flow li) {
+.compactFlow li {
   min-height: auto;
-  padding: 0.85rem 1rem;
+  padding: 0.95rem 1rem;
 }
 
-.flowShowcase :global(.flow li:not(:last-child)::after) {
+.compactFlow li:not(:last-child)::after {
   bottom: -1.1rem;
   left: 1rem;
   right: auto;
