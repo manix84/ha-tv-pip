@@ -1,4 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+import styles from "./App.module.scss";
+import controlMockup from "./assets/home-assistant-control.png";
+import networkMockup from "./assets/local-network-pip.png";
+import heroCleanMockup from "./assets/tv-pip-hero-clean.png";
+import phaseOnePromoMockup from "./assets/tv-pip-promo.png";
 import { Button } from "./components/Button";
 import { CodeBlock } from "./components/CodeBlock";
 import { FeatureCard } from "./components/FeatureCard";
@@ -6,15 +11,14 @@ import { FlowDiagram } from "./components/FlowDiagram";
 import { Section } from "./components/Section";
 import { StatusBadge } from "./components/StatusBadge";
 import { ThemeToggle, type ThemeMode } from "./components/ThemeToggle";
-import controlMockup from "./assets/home-assistant-control.png";
-import networkMockup from "./assets/local-network-pip.png";
-import tvPipMockup from "./assets/tv-pip-promo.png";
-import styles from "./App.module.scss";
 
 const githubUrl = "https://github.com/manix84/hassio-pip";
-const roadmapUrl = "https://github.com/manix84/hassio-pip/blob/main/docs/roadmap.md";
-const architectureUrl = "https://github.com/manix84/hassio-pip/blob/main/docs/architecture.md";
-const developmentUrl = "https://github.com/manix84/hassio-pip/blob/main/docs/development.md";
+const roadmapUrl =
+  "https://github.com/manix84/hassio-pip/blob/main/docs/roadmap.md";
+const architectureUrl =
+  "https://github.com/manix84/hassio-pip/blob/main/docs/architecture.md";
+const developmentUrl =
+  "https://github.com/manix84/hassio-pip/blob/main/docs/development.md";
 const releasesUrl = "https://github.com/manix84/hassio-pip/releases";
 const licenseUrl = "https://github.com/manix84/hassio-pip/blob/main/LICENSE";
 
@@ -37,44 +41,52 @@ action:
 const features = [
   {
     title: "Android TV receiver app",
-    description: "A Kotlin receiver app that owns playback, PiP behavior, and TV-friendly interaction.",
-    status: "phase1" as const
+    description:
+      "A Kotlin receiver app that owns playback, PiP behavior, and TV-friendly interaction.",
+    status: "phase1" as const,
   },
   {
     title: "Home Assistant custom integration",
-    description: "A future controller integration for discovery, pairing, services, and camera resolution.",
-    status: "planned" as const
+    description:
+      "A future controller integration for discovery, pairing, services, and camera resolution.",
+    status: "planned" as const,
   },
   {
     title: "Local-first control",
-    description: "Designed for LAN operation before remote connectivity, with no cloud relay by default.",
-    status: "planned" as const
+    description:
+      "Designed for LAN operation before remote connectivity, with no cloud relay by default.",
+    status: "planned" as const,
   },
   {
     title: "Automatic discovery",
-    description: "Planned mDNS discovery so Home Assistant can find receiver apps automatically.",
-    status: "planned" as const
+    description:
+      "Planned mDNS discovery so Home Assistant can find receiver apps automatically.",
+    status: "planned" as const,
   },
   {
     title: "Secure pairing",
-    description: "Planned pairing flow so random LAN devices cannot trigger camera popups.",
-    status: "planned" as const
+    description:
+      "Planned pairing flow so random LAN devices cannot trigger camera popups.",
+    status: "planned" as const,
   },
   {
     title: "Camera stream support",
-    description: "HLS first, then broader stream handling as the integration matures.",
-    status: "planned" as const
+    description:
+      "HLS first, then broader stream handling as the integration matures.",
+    status: "planned" as const,
   },
   {
     title: "Snapshot support",
-    description: "Still-image popups for fast alerts and fallback behavior when video is unnecessary.",
-    status: "future" as const
+    description:
+      "Still-image popups for fast alerts and fallback behavior when video is unnecessary.",
+    status: "future" as const,
   },
   {
     title: "Future remote receiver mode",
-    description: "A later outbound connection mode for travel TVs without router port forwarding.",
-    status: "future" as const
-  }
+    description:
+      "A later outbound connection mode for travel TVs without router port forwarding.",
+    status: "future" as const,
+  },
 ];
 
 const roadmapItems = [
@@ -85,13 +97,15 @@ const roadmapItems = [
   "Snapshot support",
   "WebRTC support",
   "Remote mode",
-  "Play Store and HACS distribution"
+  "Play Store and HACS distribution",
 ];
 
 function App() {
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
     const saved = window.localStorage.getItem("ha-tv-pip-theme");
-    return saved === "light" || saved === "dark" || saved === "auto" ? saved : "auto";
+    return saved === "light" || saved === "dark" || saved === "auto"
+      ? saved
+      : "auto";
   });
 
   useEffect(() => {
@@ -108,13 +122,13 @@ function App() {
       {
         image: controlMockup,
         title: "Automation control surface",
-        text: "A Home Assistant-friendly control plane for future receiver discovery, pairing, and service calls."
+        text: "A Home Assistant-friendly control plane for future receiver discovery, pairing, and service calls.",
       },
       {
         image: networkMockup,
         title: "Local-first receiver path",
-        text: "The TV app owns playback and PiP while Home Assistant decides what should appear."
-      }
+        text: "The TV app owns playback and PiP while Home Assistant decides what should appear.",
+      },
     ],
     []
   );
@@ -129,8 +143,9 @@ function App() {
             <p className={styles.version}>Version {__PROJECT_VERSION__}</p>
             <h1>Show Home Assistant camera feeds on your Android TV.</h1>
             <p className={styles.subheading}>
-              HA TV PiP lets Home Assistant automations open security camera feeds, snapshots,
-              and alerts in Picture-in-Picture on Android TV and Google TV devices.
+              HA TV PiP lets Home Assistant automations open security camera
+              feeds, snapshots, and alerts in Picture-in-Picture on Android TV
+              and Google TV devices.
             </p>
             <div className={styles.actions}>
               <Button href={githubUrl}>View on GitHub</Button>
@@ -139,27 +154,42 @@ function App() {
               </Button>
             </div>
           </div>
-          <div className={styles.tvVisual} aria-label="Android TV Picture-in-Picture visual">
-            <div className={styles.tvFrame}>
-              <div className={styles.cameraFeed}>
-                <span>Front Door</span>
+          <figure className={styles.heroProductVisual}>
+            <img
+              alt="Living room Android TV showing a security camera feed in Picture-in-Picture"
+              src={heroCleanMockup}
+            />
+            <figcaption className={styles.heroOverlay}>
+              <span className={styles.overlayKicker}>Android TV receiver</span>
+              <strong>Playing test HLS stream</strong>
+              <span>PiP mode ready</span>
+            </figcaption>
+            <div className={styles.signalPanel} aria-hidden="true">
+              <div>
+                <span />
+                <span />
+                <span />
               </div>
-              <div className={styles.pipWindow}>
-                <span>PiP</span>
-              </div>
+              <p>Local automation path</p>
             </div>
-          </div>
+          </figure>
         </div>
       </section>
 
-      <Section eyebrow="The problem" title="Smart-home alerts deserve a better TV moment.">
+      <Section
+        eyebrow="The problem"
+        title="Smart-home alerts deserve a better TV moment."
+      >
         <p className={styles.copy}>
-          Home Assistant can detect doorbells, motion, people, and camera events, but showing those
-          events naturally on a TV is still awkward.
+          Home Assistant can detect doorbells, motion, people, and camera
+          events, but showing those events naturally on a TV is still awkward.
         </p>
       </Section>
 
-      <Section eyebrow="The solution" title="A receiver app for the TV, a controller in Home Assistant.">
+      <Section
+        eyebrow="The solution"
+        title="A receiver app for the TV, a controller in Home Assistant."
+      >
         <div className={styles.solutionShowcase}>
           <div className={styles.solutionSteps}>
             <p>Install the Android TV receiver app.</p>
@@ -176,7 +206,10 @@ function App() {
         </div>
       </Section>
 
-      <Section eyebrow="How it works" title="A local-first path from event to PiP popup.">
+      <Section
+        eyebrow="How it works"
+        title="A local-first path from event to PiP popup."
+      >
         <div className={styles.flowShowcase}>
           <FlowDiagram
             className={styles.compactFlow}
@@ -184,7 +217,7 @@ function App() {
               "Home Assistant event",
               "HA TV PiP integration",
               "Android TV receiver app",
-              "PiP camera popup"
+              "PiP camera popup",
             ]}
           />
           <figure className={styles.imageCard}>
@@ -196,7 +229,10 @@ function App() {
         </div>
       </Section>
 
-      <Section eyebrow="Features" title="Built in phases, designed as one experience.">
+      <Section
+        eyebrow="Features"
+        title="Built in phases, designed as one experience."
+      >
         <div className={styles.visualGrid}>
           {visualCards.map((card) => (
             <article className={styles.visualCard} key={card.title}>
@@ -223,20 +259,27 @@ function App() {
       <Section eyebrow="Current status" title="Phase 1: Android TV PiP MVP">
         <div className={styles.statusPanel}>
           <div>
-            <p>Currently proving reliable Android TV video playback and PiP behaviour.</p>
             <p>
-              Home Assistant integration, discovery, pairing, camera streams, and remote mode are
-              intentionally future phases.
+              Currently proving reliable Android TV video playback and PiP
+              behaviour.
+            </p>
+            <p>
+              Home Assistant integration, discovery, pairing, camera streams,
+              and remote mode are intentionally future phases.
             </p>
           </div>
           <img
-            alt="Promotional mockup of HA TV PiP running on a living room Android TV"
-            src={tvPipMockup}
+            alt="Promotional overview of HA TV PiP features beside an Android TV Picture-in-Picture mockup"
+            className={styles.phaseOneImage}
+            src={phaseOnePromoMockup}
           />
         </div>
       </Section>
 
-      <Section eyebrow="Roadmap preview" title="The path from MVP to daily-driver smart-home tool.">
+      <Section
+        eyebrow="Roadmap preview"
+        title="The path from MVP to daily-driver smart-home tool."
+      >
         <ul className={styles.roadmap}>
           {roadmapItems.map((item) => (
             <li key={item}>{item}</li>

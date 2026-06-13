@@ -49,76 +49,109 @@
   margin-top: 2rem;
 }
 
-.tvVisual {
-  display: flex;
-  justify-content: center;
+.heroProductVisual {
+  background:
+    linear-gradient(140deg, var(--tv-frame-glint), transparent 38%),
+    var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  isolation: isolate;
+  margin: 0;
+  min-height: 460px;
+  overflow: hidden;
+  position: relative;
 }
 
-.tvFrame {
-  aspect-ratio: 16 / 10;
-  background:
-    linear-gradient(130deg, var(--tv-frame-glint), transparent 44%),
-    var(--tv-frame-bg);
-  border: 12px solid var(--tv-bezel);
-  border-radius: 8px;
-  box-shadow:
-    var(--shadow),
-    0 0 0 1px var(--tv-frame-outline);
-  max-width: 500px;
-  min-width: 300px;
-  padding: 1rem;
-  position: relative;
+.heroProductVisual::before {
+  background: var(--hero-image-scrim);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.heroProductVisual img {
+  display: block;
+  filter: var(--hero-image-filter);
+  height: 100%;
+  min-height: inherit;
+  object-fit: cover;
+  object-position: 72% center;
   width: 100%;
 }
 
-.tvFrame::after {
-  background: var(--tv-stand);
-  border-radius: 0 0 8px 8px;
-  bottom: -32px;
-  content: "";
-  height: 20px;
-  left: 38%;
+.heroOverlay,
+.signalPanel {
+  backdrop-filter: blur(18px);
+  background: var(--tv-label-bg);
+  border: 1px solid var(--tv-frame-outline);
+  border-radius: 8px;
+  color: var(--tv-label-text);
   position: absolute;
-  right: 38%;
+  z-index: 2;
 }
 
-.cameraFeed {
-  align-items: flex-end;
-  background:
-    linear-gradient(160deg, var(--tv-feed-a), var(--tv-feed-b)),
-    linear-gradient(45deg, var(--tv-feed-c), var(--tv-feed-d));
-  border-radius: 6px;
-  display: flex;
-  height: 100%;
+.heroOverlay {
+  bottom: 1.2rem;
+  display: grid;
+  gap: 0.3rem;
+  left: 1.2rem;
+  max-width: min(360px, calc(100% - 2.4rem));
   padding: 1rem;
 }
 
-.cameraFeed span,
-.pipWindow span {
-  background: var(--tv-label-bg);
-  border-radius: 999px;
-  color: var(--tv-label-text);
-  font-size: 0.82rem;
-  font-weight: 800;
-  padding: 0.4rem 0.65rem;
+.heroOverlay strong {
+  font-size: 1.05rem;
 }
 
-.pipWindow {
-  align-items: flex-end;
-  background:
-    linear-gradient(140deg, var(--tv-pip-glint), transparent),
-    var(--tv-pip-bg);
-  border: 2px solid var(--tv-pip-border);
-  border-radius: 6px;
-  bottom: 2rem;
-  box-shadow: var(--tv-pip-shadow);
+.heroOverlay span {
+  color: var(--hero-overlay-muted);
+}
+
+.overlayKicker {
+  color: var(--hero-overlay-accent);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.signalPanel {
+  align-items: center;
   display: flex;
-  height: 30%;
-  justify-content: flex-start;
-  padding: 0.65rem;
-  position: absolute;
-  right: 2rem;
-  width: 38%;
+  gap: 0.8rem;
+  padding: 0.75rem 0.85rem;
+  right: 1.2rem;
+  top: 1.2rem;
+}
+
+.signalPanel div {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.signalPanel span {
+  background: var(--accent);
+  border-radius: 999px;
+  display: block;
+  height: 0.7rem;
+  width: 0.7rem;
+}
+
+.signalPanel span:nth-child(2) {
+  background: var(--accent-2);
+}
+
+.signalPanel span:nth-child(3) {
+  background: var(--link);
+}
+
+.signalPanel p {
+  font-size: 0.82rem;
+  font-weight: 800;
+  margin: 0;
 }
 
 .solutionShowcase,
@@ -260,6 +293,12 @@
 
 .statusPanel img {
   aspect-ratio: 16 / 10;
+}
+
+.phaseOneImage {
+  background: var(--bg-elevated);
+  object-fit: contain;
+  object-position: center;
 }
 
 .roadmap {

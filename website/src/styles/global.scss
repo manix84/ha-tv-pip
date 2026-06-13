@@ -16,6 +16,12 @@
     radial-gradient(circle at 18% 20%, rgba(3, 169, 244, 0.24), transparent 28rem),
     radial-gradient(circle at 80% 12%, rgba(0, 188, 212, 0.18), transparent 26rem),
     linear-gradient(140deg, #07131c 0%, #0d2330 48%, #08131a 100%);
+  --hero-image-filter: saturate(1.08) contrast(1.03);
+  --hero-image-scrim:
+    radial-gradient(circle at 68% 18%, rgba(255, 255, 255, 0.16), transparent 28%),
+    linear-gradient(90deg, rgba(7, 19, 28, 0.9), transparent 34%);
+  --hero-overlay-accent: #9fdff7;
+  --hero-overlay-muted: #d8f4ff;
   --link: #9fdff7;
   --on-accent: #03131c;
   --page-bg: linear-gradient(180deg, #07131c 0%, #0b1821 46%, #07131c 100%);
@@ -67,6 +73,12 @@
     radial-gradient(circle at 18% 20%, rgba(3, 169, 244, 0.22), transparent 28rem),
     radial-gradient(circle at 78% 14%, rgba(86, 218, 168, 0.18), transparent 26rem),
     linear-gradient(140deg, #f5fbff 0%, #e9f5fb 48%, #d8edf7 100%);
+  --hero-image-filter: brightness(1.12) saturate(0.9) contrast(0.92);
+  --hero-image-scrim:
+    radial-gradient(circle at 68% 18%, rgba(255, 255, 255, 0.5), transparent 28%),
+    linear-gradient(90deg, rgba(245, 251, 255, 0.82), transparent 34%);
+  --hero-overlay-accent: #dff6ff;
+  --hero-overlay-muted: #f5fbff;
   --link: #006a9e;
   --on-accent: #ffffff;
   --page-bg: linear-gradient(180deg, #f5fbff 0%, #e8f4fa 46%, #f5fbff 100%);
@@ -114,6 +126,12 @@
       radial-gradient(circle at 18% 20%, rgba(3, 169, 244, 0.22), transparent 28rem),
       radial-gradient(circle at 78% 14%, rgba(86, 218, 168, 0.18), transparent 26rem),
       linear-gradient(140deg, #f5fbff 0%, #e9f5fb 48%, #d8edf7 100%);
+    --hero-image-filter: brightness(1.12) saturate(0.9) contrast(0.92);
+    --hero-image-scrim:
+      radial-gradient(circle at 68% 18%, rgba(255, 255, 255, 0.5), transparent 28%),
+      linear-gradient(90deg, rgba(245, 251, 255, 0.82), transparent 34%);
+    --hero-overlay-accent: #dff6ff;
+    --hero-overlay-muted: #f5fbff;
     --link: #006a9e;
     --on-accent: #ffffff;
     --page-bg: linear-gradient(180deg, #f5fbff 0%, #e8f4fa 46%, #f5fbff 100%);
