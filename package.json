@@ -15,6 +15,7 @@
     "check": "npm run version:check && npm run lint && npm run typecheck && npm run test",
     "ha:check": "npm --prefix ha-integration run check",
     "ha:build:dry-run": "npm run package:integration",
+    "ha:install": "node scripts/install-ha-python-tools.mjs",
     "ha:lint": "npm --prefix ha-integration run lint",
     "ha:test": "npm --prefix ha-integration run test",
     "ha:typecheck": "npm --prefix ha-integration run typecheck",

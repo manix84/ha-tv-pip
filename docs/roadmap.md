@@ -37,7 +37,9 @@ The intended user experience is:
 
 ---
 
-# Phase 1: Android TV PiP MVP
+# Phase 1: Android TV PiP MVP ✅
+
+Status: Complete in `0.3.0`.
 
 ## Goal
 

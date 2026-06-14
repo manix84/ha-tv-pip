@@ -1,5 +1,19 @@
 # What's New ✨
 
+## 0.3.0 - Phase 1 Complete ✅
+
+Phase 1 is now complete and validated as the Android TV PiP MVP.
+
+- Confirmed Android TV Kotlin receiver app builds successfully 📺
+- Confirmed Media3 / ExoPlayer public HLS playback path compiles cleanly 🎬
+- Confirmed manual and Home-triggered PiP support is implemented 🪟
+- Added Android, Home Assistant integration, and website test coverage 🧪
+- Added split GitHub Actions quality jobs for linting, type checking, tests, and dry-run builds ✅
+- Added native Git pre-commit checks and version bump automation 🪝
+- Added local dependency installer with Android SDK detection and Home Assistant Python virtualenv setup 🛠️
+- Added GitHub Pages-ready promotional website build 🌐
+- Updated Android SDK/build tools configuration for Android Studio 2026.1.1 / SDK 36.1 compatibility 🤖
+
 ## 0.1.0 - Phase 1 MVP 🚀
 
 Initial Android TV Picture-in-Picture proof of concept.

@@ -15,12 +15,6 @@ const androidSdkCandidates = [
   "/usr/local/share/android-sdk",
   "/opt/homebrew/share/android-sdk",
 ].filter(Boolean);
-const integrationDir = "ha-integration";
-const integrationVenvDir = join(integrationDir, ".venv");
-const integrationVenvPython = join(
-  integrationVenvDir,
-  isWindows ? "Scripts/python.exe" : "bin/python",
-);
 
 function run(label, command, args, options = {}) {
   console.log(`\n==> ${label}`);
@@ -77,33 +71,9 @@ run("Checking Android app npm metadata", npmCommand, [
 ]);
 configureAndroidSdk();
 run("Installing website npm dependencies", npmCommand, ["--prefix", "website", "install"]);
-
-if (existsSync("ha-integration/requirements-dev.txt")) {
-  if (!existsSync(integrationVenvPython)) {
-    run("Creating Home Assistant integration Python virtualenv", "python3", [
-      "-m",
-      "venv",
-      integrationVenvDir,
-    ]);
-  }
-
-  run("Updating Home Assistant integration virtualenv pip", integrationVenvPython, [
-    "-m",
-    "pip",
-    "install",
-    "--upgrade",
-    "pip",
-  ]);
-
-  run("Installing Home Assistant integration Python dev tools", integrationVenvPython, [
-    "-m",
-    "pip",
-    "install",
-    "-r",
-    "ha-integration/requirements-dev.txt",
-  ]);
-}
+run("Installing Home Assistant integration Python dev tools", "node", [
+  "scripts/install-ha-python-tools.mjs",
+]);
 
 console.log("\nInstall complete.");
 console.log("Android Gradle dependencies are resolved by Android Studio or Gradle during builds.");
-console.log("Home Assistant Python tools are installed in ha-integration/.venv.");

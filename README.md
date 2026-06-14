@@ -12,9 +12,9 @@ This repository is a monorepo that contains the receiver app, future Home Assist
 - `docs/`: Architecture, roadmap, and development notes 📚
 - `examples/`: Example Home Assistant automations ⚙️
 
-## Current Phase 🧪
+## Current Phase ✅
 
-Phase 1 is limited to the Android TV MVP. It proves that an Android TV app can play a public HLS test stream and reliably enter and exit Picture-in-Picture mode.
+Phase 1 is complete. The Android TV MVP proves that an Android TV app can play a public HLS test stream and reliably enter and exit Picture-in-Picture mode.
 
 The Home Assistant integration, local control endpoint, discovery, pairing, authentication, camera support, snapshots, and WebRTC support are not implemented yet.
 

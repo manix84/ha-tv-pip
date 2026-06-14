@@ -127,8 +127,13 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Install Python dev tools
-        run: python -m pip install -r ha-integration/requirements-dev.txt
+        run: npm run ha:install
 
       - name: Run Home Assistant integration lint
         run: npm run ha:lint
@@ -146,8 +151,13 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Install Python dev tools
-        run: python -m pip install -r ha-integration/requirements-dev.txt
+        run: npm run ha:install
 
       - name: Run Home Assistant integration typecheck
         run: npm run ha:typecheck
@@ -165,8 +175,13 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Install Python dev tools
-        run: python -m pip install -r ha-integration/requirements-dev.txt
+        run: npm run ha:install
 
       - name: Run Home Assistant integration tests
         run: npm run ha:test
