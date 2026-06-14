@@ -1,5 +1,16 @@
 # What's New ✨
 
+## 0.4.0 - Chromecast Overlay Validation 📺
+
+Phase 1 is now validated on physical Chromecast with Google TV hardware.
+
+- Added device compatibility detection for native PiP and overlay support 🧭
+- Added a no-ADB floating overlay fallback for Google TV devices that reject native PiP 🪟
+- Added an overlay permission entry point from the Android TV app UI 🔐
+- Added overlay stop handling from the receiver main screen 🛑
+- Updated the player action label so fallback devices show `Show Overlay` instead of `Enter PiP` 🎮
+- Confirmed the fallback works on Chromecast with Google TV after granting overlay permission ✅
+
 ## 0.3.0 - Phase 1 Complete ✅
 
 Phase 1 is now complete and validated as the Android TV PiP MVP.

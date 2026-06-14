@@ -4,7 +4,7 @@
 
 [![Android TV App Quality 📺](https://github.com/manix84/hassio-pip/actions/workflows/quality-android-tv-app.yml/badge.svg)](https://github.com/manix84/hassio-pip/actions/workflows/quality-android-tv-app.yml) [![Home Assistant Integration Quality 🏠](https://github.com/manix84/hassio-pip/actions/workflows/quality-ha-integration.yml/badge.svg)](https://github.com/manix84/hassio-pip/actions/workflows/quality-ha-integration.yml) [![Website Quality 🌐](https://github.com/manix84/hassio-pip/actions/workflows/quality-website.yml/badge.svg)](https://github.com/manix84/hassio-pip/actions/workflows/quality-website.yml)
 
-HA TV PiP is a planned Home Assistant companion project for showing short-lived camera feeds on Android TV and Google TV devices using Android Picture-in-Picture.
+HA TV PiP is a planned Home Assistant companion project for showing short-lived camera feeds on Android TV and Google TV devices using Android Picture-in-Picture or a local overlay fallback.
 
 This repository is a monorepo that contains the receiver app, future Home Assistant integration, and promotional website:
 
@@ -16,7 +16,7 @@ This repository is a monorepo that contains the receiver app, future Home Assist
 
 ## Current Phase ✅
 
-Phase 1 is complete. The Android TV MVP proves that an Android TV app can play a public HLS test stream and reliably enter and exit Picture-in-Picture mode.
+Phase 1 is complete in `0.4.0`. The Android TV MVP proves that an Android TV app can play a public HLS test stream and show it outside the full-screen app using native Picture-in-Picture where Android TV exposes it, or a no-ADB overlay fallback where native PiP is unavailable.
 
 The Home Assistant integration, local control endpoint, discovery, pairing, authentication, camera support, snapshots, and WebRTC support are not implemented yet.
 
@@ -47,7 +47,7 @@ ha-tv-pip/
 2. Let Android Studio sync Gradle.
 3. Select an Android TV or Google TV device, or create an Android TV emulator.
 4. Run the `app` configuration.
-5. Select `Play Test Video`, then use `Enter PiP` or press Home to test Picture-in-Picture.
+5. Select `Play Test Video`, then use `Enter PiP`, `Show Overlay`, or press Home to test the receiver display mode.
 
 From VSCode or a terminal with a configured JDK and Android SDK:
 

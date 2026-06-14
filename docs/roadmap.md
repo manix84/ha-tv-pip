@@ -39,11 +39,11 @@ The intended user experience is:
 
 # Phase 1: Android TV PiP MVP ✅
 
-Status: Complete in `0.3.0`.
+Status: Complete in `0.4.0`.
 
 ## Goal
 
-Prove that an Android TV app can reliably play a video stream and enter Picture-in-Picture mode.
+Prove that an Android TV app can reliably play a video stream and display it outside the full-screen app using native Picture-in-Picture where available, or a local overlay fallback where Android TV does not expose native PiP.
 
 ## Scope
 
@@ -52,6 +52,7 @@ Prove that an Android TV app can reliably play a video stream and enter Picture-
 - Media3 ExoPlayer.
 - Manual PiP entry.
 - Automatic PiP entry when Home is pressed.
+- No-ADB overlay fallback for Google TV devices that reject native PiP.
 - Basic TV-friendly UI.
 - Basic logging and error handling.
 
@@ -71,9 +72,10 @@ Do not implement yet:
 
 - App launches on Android TV / Google TV.
 - User can play a public test HLS stream.
-- User can manually enter PiP.
-- Pressing Home while video is playing enters PiP where supported.
-- Playback continues in PiP.
+- User can manually enter native PiP where supported.
+- User can manually show the overlay fallback where native PiP is unavailable.
+- Pressing Home while video is playing enters native PiP or starts the overlay fallback where supported.
+- Playback continues in PiP or overlay mode.
 - App handles pause/resume/close cleanly.
 
 ---

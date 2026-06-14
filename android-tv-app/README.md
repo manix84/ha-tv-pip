@@ -2,7 +2,7 @@
 
 [![Android TV App Quality 📺](https://github.com/manix84/hassio-pip/actions/workflows/quality-android-tv-app.yml/badge.svg)](https://github.com/manix84/hassio-pip/actions/workflows/quality-android-tv-app.yml) [![Release 📦](https://github.com/manix84/hassio-pip/actions/workflows/release.yml/badge.svg)](https://github.com/manix84/hassio-pip/actions/workflows/release.yml)
 
-Phase 1 Android TV MVP for HA TV PiP. This app plays a public HLS test stream and validates Android TV Picture-in-Picture behavior.
+Phase 1 Android TV MVP for HA TV PiP. This app plays a public HLS test stream and validates Android TV Picture-in-Picture behavior where supported, with a floating overlay fallback for devices that do not expose native PiP.
 
 ## Build 🛠️
 
@@ -44,18 +44,20 @@ The dry-run build assembles the debug APK.
 1. Launch the app on an Android TV target.
 2. Select `Play Test Video`.
 3. Confirm the public HLS stream starts playing.
-4. Select `Enter PiP` to manually enter Picture-in-Picture.
+4. Select `Enter PiP` to manually enter Picture-in-Picture, or `Show Overlay` if the device uses the fallback path.
 
 ## Android TV Testing 🎮
 
 Use a TV remote, emulator D-pad, or keyboard arrows to navigate. The main screen focuses the playback button by default.
 
-## PiP Testing 🪟
+## PiP and Overlay Testing 🪟
 
-- While playback is running, select `Enter PiP` ✅
-- While playback is running full screen, press Home and confirm playback continues in PiP 🏠
+- While playback is running, select `Enter PiP` or `Show Overlay` ✅
+- While playback is running full screen, press Home and confirm playback continues in PiP or the overlay fallback 🏠
 - Reopen the app from the launcher or recents and confirm it returns to full-screen playback 🔁
 - Press Back from full screen and confirm playback stops cleanly 🛑
+
+Some Google TV devices, including Chromecast HD test hardware, do not expose Android's native PiP feature to third-party TV apps. On those devices the app can use the `SYSTEM_ALERT_WINDOW` overlay permission as a no-ADB fallback. Use `Open Overlay Settings` from the main screen, grant the permission, then test `Show Overlay`.
 
 ## Stream Configuration 🎬
 

@@ -746,6 +746,7 @@ Focus on:
 
 - Playback reliability
 - PiP behaviour
+- Overlay fallback behaviour on Google TV devices that do not expose native PiP
 - Lifecycle handling
 - Crash recovery
 
@@ -822,17 +823,18 @@ Choose the simplest implementation that supports future expansion.
 Current development target:
 
 ```txt
-Phase 1
-Android TV PiP MVP
+Phase 2
+Local Control Endpoint
 ```
 
-Success criteria:
+Phase 1 is complete in `0.4.0`. It validated:
 
 ```txt
 Play a test HLS stream.
-Enter PiP mode.
+Enter native PiP where supported.
+Use the no-ADB overlay fallback where native PiP is unavailable.
 Remain stable across lifecycle events.
 Provide a foundation for future receiver control.
 ```
 
-No Home Assistant functionality should be implemented until Phase 1 is complete and stable.
+Phase 2 should add local receiver control without implementing the Home Assistant integration yet.

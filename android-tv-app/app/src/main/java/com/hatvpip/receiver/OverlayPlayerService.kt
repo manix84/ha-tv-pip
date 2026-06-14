@@ -1,0 +1,109 @@
+package com.hatvpip.receiver
+
+import android.app.Service
+import android.content.Intent
+import android.graphics.PixelFormat
+import android.os.IBinder
+import android.view.Gravity
+import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.FrameLayout
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
+
+class OverlayPlayerService : Service() {
+    private lateinit var windowManager: WindowManager
+    private var overlayView: FrameLayout? = null
+    private var player: ExoPlayer? = null
+
+    override fun onCreate() {
+        super.onCreate()
+        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        when (intent?.action) {
+            ACTION_STOP -> stopSelf()
+            else -> showOverlay()
+        }
+        return START_STICKY
+    }
+
+    override fun onDestroy() {
+        removeOverlay()
+        super.onDestroy()
+    }
+
+    override fun onBind(intent: Intent?): IBinder? = null
+
+    private fun showOverlay() {
+        if (overlayView != null) return
+
+        val overlayPlayer = ExoPlayer.Builder(this).build().also { exoPlayer ->
+            exoPlayer.setMediaItem(MediaItem.fromUri(PlayerActivity.TEST_STREAM_URL))
+            exoPlayer.repeatMode = Player.REPEAT_MODE_ONE
+            exoPlayer.playWhenReady = true
+            exoPlayer.prepare()
+        }
+        player = overlayPlayer
+
+        val playerView = PlayerView(this).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            useController = false
+            this.player = overlayPlayer
+        }
+
+        val root = FrameLayout(this).apply {
+            setBackgroundColor(android.graphics.Color.BLACK)
+            addView(playerView)
+        }
+
+        val params = WindowManager.LayoutParams(
+            OVERLAY_WIDTH_PX,
+            OVERLAY_HEIGHT_PX,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            gravity = Gravity.TOP or Gravity.END
+            x = OVERLAY_MARGIN_PX
+            y = OVERLAY_MARGIN_PX
+        }
+
+        runCatching {
+            windowManager.addView(root, params)
+            overlayView = root
+            AppLog.playbackStart(PlayerActivity.TEST_STREAM_URL)
+        }.onFailure { error ->
+            AppLog.error("Unable to show overlay fallback", error)
+            overlayPlayer.release()
+            player = null
+            stopSelf()
+        }
+    }
+
+    private fun removeOverlay() {
+        overlayView?.let { view ->
+            runCatching { windowManager.removeView(view) }
+        }
+        overlayView = null
+        player?.release()
+        player = null
+        AppLog.playbackStop(reason = "overlay_service_stopped")
+    }
+
+    companion object {
+        const val ACTION_SHOW = "com.hatvpip.receiver.action.SHOW_OVERLAY"
+        const val ACTION_STOP = "com.hatvpip.receiver.action.STOP_OVERLAY"
+        private const val OVERLAY_WIDTH_PX = 640
+        private const val OVERLAY_HEIGHT_PX = 360
+        private const val OVERLAY_MARGIN_PX = 48
+    }
+}

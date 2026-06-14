@@ -122,7 +122,7 @@ The Android TV app is responsible for:
 - Managing playback lifecycle.
 - Recovering from playback errors.
 - Closing displays.
-- Rendering overlays.
+- Rendering overlays when native Android TV PiP is unavailable.
 
 ---
 
@@ -481,7 +481,8 @@ Phase 1 currently implements:
 - Android TV application
 - Media3 playback
 - Public HLS playback
-- Picture-in-Picture support
+- Native Picture-in-Picture support where Android TV exposes it
+- Floating overlay fallback for devices that reject native PiP
 - Basic logging
 
 ## Planned

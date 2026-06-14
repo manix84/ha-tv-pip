@@ -1,8 +1,9 @@
 package com.hatvpip.receiver
 
 import android.app.PictureInPictureParams
-import android.content.pm.PackageManager
+import android.content.Intent
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.util.Rational
 import android.view.ViewGroup
@@ -41,19 +42,23 @@ import androidx.media3.ui.PlayerView
 class PlayerActivity : ComponentActivity() {
     private val viewModel: PlayerViewModel by viewModels()
     private var player: ExoPlayer? = null
+    private lateinit var compatibility: DeviceCompatibility
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppLog.activityCreated("PlayerActivity")
+        compatibility = DeviceCompatibilityEvaluator.from(this)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         initializePlayer()
+        updatePictureInPictureParams()
 
         setContent {
             HaTvTheme {
                 PlayerScreen(
                     player = player,
                     playbackState = viewModel.playbackState,
+                    compatibility = compatibility,
                     isInPip = viewModel.isInPip,
                     onEnterPip = { enterPip(trigger = "button") }
                 )
@@ -64,6 +69,7 @@ class PlayerActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         initializePlayer()
+        updatePictureInPictureParams()
         player?.play()
     }
 
@@ -83,7 +89,13 @@ class PlayerActivity : ComponentActivity() {
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
         if (!isFinishing && !viewModel.isInPip) {
-            enterPip(trigger = "home")
+            if (compatibility.recommendedMode == ReceiverDisplayMode.OverlayFallback) {
+                enterPip(trigger = "home")
+            } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+                enterPip(trigger = "home")
+            } else {
+                updatePictureInPictureParams()
+            }
         }
     }
 
@@ -137,22 +149,72 @@ class PlayerActivity : ComponentActivity() {
         AppLog.playbackStop(reason = "player_released")
     }
 
+    private fun updatePictureInPictureParams(): PictureInPictureParams {
+        val paramsBuilder = PictureInPictureParams.Builder()
+            .setAspectRatio(Rational(16, 9))
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            paramsBuilder
+                .setTitle("HA TV PiP")
+                .setSubtitle("Smart home camera preview")
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            paramsBuilder.setAutoEnterEnabled(true)
+        }
+
+        val params = paramsBuilder.build()
+        setPictureInPictureParams(params)
+        return params
+    }
+
     private fun enterPip(trigger: String) {
-        if (!packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
-            AppLog.error("Picture-in-Picture is not supported on this device")
+        if (compatibility.recommendedMode == ReceiverDisplayMode.OverlayFallback) {
+            enterOverlayFallback()
             return
         }
 
-        val params = PictureInPictureParams.Builder()
-            .setAspectRatio(Rational(16, 9))
-            .build()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            val message = "Picture-in-Picture requires Android 8.0 or newer"
+            viewModel.setPlaybackError(message)
+            AppLog.error(message)
+            return
+        }
 
-        setPictureInPictureParams(params)
-        val entered = enterPictureInPictureMode(params)
-        if (entered) {
-            AppLog.enterPip(trigger = trigger)
-        } else {
-            AppLog.error("System rejected Picture-in-Picture request")
+        try {
+            val params = updatePictureInPictureParams()
+            val entered = enterPictureInPictureMode(params)
+            if (entered) {
+                AppLog.enterPip(trigger = trigger)
+            } else {
+                val message = "System rejected Picture-in-Picture request"
+                viewModel.setPlaybackError(message)
+                AppLog.error(message)
+            }
+        } catch (error: IllegalStateException) {
+            val message = "Picture-in-Picture request failed: ${error.message ?: "unknown reason"}"
+            viewModel.setPlaybackError(message)
+            AppLog.error(message, error)
+        } catch (error: IllegalArgumentException) {
+            val message = "Picture-in-Picture parameters were rejected: ${error.message ?: "unknown reason"}"
+            viewModel.setPlaybackError(message)
+            AppLog.error(message, error)
+        }
+    }
+
+    private fun enterOverlayFallback() {
+        runCatching {
+            startService(
+                Intent(this, OverlayPlayerService::class.java)
+                    .setAction(OverlayPlayerService.ACTION_SHOW)
+            )
+            player?.pause()
+            AppLog.playbackStop(reason = "overlay_fallback_started")
+            moveTaskToBack(true)
+        }.onFailure { error ->
+            val message = "Overlay fallback failed: ${error.message ?: "unknown reason"}"
+            viewModel.setPlaybackError(message)
+            AppLog.error(message, error)
         }
     }
 
@@ -174,10 +236,16 @@ class PlayerActivity : ComponentActivity() {
 private fun PlayerScreen(
     player: Player?,
     playbackState: PlayerPlaybackState,
+    compatibility: DeviceCompatibility,
     isInPip: Boolean,
     onEnterPip: () -> Unit
 ) {
     val pipButtonFocusRequester = remember { FocusRequester() }
+    val displayActionLabel = when (compatibility.recommendedMode) {
+        ReceiverDisplayMode.NativePictureInPicture -> "Enter PiP"
+        ReceiverDisplayMode.OverlayFallback -> "Show Overlay"
+        ReceiverDisplayMode.FullScreenFallback -> "Try PiP"
+    }
 
     LaunchedEffect(Unit) {
         pipButtonFocusRequester.requestFocus()
@@ -227,12 +295,17 @@ private fun PlayerScreen(
                         color = Color.White,
                         fontSize = 18.sp
                     )
+                    Text(
+                        text = compatibility.statusText,
+                        color = Color.White,
+                        fontSize = 16.sp
+                    )
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         Button(
                             modifier = Modifier.focusRequester(pipButtonFocusRequester),
                             onClick = onEnterPip
                         ) {
-                            Text(text = "Enter PiP")
+                            Text(text = displayActionLabel)
                         }
                     }
                 }
