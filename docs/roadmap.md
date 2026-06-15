@@ -144,6 +144,7 @@ Initial `0.5.0` behaviour:
 - `durationSeconds` is enforced for both full-screen playback and the overlay fallback.
 - The Android TV main screen shows the local control endpoint address when available.
 - `/status` includes endpoint uptime, request count, and previous request diagnostics.
+- The Android TV main screen shows live endpoint state, uptime, request count, and previous request diagnostics.
 
 ## Success Criteria
 

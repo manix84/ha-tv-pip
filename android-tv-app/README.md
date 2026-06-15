@@ -65,6 +65,7 @@ Some Google TV devices, including Chromecast HD test hardware, do not expose And
 
 The app starts a local HTTP server on port `8765` while the receiver service is running.
 The main screen shows the current LAN endpoint address when Android exposes a local IPv4 address.
+It also shows live control diagnostics including service state, uptime, request count, and the previous request.
 
 ```sh
 curl http://ANDROID_TV_IP:8765/status

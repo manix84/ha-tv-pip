@@ -4,6 +4,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -44,6 +46,14 @@ import androidx.compose.ui.unit.sp
 class MainActivity : ComponentActivity() {
     private var compatibility by mutableStateOf<DeviceCompatibility?>(null)
     private var endpointInfo by mutableStateOf(ControlEndpointInfo())
+    private var controlSnapshot by mutableStateOf(ControlRuntimeState.snapshot())
+    private val controlSnapshotHandler = Handler(Looper.getMainLooper())
+    private val controlSnapshotUpdater = object : Runnable {
+        override fun run() {
+            controlSnapshot = ControlRuntimeState.snapshot()
+            controlSnapshotHandler.postDelayed(this, CONTROL_STATUS_REFRESH_MS)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +72,7 @@ class MainActivity : ComponentActivity() {
                     MainScreen(
                         compatibility = currentCompatibility,
                         endpointInfo = endpointInfo,
+                        controlSnapshot = controlSnapshot,
                         onRequestOverlayPermission = ::openOverlayPermissionSettings,
                         onStopOverlay = ::stopOverlayFallback,
                         onPlayTestVideo = {
@@ -81,11 +92,19 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         refreshCompatibility()
+        controlSnapshotHandler.removeCallbacks(controlSnapshotUpdater)
+        controlSnapshotHandler.post(controlSnapshotUpdater)
+    }
+
+    override fun onPause() {
+        controlSnapshotHandler.removeCallbacks(controlSnapshotUpdater)
+        super.onPause()
     }
 
     private fun refreshCompatibility() {
         compatibility = DeviceCompatibilityEvaluator.from(this)
         endpointInfo = ControlEndpointInfo()
+        controlSnapshot = ControlRuntimeState.snapshot()
     }
 
     private fun openOverlayPermissionSettings() {
@@ -115,6 +134,7 @@ class MainActivity : ComponentActivity() {
 private fun MainScreen(
     compatibility: DeviceCompatibility,
     endpointInfo: ControlEndpointInfo,
+    controlSnapshot: ControlServerSnapshot,
     onRequestOverlayPermission: () -> Unit,
     onStopOverlay: () -> Unit,
     onPlayTestVideo: () -> Unit
@@ -155,7 +175,10 @@ private fun MainScreen(
             Spacer(modifier = Modifier.height(20.dp))
             CompatibilityStatus(compatibility = compatibility)
             Spacer(modifier = Modifier.height(18.dp))
-            ControlEndpointStatus(endpointInfo = endpointInfo)
+            ControlEndpointStatus(
+                endpointInfo = endpointInfo,
+                controlSnapshot = controlSnapshot
+            )
             Spacer(modifier = Modifier.height(24.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 TvActionButton(
@@ -185,6 +208,8 @@ private fun MainScreen(
         }
     }
 }
+
+private const val CONTROL_STATUS_REFRESH_MS = 1_000L
 
 @Composable
 private fun TvActionButton(
@@ -219,11 +244,17 @@ private fun TvActionButton(
 }
 
 @Composable
-private fun ControlEndpointStatus(endpointInfo: ControlEndpointInfo) {
+private fun ControlEndpointStatus(
+    endpointInfo: ControlEndpointInfo,
+    controlSnapshot: ControlServerSnapshot
+) {
     Column(
         modifier = Modifier.widthIn(max = 760.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        val lastRequest = controlSnapshot.lastRequest
+        val runningLabel = if (controlSnapshot.running) "running" else "stopped"
+
         Text(
             text = "Local control endpoint",
             color = MaterialTheme.colorScheme.onBackground,
@@ -235,6 +266,20 @@ private fun ControlEndpointStatus(endpointInfo: ControlEndpointInfo) {
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = 16.sp
         )
+        Text(
+            text = "State: $runningLabel | Uptime: ${
+                controlSnapshot.uptimeSeconds(System.currentTimeMillis())
+            }s | Requests: ${controlSnapshot.requestCount}",
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 15.sp
+        )
+        if (lastRequest != null) {
+            Text(
+                text = "Last: ${lastRequest.method} ${lastRequest.path} -> ${lastRequest.status}",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 15.sp
+            )
+        }
     }
 }
 
