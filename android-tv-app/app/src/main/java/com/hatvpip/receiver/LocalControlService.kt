@@ -21,6 +21,7 @@ class LocalControlService : Service() {
             context = applicationContext,
             onShow = ::showPlayer,
             onClose = ::closePlayer,
+            onPairingChanged = ::refreshDiscovery,
             onStarted = { port ->
                 discoveryAdvertiser?.start(port)
             }
@@ -35,7 +36,12 @@ class LocalControlService : Service() {
         super.onDestroy()
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int = START_STICKY
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_PAIRING_CHANGED) {
+            refreshDiscovery()
+        }
+        return START_STICKY
+    }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -115,7 +121,12 @@ class LocalControlService : Service() {
         )
     }
 
+    private fun refreshDiscovery() {
+        discoveryAdvertiser?.refresh()
+    }
+
     companion object {
+        const val ACTION_PAIRING_CHANGED = "com.hatvpip.receiver.PAIRING_CHANGED"
         private const val NOTIFICATION_ID = 1001
         private const val NOTIFICATION_CHANNEL_ID = "local_control"
     }

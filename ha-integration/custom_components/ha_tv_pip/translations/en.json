@@ -4,6 +4,7 @@
       "invalid_discovery": "Home Assistant found an HA TV PiP receiver, but the discovery data was incomplete."
     },
     "error": {
+      "already_paired": "This receiver is already paired. Use Reset Pairing on the TV app, then try again.",
       "cannot_connect": "Could not connect to the Android TV receiver.",
       "invalid_client": "The receiver rejected this Home Assistant pairing session.",
       "invalid_code": "Enter the six-digit pairing code shown on the TV.",

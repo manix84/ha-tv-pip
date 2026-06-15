@@ -20,6 +20,7 @@ class LocalControlServer(
     private val port: Int = DEFAULT_PORT,
     private val onShow: (ShowCommand) -> Unit,
     private val onClose: () -> Unit,
+    private val onPairingChanged: () -> Unit = {},
     private val onStarted: (Int) -> Unit = {}
 ) {
     @Volatile
@@ -177,8 +178,14 @@ class LocalControlServer(
             )
         }
 
-        val pairing = PairingState.startPairing(context, request)
+        val pairing = PairingState.startPairing(context, request).getOrElse { error ->
+            return HttpResponse.json(
+                status = 409,
+                body = JSONObject().put("error", error.message ?: "Pairing failed")
+            )
+        }
         AppLog.pairingEvent("pairing_started", pairing.state.wireName)
+        onPairingChanged()
 
         return HttpResponse.json(
             status = 202,
@@ -204,6 +211,7 @@ class LocalControlServer(
             )
         }
         AppLog.pairingEvent("pairing_confirmed", PairingStatus.Paired.wireName)
+        onPairingChanged()
 
         return HttpResponse.json(
             status = 200,
@@ -389,6 +397,7 @@ private data class HttpResponse(
                     202 -> "Accepted"
                     400 -> "Bad Request"
                     401 -> "Unauthorized"
+                    409 -> "Conflict"
                     405 -> "Method Not Allowed"
                     404 -> "Not Found"
                     else -> "OK"

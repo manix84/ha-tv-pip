@@ -79,15 +79,19 @@ object PairingState {
         context: Context,
         request: PairingStartRequest,
         nowMillis: Long = System.currentTimeMillis()
-    ): PairingSnapshot {
-        clearStoredPairing(context)
+    ): Result<PairingSnapshot> {
+        val current = snapshot(context, nowMillis)
+        if (current.state == PairingStatus.Paired) {
+            return Result.failure(IllegalStateException("already_paired"))
+        }
+
         pending = PendingPairing(
             clientId = request.clientId,
             clientName = request.clientName,
             code = generateCode(),
             expiresAtMillis = nowMillis + PAIRING_CODE_TTL_MS
         )
-        return snapshot(context, nowMillis)
+        return Result.success(snapshot(context, nowMillis))
     }
 
     fun confirmPairing(

@@ -8,9 +8,12 @@ class DiscoveryAdvertiser(private val context: Context) {
     private val nsdManager: NsdManager? =
         context.getSystemService(Context.NSD_SERVICE) as? NsdManager
     private var registrationListener: NsdManager.RegistrationListener? = null
+    private var advertisedPort: Int? = null
+    private var restartAfterUnregister = false
 
     fun start(port: Int) {
         if (registrationListener != null) return
+        advertisedPort = port
 
         val descriptor = DiscoveryServiceDescriptor.create(
             deviceId = ReceiverDeviceInfo.stableDeviceId(context),
@@ -58,6 +61,10 @@ class DiscoveryAdvertiser(private val context: Context) {
                 DiscoveryRuntimeState.markStopped()
                 AppLog.discoveryStopped(info.serviceName)
                 registrationListener = null
+                if (restartAfterUnregister) {
+                    restartAfterUnregister = false
+                    advertisedPort?.let(::start)
+                }
             }
 
             override fun onUnregistrationFailed(info: NsdServiceInfo, errorCode: Int) {
@@ -71,12 +78,33 @@ class DiscoveryAdvertiser(private val context: Context) {
 
     fun stop() {
         val listener = registrationListener ?: return
+        restartAfterUnregister = false
         runCatching {
             nsdManager?.unregisterService(listener)
         }.onFailure { error ->
             AppLog.error("Unable to unregister discovery service", error)
             DiscoveryRuntimeState.markStopped()
             registrationListener = null
+        }
+    }
+
+    fun refresh() {
+        val port = advertisedPort ?: return
+        val listener = registrationListener
+        if (listener == null) {
+            start(port)
+            return
+        }
+
+        restartAfterUnregister = true
+        runCatching {
+            nsdManager?.unregisterService(listener)
+        }.onFailure { error ->
+            AppLog.error("Unable to refresh discovery service", error)
+            DiscoveryRuntimeState.markStopped()
+            registrationListener = null
+            restartAfterUnregister = false
+            start(port)
         }
     }
 }

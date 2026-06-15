@@ -30,7 +30,7 @@ try {
   cpSync(sourceDir, targetDir, {
     recursive: true,
     filter: (source) => {
-      const ignored = [".git", "node_modules", "dist", "__pycache__"];
+      const ignored = [".git", "node_modules", "dist", "__pycache__", ".DS_Store"];
       return !ignored.some((segment) => source.split(/[\\/]/).includes(segment));
     }
   });

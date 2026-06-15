@@ -224,6 +224,8 @@ When a device is discovered:
 
 # Phase 4: Device Pairing and Local Authentication
 
+Status: Complete in `0.17.1`.
+
 ## Goal
 
 Secure local control so that random LAN devices cannot trigger camera popups.
@@ -257,6 +259,15 @@ After pairing:
 - Reject unauthenticated `/show` and `/close` requests.
 - Provide a UI option to reset pairing.
 
+Current behaviour:
+
+- The receiver starts in `pairing=required`.
+- `POST /pair/start` starts a five-minute pairing window and shows a six-digit code on the TV only.
+- `POST /pair/confirm` exchanges the TV-visible code for a bearer token.
+- Existing pairings cannot be replaced remotely; the user must choose `Reset Pairing` on the TV app first.
+- `/show` and `/close` reject unauthenticated requests once pairing is required or complete.
+- Discovery metadata refreshes when pairing starts, completes, or resets.
+
 ## Home Assistant Integration Requirements
 
 - Add config flow steps for pairing.
@@ -264,6 +275,13 @@ After pairing:
 - Never expose the token in logs.
 - Handle pairing failures clearly.
 - Allow reauthentication if token becomes invalid.
+
+Current behaviour:
+
+- Discovery setup starts pairing when the receiver reports pairing is required.
+- Home Assistant asks the user for the code shown on the TV.
+- The returned token is stored in config entry data and is not logged.
+- If the receiver is already paired, Home Assistant asks the user to reset pairing from the TV app.
 
 ## Success Criteria
 

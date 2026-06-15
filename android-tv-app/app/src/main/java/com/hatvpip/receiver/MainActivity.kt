@@ -142,6 +142,10 @@ class MainActivity : ComponentActivity() {
         PairingState.reset(this)
         pairingSnapshot = PairingState.snapshot(this)
         AppLog.pairingEvent("pairing_reset", pairingSnapshot?.state?.wireName ?: "unknown")
+        startService(
+            Intent(this, LocalControlService::class.java)
+                .setAction(LocalControlService.ACTION_PAIRING_CHANGED)
+        )
     }
 }
 

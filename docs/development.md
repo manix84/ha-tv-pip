@@ -237,6 +237,27 @@ The install script covers root npm metadata, Android app npm metadata, website n
 
 For Android builds, the install script writes `android-tv-app/local.properties` when it can find an SDK through `ANDROID_HOME`, `ANDROID_SDK_ROOT`, or the usual Android Studio SDK locations. If no SDK is installed yet, install it through Android Studio and rerun `npm run install:all`.
 
+## Pairing Development 🔐
+
+Stage 4 secures the local receiver API with one-time pairing and bearer-token requests.
+
+The Android TV receiver exposes:
+
+```txt
+POST /pair/start
+POST /pair/confirm
+```
+
+`/pair/start` opens a short pairing window and shows the code on the TV screen only. The HTTP response deliberately does not include the code, so LAN clients must have access to the TV display to pair.
+
+After `/pair/confirm` succeeds, `/show` and `/close` require:
+
+```txt
+Authorization: Bearer <token>
+```
+
+Use `Reset Pairing` in the Android TV app before testing a new Home Assistant pairing flow. Existing pairings cannot be replaced remotely.
+
 ### Website Development
 
 ```txt
