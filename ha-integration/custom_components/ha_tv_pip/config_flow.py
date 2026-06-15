@@ -36,6 +36,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
     """Handle a config flow for HA TV PiP."""
 
     VERSION = 1
+    _discovered_receiver: ReceiverDiscovery | None = None
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> Any:
         """Handle manual setup when Zeroconf discovery is unavailable."""
@@ -93,7 +94,32 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
             }
         )
 
-        return _create_receiver_entry(self, receiver)
+        self._discovered_receiver = receiver
+        self.context["title_placeholders"] = {"name": receiver.name}
+        return await self.async_step_confirm()
+
+    async def async_step_confirm(
+        self,
+        user_input: dict[str, Any] | None = None,
+    ) -> Any:
+        """Ask the user to confirm a discovered HA TV PiP receiver."""
+
+        receiver = self._discovered_receiver
+        if receiver is None:
+            return self.async_abort(reason="invalid_discovery")
+
+        if user_input is not None:
+            return _create_receiver_entry(self, receiver)
+
+        return self.async_show_form(
+            step_id="confirm",
+            description_placeholders={
+                CONF_HOST: receiver.host,
+                CONF_NAME: receiver.name,
+                CONF_PORT: str(receiver.port),
+            },
+            errors={},
+        )
 
 
 def _create_receiver_entry(flow: ConfigFlow, receiver: ReceiverDiscovery) -> Any:

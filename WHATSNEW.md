@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 0.12.0 - Discovery Confirmation Flow 🔎
+
+- Changed Zeroconf discovery to show a confirmation card instead of auto-creating entries 🧭
+- Added confirmation text for discovered receivers 📝
+- Kept manual host/port setup as a fallback path only 🛟
+
 ## 0.11.0 - Discovery Diagnostics 🔎
 
 - Switched the Home Assistant Zeroconf manifest matcher to the explicit object format 🧭
