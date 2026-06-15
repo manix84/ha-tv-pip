@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Protocol
 
+import voluptuous as vol  # type: ignore[import-not-found]
 from homeassistant import config_entries  # type: ignore[import-not-found]
 
 from .const import (
@@ -14,6 +15,7 @@ from .const import (
     CONF_PAIRING,
     CONF_PORT,
     CONF_VERSION,
+    DEFAULT_PORT,
     DOMAIN,
 )
 from .discovery import ReceiverDiscovery, parse_discovery_properties
@@ -33,14 +35,29 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
     VERSION = 1
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> Any:
-        """Handle manual setup.
+        """Handle manual setup when Zeroconf discovery is unavailable."""
 
-        Stage 3 only supports Zeroconf discovery. Providing this step keeps the
-        config-flow handler loadable when users try to add the integration
-        manually from the Home Assistant UI.
-        """
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            try:
+                receiver = _receiver_from_user_input(user_input)
+            except ValueError as error:
+                errors["base"] = str(error)
+            else:
+                await self.async_set_unique_id(receiver.device_id)
+                self._abort_if_unique_id_configured()
+                return _create_receiver_entry(self, receiver)
 
-        return self.async_abort(reason="discovery_required")
+        return self.async_show_form(
+            step_id="user",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_HOST): str,
+                    vol.Optional(CONF_PORT, default=DEFAULT_PORT): int,
+                }
+            ),
+            errors=errors,
+        )
 
     async def async_step_zeroconf(
         self,
@@ -65,19 +82,25 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
             }
         )
 
-        self.context["title_placeholders"] = {"name": receiver.name}
-        return self.async_create_entry(
-            title=receiver.name,
-            data={
-                CONF_DEVICE_ID: receiver.device_id,
-                CONF_HOST: receiver.host,
-                CONF_PORT: receiver.port,
-                CONF_NAME: receiver.name,
-                CONF_VERSION: receiver.version,
-                CONF_PAIRING: receiver.pairing,
-                CONF_API_VERSION: receiver.api_version,
-            },
-        )
+        return _create_receiver_entry(self, receiver)
+
+
+def _create_receiver_entry(flow: ConfigFlow, receiver: ReceiverDiscovery) -> Any:
+    """Create a Home Assistant config entry from receiver details."""
+
+    flow.context["title_placeholders"] = {"name": receiver.name}
+    return flow.async_create_entry(
+        title=receiver.name,
+        data={
+            CONF_DEVICE_ID: receiver.device_id,
+            CONF_HOST: receiver.host,
+            CONF_PORT: receiver.port,
+            CONF_NAME: receiver.name,
+            CONF_VERSION: receiver.version,
+            CONF_PAIRING: receiver.pairing,
+            CONF_API_VERSION: receiver.api_version,
+        },
+    )
 
 
 def _receiver_from_zeroconf(discovery_info: ZeroconfDiscoveryInfo) -> ReceiverDiscovery:
@@ -88,3 +111,34 @@ def _receiver_from_zeroconf(discovery_info: ZeroconfDiscoveryInfo) -> ReceiverDi
         port=discovery_info.port,
         properties=dict(discovery_info.properties),
     )
+
+
+def _receiver_from_user_input(user_input: dict[str, Any]) -> ReceiverDiscovery:
+    """Convert manual setup data into receiver discovery data."""
+
+    host = str(user_input.get(CONF_HOST, "")).strip()
+    if not host:
+        raise ValueError("invalid_host")
+
+    port = _manual_port(user_input.get(CONF_PORT, DEFAULT_PORT))
+    return ReceiverDiscovery(
+        device_id=f"manual-{host}-{port}",
+        name=f"HA TV PiP Receiver ({host})",
+        host=host,
+        port=port,
+        version="unknown",
+        pairing="disabled",
+        api_version=1,
+    )
+
+
+def _manual_port(value: Any) -> int:
+    try:
+        port = int(value)
+    except (TypeError, ValueError):
+        raise ValueError("invalid_port") from None
+
+    if port < 1 or port > 65535:
+        raise ValueError("invalid_port")
+
+    return port

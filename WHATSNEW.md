@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 0.10.0 - Manual Receiver Setup 🧭
+
+- Added manual Home Assistant setup for receiver host and port 🏠
+- Kept Zeroconf discovery as the preferred setup path 🔎
+- Added manual setup validation and tests for fallback receiver entries 🧪
+
 ## 0.9.0 - Config Flow Load Fix 🧭
 
 - Added a manual setup step that cleanly explains discovery-only setup 🏠
