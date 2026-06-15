@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 0.9.0 - Config Flow Load Fix 🧭
+
+- Added a manual setup step that cleanly explains discovery-only setup 🏠
+- Removed the runtime dependency on Home Assistant's Zeroconf type location 🔧
+- Added config-flow helper coverage and Home Assistant strings for early abort reasons 🧪
+
 ## 0.8.1 - Home Assistant Entry Lifecycle 🧩
 
 The Home Assistant scaffold can now load and unload discovered config entries cleanly.

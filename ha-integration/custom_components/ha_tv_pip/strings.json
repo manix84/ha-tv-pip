@@ -1,0 +1,8 @@
+{
+  "config": {
+    "abort": {
+      "discovery_required": "Manual setup is not available yet. Keep the Android TV receiver app open and wait for Home Assistant to discover it on the local network.",
+      "invalid_discovery": "Home Assistant found an HA TV PiP receiver, but the discovery data was incomplete."
+    }
+  }
+}

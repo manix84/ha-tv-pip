@@ -2,12 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Protocol
 
 from homeassistant import config_entries  # type: ignore[import-not-found]
-from homeassistant.components.zeroconf import (  # type: ignore[import-not-found]
-    ZeroconfServiceInfo,
-)
 
 from .const import (
     CONF_API_VERSION,
@@ -22,14 +19,32 @@ from .const import (
 from .discovery import ReceiverDiscovery, parse_discovery_properties
 
 
+class ZeroconfDiscoveryInfo(Protocol):
+    """Runtime shape Home Assistant passes to `async_step_zeroconf`."""
+
+    host: str
+    port: int | None
+    properties: dict[str, Any]
+
+
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call-arg,misc]
     """Handle a config flow for HA TV PiP."""
 
     VERSION = 1
 
+    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> Any:
+        """Handle manual setup.
+
+        Stage 3 only supports Zeroconf discovery. Providing this step keeps the
+        config-flow handler loadable when users try to add the integration
+        manually from the Home Assistant UI.
+        """
+
+        return self.async_abort(reason="discovery_required")
+
     async def async_step_zeroconf(
         self,
-        discovery_info: ZeroconfServiceInfo,
+        discovery_info: ZeroconfDiscoveryInfo,
     ) -> Any:
         """Handle a discovered HA TV PiP receiver."""
 
@@ -65,7 +80,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
         )
 
 
-def _receiver_from_zeroconf(discovery_info: ZeroconfServiceInfo) -> ReceiverDiscovery:
+def _receiver_from_zeroconf(discovery_info: ZeroconfDiscoveryInfo) -> ReceiverDiscovery:
     """Convert Home Assistant Zeroconf data into receiver discovery data."""
 
     return parse_discovery_properties(
