@@ -1,5 +1,13 @@
 # What's New ✨
 
+## 0.8.1 - Home Assistant Entry Lifecycle 🧩
+
+The Home Assistant scaffold can now load and unload discovered config entries cleanly.
+
+- Added initial `async_setup_entry` and `async_unload_entry` lifecycle hooks 🏠
+- Added async tests for config entry setup and unload behavior 🧪
+- Kept receiver clients, entities, services, pairing, and authentication out of scope for this slice 🔒
+
 ## 0.8.0 - Home Assistant Discovery Scaffold 🏠
 
 Stage 3 now has the first Home Assistant-side discovery scaffold.
