@@ -838,3 +838,17 @@ Provide a foundation for future receiver control.
 ```
 
 Phase 2 should add local receiver control without implementing the Home Assistant integration yet.
+
+Stage 2 local endpoint testing:
+
+```sh
+curl http://ANDROID_TV_IP:8765/status
+
+curl -X POST http://ANDROID_TV_IP:8765/show \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"Front Door","url":"https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8","streamType":"hls","durationSeconds":30,"enterPip":true}'
+
+curl -X POST http://ANDROID_TV_IP:8765/close
+```
+
+The Stage 2 endpoint is intentionally unauthenticated. Pairing and request authentication belong to Phase 4.

@@ -42,6 +42,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         AppLog.activityCreated("MainActivity")
         refreshCompatibility()
+        val controlServiceIntent = Intent(this, LocalControlService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(controlServiceIntent)
+        } else {
+            startService(controlServiceIntent)
+        }
 
         setContent {
             HaTvTheme {
@@ -51,7 +57,12 @@ class MainActivity : ComponentActivity() {
                         onRequestOverlayPermission = ::openOverlayPermissionSettings,
                         onStopOverlay = ::stopOverlayFallback,
                         onPlayTestVideo = {
-                            startActivity(Intent(this, PlayerActivity::class.java))
+                            startActivity(
+                                PlayerActivity.createShowIntent(
+                                    context = this,
+                                    command = ShowCommand.testVideo()
+                                )
+                            )
                         }
                     )
                 }
@@ -125,7 +136,7 @@ private fun MainScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Phase 1 MVP: test HLS playback, native PiP where supported, and safe fallback handling.",
+                text = "Stage 2 MVP: local HTTP control on port ${LocalControlServer.DEFAULT_PORT}, test HLS playback, and TV-safe display modes.",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 20.sp
             )

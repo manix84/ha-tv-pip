@@ -17,6 +17,8 @@ class OverlayPlayerService : Service() {
     private lateinit var windowManager: WindowManager
     private var overlayView: FrameLayout? = null
     private var player: ExoPlayer? = null
+    private var title: String = "HA TV PiP"
+    private var url: String = PlayerActivity.TEST_STREAM_URL
 
     override fun onCreate() {
         super.onCreate()
@@ -26,7 +28,11 @@ class OverlayPlayerService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_STOP -> stopSelf()
-            else -> showOverlay()
+            else -> {
+                title = intent?.getStringExtra(PlayerActivity.EXTRA_TITLE) ?: title
+                url = intent?.getStringExtra(PlayerActivity.EXTRA_URL) ?: url
+                showOverlay()
+            }
         }
         return START_STICKY
     }
@@ -39,10 +45,12 @@ class OverlayPlayerService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun showOverlay() {
-        if (overlayView != null) return
+        if (overlayView != null) {
+            removeOverlay()
+        }
 
         val overlayPlayer = ExoPlayer.Builder(this).build().also { exoPlayer ->
-            exoPlayer.setMediaItem(MediaItem.fromUri(PlayerActivity.TEST_STREAM_URL))
+            exoPlayer.setMediaItem(MediaItem.fromUri(url))
             exoPlayer.repeatMode = Player.REPEAT_MODE_ONE
             exoPlayer.playWhenReady = true
             exoPlayer.prepare()
@@ -80,7 +88,16 @@ class OverlayPlayerService : Service() {
         runCatching {
             windowManager.addView(root, params)
             overlayView = root
-            AppLog.playbackStart(PlayerActivity.TEST_STREAM_URL)
+            ReceiverRuntimeState.update(
+                ReceiverPlaybackSnapshot(
+                    status = PlaybackStatus.Ready,
+                    isPlaying = true,
+                    mode = ReceiverPlaybackMode.Overlay,
+                    title = title,
+                    url = url
+                )
+            )
+            AppLog.playbackStart(url)
         }.onFailure { error ->
             AppLog.error("Unable to show overlay fallback", error)
             overlayPlayer.release()
@@ -96,6 +113,7 @@ class OverlayPlayerService : Service() {
         overlayView = null
         player?.release()
         player = null
+        ReceiverRuntimeState.markIdle()
         AppLog.playbackStop(reason = "overlay_service_stopped")
     }
 

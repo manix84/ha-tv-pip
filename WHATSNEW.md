@@ -1,5 +1,16 @@
 # What's New ✨
 
+## 0.5.0 - Stage 2 Local Control Begins 🌐
+
+Stage 2 has started with a developer-testable local HTTP endpoint in the Android TV app.
+
+- Added local receiver service on port `8765` 🛰️
+- Added `GET /status` for version, device, playback, and display-mode state 📡
+- Added `POST /show` for HLS playback commands 🎬
+- Added `POST /close` for stopping playback and overlay fallback 🛑
+- Added command validation and JVM unit tests for show requests 🧪
+- Kept pairing, authentication, discovery, and Home Assistant integration out of scope for now 🔒
+
 ## 0.4.0 - Chromecast Overlay Validation 📺
 
 Phase 1 is now validated on physical Chromecast with Google TV hardware.

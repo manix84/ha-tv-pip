@@ -25,6 +25,18 @@ object AppLog {
         Log.i(TAG, "event=exit_pip")
     }
 
+    fun controlServerStarted(port: Int) {
+        Log.i(TAG, "event=control_server_started port=$port")
+    }
+
+    fun controlServerStopped() {
+        Log.i(TAG, "event=control_server_stopped")
+    }
+
+    fun controlRequest(method: String, path: String, status: Int) {
+        Log.i(TAG, "event=control_request method=$method path=$path status=$status")
+    }
+
     fun error(message: String, throwable: Throwable? = null) {
         Log.e(TAG, "event=error message=$message", throwable)
     }

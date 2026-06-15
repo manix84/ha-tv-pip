@@ -4,6 +4,8 @@
 
 Phase 1 Android TV MVP for HA TV PiP. This app plays a public HLS test stream and validates Android TV Picture-in-Picture behavior where supported, with a floating overlay fallback for devices that do not expose native PiP.
 
+Stage 2 adds the first local HTTP control endpoint for developer testing.
+
 ## Build 🛠️
 
 Open this directory in Android Studio and let Gradle sync.
@@ -58,6 +60,25 @@ Use a TV remote, emulator D-pad, or keyboard arrows to navigate. The main screen
 - Press Back from full screen and confirm playback stops cleanly 🛑
 
 Some Google TV devices, including Chromecast HD test hardware, do not expose Android's native PiP feature to third-party TV apps. On those devices the app can use the `SYSTEM_ALERT_WINDOW` overlay permission as a no-ADB fallback. Use `Open Overlay Settings` from the main screen, grant the permission, then test `Show Overlay`.
+
+## Local Control Testing 🌐
+
+The app starts a local HTTP server on port `8765` while the receiver service is running.
+
+```sh
+curl http://ANDROID_TV_IP:8765/status
+curl -X POST http://ANDROID_TV_IP:8765/close
+```
+
+Show the default public test stream:
+
+```sh
+curl -X POST http://ANDROID_TV_IP:8765/show \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"Front Door","url":"https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8","streamType":"hls","durationSeconds":30,"enterPip":true}'
+```
+
+Stage 2 does not include pairing or authentication yet. Test this only on a trusted local network.
 
 ## Stream Configuration 🎬
 

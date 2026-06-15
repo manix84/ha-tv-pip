@@ -123,6 +123,7 @@ The Android TV app is responsible for:
 - Recovering from playback errors.
 - Closing displays.
 - Rendering overlays when native Android TV PiP is unavailable.
+- Serving the local Stage 2 receiver control endpoint.
 
 ---
 
@@ -484,6 +485,13 @@ Phase 1 currently implements:
 - Native Picture-in-Picture support where Android TV exposes it
 - Floating overlay fallback for devices that reject native PiP
 - Basic logging
+
+Phase 2 currently adds:
+
+- Local HTTP status endpoint
+- Local HLS show command
+- Local close command
+- Runtime playback state reporting
 
 ## Planned
 

@@ -82,6 +82,8 @@ Do not implement yet:
 
 # Phase 2: Local Control Endpoint
 
+Status: In progress in `0.5.0`.
+
 ## Goal
 
 Allow another device on the LAN to command the Android TV app to show or close a video.
@@ -130,6 +132,14 @@ Example `/show` request:
 - The player enters PiP if requested.
 - The player auto-closes after `durationSeconds` if provided.
 - `/close` stops playback and closes the player.
+
+Initial `0.5.0` behaviour:
+
+- The Android TV app starts an unauthenticated local HTTP endpoint on port `8765`.
+- `GET /status` reports app version, stable device id, playback state, display mode, title, and URL.
+- `POST /show` accepts HLS commands.
+- `POST /close` closes playback and stops the overlay fallback.
+- On Google TV devices that reject native PiP, `enterPip: true` can start the overlay fallback directly.
 
 ## Success Criteria
 

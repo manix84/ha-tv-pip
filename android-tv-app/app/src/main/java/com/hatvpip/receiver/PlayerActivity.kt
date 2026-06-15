@@ -1,10 +1,13 @@
 package com.hatvpip.receiver
 
 import android.app.PictureInPictureParams
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Rational
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -43,15 +46,26 @@ class PlayerActivity : ComponentActivity() {
     private val viewModel: PlayerViewModel by viewModels()
     private var player: ExoPlayer? = null
     private lateinit var compatibility: DeviceCompatibility
+    private var command: ShowCommand = ShowCommand.testVideo()
+    private var currentDisplayMode: ReceiverPlaybackMode = ReceiverPlaybackMode.Idle
+    private val autoCloseHandler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppLog.activityCreated("PlayerActivity")
+        if (intent.action == ACTION_CLOSE) {
+            ReceiverRuntimeState.markIdle()
+            finish()
+            return
+        }
+
         compatibility = DeviceCompatibilityEvaluator.from(this)
+        command = intent.toShowCommand()
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         initializePlayer()
         updatePictureInPictureParams()
+        scheduleAutoClose()
 
         setContent {
             HaTvTheme {
@@ -63,6 +77,29 @@ class PlayerActivity : ComponentActivity() {
                     onEnterPip = { enterPip(trigger = "button") }
                 )
             }
+        }
+
+        if (command.enterPip) {
+            autoCloseHandler.postDelayed({ enterPip(trigger = "remote") }, REMOTE_PIP_DELAY_MS)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        if (intent.action == ACTION_CLOSE) {
+            closePlayer(reason = "remote_close")
+            return
+        }
+
+        setIntent(intent)
+        command = intent.toShowCommand()
+        player?.setMediaItem(MediaItem.fromUri(command.url))
+        player?.prepare()
+        player?.play()
+        AppLog.playbackStart(command.url)
+        scheduleAutoClose()
+        if (command.enterPip) {
+            autoCloseHandler.postDelayed({ enterPip(trigger = "remote") }, REMOTE_PIP_DELAY_MS)
         }
     }
 
@@ -83,6 +120,7 @@ class PlayerActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        autoCloseHandler.removeCallbacksAndMessages(null)
         releasePlayer()
     }
 
@@ -106,8 +144,10 @@ class PlayerActivity : ComponentActivity() {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
         viewModel.setPictureInPicture(isInPictureInPictureMode)
         if (isInPictureInPictureMode) {
+            updateRuntimeState(mode = ReceiverPlaybackMode.NativePictureInPicture)
             AppLog.enterPip(trigger = "system")
         } else {
+            updateRuntimeState(mode = ReceiverPlaybackMode.FullScreen)
             AppLog.exitPip()
         }
     }
@@ -123,29 +163,36 @@ class PlayerActivity : ComponentActivity() {
                             status = playbackStateValue.toPlaybackStatus(),
                             isPlaying = exoPlayer.isPlaying
                         )
+                        updateRuntimeState(mode = currentDisplayMode)
                     }
 
                     override fun onIsPlayingChanged(isPlaying: Boolean) {
                         viewModel.setIsPlaying(isPlaying)
+                        updateRuntimeState(mode = currentDisplayMode)
                     }
 
                     override fun onPlayerError(error: PlaybackException) {
                         viewModel.setPlaybackError(error.errorCodeName)
+                        updateRuntimeState(mode = currentDisplayMode)
                         AppLog.error("Playback failed: ${error.errorCodeName}", error)
                     }
                 }
             )
-            exoPlayer.setMediaItem(MediaItem.fromUri(TEST_STREAM_URL))
+            exoPlayer.setMediaItem(MediaItem.fromUri(command.url))
             exoPlayer.repeatMode = Player.REPEAT_MODE_ONE
             exoPlayer.playWhenReady = true
             exoPlayer.prepare()
-            AppLog.playbackStart(TEST_STREAM_URL)
+            AppLog.playbackStart(command.url)
+            updateRuntimeState(mode = ReceiverPlaybackMode.FullScreen)
         }
     }
 
     private fun releasePlayer() {
         player?.release()
         player = null
+        if (currentDisplayMode != ReceiverPlaybackMode.Overlay) {
+            ReceiverRuntimeState.markIdle()
+        }
         AppLog.playbackStop(reason = "player_released")
     }
 
@@ -207,8 +254,11 @@ class PlayerActivity : ComponentActivity() {
             startService(
                 Intent(this, OverlayPlayerService::class.java)
                     .setAction(OverlayPlayerService.ACTION_SHOW)
+                    .putExtra(EXTRA_TITLE, command.title)
+                    .putExtra(EXTRA_URL, command.url)
             )
             player?.pause()
+            updateRuntimeState(mode = ReceiverPlaybackMode.Overlay)
             AppLog.playbackStop(reason = "overlay_fallback_started")
             moveTaskToBack(true)
         }.onFailure { error ->
@@ -216,6 +266,39 @@ class PlayerActivity : ComponentActivity() {
             viewModel.setPlaybackError(message)
             AppLog.error(message, error)
         }
+    }
+
+    private fun scheduleAutoClose() {
+        autoCloseHandler.removeCallbacksAndMessages(null)
+        val durationSeconds = command.durationSeconds ?: return
+        autoCloseHandler.postDelayed(
+            { closePlayer(reason = "duration_elapsed") },
+            durationSeconds * 1_000L
+        )
+    }
+
+    private fun closePlayer(reason: String) {
+        stopService(
+            Intent(this, OverlayPlayerService::class.java)
+                .setAction(OverlayPlayerService.ACTION_STOP)
+        )
+        AppLog.playbackStop(reason = reason)
+        finishAndRemoveTask()
+    }
+
+    private fun updateRuntimeState(mode: ReceiverPlaybackMode) {
+        currentDisplayMode = mode
+        val playbackState = viewModel.playbackState
+        ReceiverRuntimeState.update(
+            ReceiverPlaybackSnapshot(
+                status = playbackState.status,
+                isPlaying = playbackState.isPlaying,
+                mode = mode,
+                title = command.title,
+                url = command.url,
+                errorMessage = playbackState.errorMessage
+            )
+        )
     }
 
     private fun Int.toPlaybackStatus(): PlaybackStatus =
@@ -228,9 +311,38 @@ class PlayerActivity : ComponentActivity() {
         }
 
     companion object {
+        const val ACTION_CLOSE = "com.hatvpip.receiver.action.CLOSE_PLAYER"
+        const val EXTRA_TITLE = "com.hatvpip.receiver.extra.TITLE"
+        const val EXTRA_URL = "com.hatvpip.receiver.extra.URL"
+        const val EXTRA_STREAM_TYPE = "com.hatvpip.receiver.extra.STREAM_TYPE"
+        const val EXTRA_DURATION_SECONDS = "com.hatvpip.receiver.extra.DURATION_SECONDS"
+        const val EXTRA_ENTER_PIP = "com.hatvpip.receiver.extra.ENTER_PIP"
         const val TEST_STREAM_URL = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+        private const val REMOTE_PIP_DELAY_MS = 750L
+
+        fun createShowIntent(context: Context, command: ShowCommand): Intent =
+            Intent(context, PlayerActivity::class.java).apply {
+                putExtra(EXTRA_TITLE, command.title)
+                putExtra(EXTRA_URL, command.url)
+                putExtra(EXTRA_STREAM_TYPE, command.streamType.wireName)
+                command.durationSeconds?.let { putExtra(EXTRA_DURATION_SECONDS, it) }
+                putExtra(EXTRA_ENTER_PIP, command.enterPip)
+            }
     }
 }
+
+private fun Intent.toShowCommand(): ShowCommand =
+    ShowCommand(
+        title = getStringExtra(PlayerActivity.EXTRA_TITLE) ?: "Test Video",
+        url = getStringExtra(PlayerActivity.EXTRA_URL) ?: PlayerActivity.TEST_STREAM_URL,
+        streamType = StreamType.Hls,
+        durationSeconds = if (hasExtra(PlayerActivity.EXTRA_DURATION_SECONDS)) {
+            getIntExtra(PlayerActivity.EXTRA_DURATION_SECONDS, 0).takeIf { it > 0 }
+        } else {
+            null
+        },
+        enterPip = getBooleanExtra(PlayerActivity.EXTRA_ENTER_PIP, false)
+    )
 
 @Composable
 private fun PlayerScreen(

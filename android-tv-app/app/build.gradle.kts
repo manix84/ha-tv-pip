@@ -17,10 +17,11 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 1
-        versionName = "0.5.0"
+        versionName = "0.6.0"
     }
 
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 
@@ -58,4 +59,5 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
 
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20240303")
 }

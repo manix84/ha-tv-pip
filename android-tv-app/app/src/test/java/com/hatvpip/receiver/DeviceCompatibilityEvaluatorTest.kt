@@ -31,7 +31,7 @@ class DeviceCompatibilityEvaluatorTest {
     }
 
     @Test
-    fun overlayPermissionIsReportedSeparatelyForFutureFallbacks() {
+    fun overlayFallbackIsRecommendedWhenPermissionIsGranted() {
         val compatibility = DeviceCompatibilityEvaluator.evaluate(
             sdkInt = 34,
             release = "14",

@@ -14,11 +14,13 @@ This repository is a monorepo that contains the receiver app, future Home Assist
 - `docs/`: Architecture, roadmap, and development notes 📚
 - `examples/`: Example Home Assistant automations ⚙️
 
-## Current Phase ✅
+## Current Phase 🚦
 
 Phase 1 is complete in `0.4.0`. The Android TV MVP proves that an Android TV app can play a public HLS test stream and show it outside the full-screen app using native Picture-in-Picture where Android TV exposes it, or a no-ADB overlay fallback where native PiP is unavailable.
 
-The Home Assistant integration, local control endpoint, discovery, pairing, authentication, camera support, snapshots, and WebRTC support are not implemented yet.
+Stage 2 has started in `0.5.0`. The Android TV app now includes an initial local HTTP control endpoint for developer testing.
+
+The Home Assistant integration, discovery, pairing, authentication, camera entity support, snapshots, and WebRTC support are not implemented yet.
 
 ## Monorepo Layout 🧱
 
@@ -85,6 +87,30 @@ Run it locally:
 ```sh
 npm run website:dev
 ```
+
+## Local Control MVP 🧪
+
+When the Android TV app is open, it starts a local HTTP control endpoint on port `8765`.
+
+```sh
+curl http://ANDROID_TV_IP:8765/status
+```
+
+Show a test HLS stream:
+
+```sh
+curl -X POST http://ANDROID_TV_IP:8765/show \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"Front Door","url":"https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8","streamType":"hls","durationSeconds":30,"enterPip":true}'
+```
+
+Close playback:
+
+```sh
+curl -X POST http://ANDROID_TV_IP:8765/close
+```
+
+This endpoint is unauthenticated during Stage 2 and should only be used on a trusted local network.
 
 ## Releases 📦
 
