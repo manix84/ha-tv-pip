@@ -69,7 +69,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
     ) -> Any:
         """Handle a discovered HA TV PiP receiver."""
 
-        _LOGGER.warning(
+        _LOGGER.debug(
             "HA TV PiP Zeroconf flow triggered: host=%s port=%s properties=%s",
             discovery_info.host,
             discovery_info.port,
