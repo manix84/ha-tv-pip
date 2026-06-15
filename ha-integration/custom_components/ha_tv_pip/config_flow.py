@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any, Protocol
 
 import voluptuous as vol  # type: ignore[import-not-found]
@@ -19,6 +20,8 @@ from .const import (
     DOMAIN,
 )
 from .discovery import ReceiverDiscovery, parse_discovery_properties
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class ZeroconfDiscoveryInfo(Protocol):
@@ -65,9 +68,17 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
     ) -> Any:
         """Handle a discovered HA TV PiP receiver."""
 
+        _LOGGER.warning(
+            "HA TV PiP Zeroconf flow triggered: host=%s port=%s properties=%s",
+            discovery_info.host,
+            discovery_info.port,
+            dict(discovery_info.properties),
+        )
+
         try:
             receiver = _receiver_from_zeroconf(discovery_info)
-        except ValueError:
+        except ValueError as error:
+            _LOGGER.warning("HA TV PiP Zeroconf discovery rejected: %s", error)
             return self.async_abort(reason="invalid_discovery")
 
         await self.async_set_unique_id(receiver.device_id)

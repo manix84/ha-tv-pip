@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 0.11.0 - Discovery Diagnostics 🔎
+
+- Switched the Home Assistant Zeroconf manifest matcher to the explicit object format 🧭
+- Added temporary warning-level Zeroconf flow diagnostics so HA logs show whether discovery reaches the integration 🪵
+- Kept manual receiver setup as a fallback, not the primary path 🛟
+
 ## 0.10.0 - Manual Receiver Setup 🧭
 
 - Added manual Home Assistant setup for receiver host and port 🏠
