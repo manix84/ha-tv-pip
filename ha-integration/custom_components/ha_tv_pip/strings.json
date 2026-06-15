@@ -9,6 +9,9 @@
     },
     "step": {
       "confirm": {
+        "data": {
+          "name": "Receiver name"
+        },
         "description": "Home Assistant discovered {name} at {host}:{port}. Add this Android TV receiver?",
         "title": "Add discovered HA TV PiP receiver"
       },

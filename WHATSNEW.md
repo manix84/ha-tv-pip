@@ -1,5 +1,10 @@
 # What's New ✨
 
+## 0.14.1 - Confirmation Modal Polish 🧭
+
+- Added a visible receiver-name field to the discovery confirmation modal so it is no longer blank 📝
+- Kept the discovered receiver name as the default confirmation value 📺
+
 ## 0.14.0 - Device Page And Shared Icon 🧩
 
 - Registered discovered receivers in Home Assistant's device registry so they have a device page 🏠

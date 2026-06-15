@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from dataclasses import replace
 from typing import Any, Protocol
 
 import voluptuous as vol  # type: ignore[import-not-found]
@@ -109,11 +110,21 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
             return self.async_abort(reason="invalid_discovery")
 
         if user_input is not None:
-            return _create_receiver_entry(self, receiver)
+            return _create_receiver_entry(
+                self,
+                replace(
+                    receiver,
+                    name=_confirmed_receiver_name(user_input, fallback=receiver.name),
+                ),
+            )
 
         return self.async_show_form(
             step_id="confirm",
-            data_schema=vol.Schema({}),
+            data_schema=vol.Schema(
+                {
+                    vol.Optional(CONF_NAME, default=receiver.name): str,
+                }
+            ),
             description_placeholders={
                 CONF_HOST: receiver.host,
                 CONF_NAME: receiver.name,
@@ -168,6 +179,13 @@ def _receiver_from_user_input(user_input: dict[str, Any]) -> ReceiverDiscovery:
         pairing="disabled",
         api_version=1,
     )
+
+
+def _confirmed_receiver_name(user_input: dict[str, Any], *, fallback: str) -> str:
+    """Return the receiver name confirmed by the user."""
+
+    name = str(user_input.get(CONF_NAME, "")).strip()
+    return name or fallback
 
 
 def _manual_port(value: Any) -> int:

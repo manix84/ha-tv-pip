@@ -27,6 +27,7 @@ sys.modules.setdefault("homeassistant.config_entries", config_entries)
 sys.modules.setdefault("voluptuous", voluptuous)
 
 from custom_components.ha_tv_pip.config_flow import (  # noqa: E402
+    _confirmed_receiver_name,
     _manual_port,
     _receiver_from_user_input,
     _receiver_from_zeroconf,
@@ -81,3 +82,14 @@ def test_manual_port_rejects_out_of_range_values() -> None:
             assert str(error) == "invalid_port"
         else:
             raise AssertionError(f"Expected invalid_port for {value}")
+
+
+def test_confirmed_receiver_name_uses_user_value_or_fallback() -> None:
+    assert (
+        _confirmed_receiver_name({"name": "Kitchen TV"}, fallback="Nursery TV")
+        == "Kitchen TV"
+    )
+    assert (
+        _confirmed_receiver_name({"name": " "}, fallback="Nursery TV")
+        == "Nursery TV"
+    )
