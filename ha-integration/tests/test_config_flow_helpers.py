@@ -27,11 +27,13 @@ sys.modules.setdefault("homeassistant.config_entries", config_entries)
 sys.modules.setdefault("voluptuous", voluptuous)
 
 from custom_components.ha_tv_pip.config_flow import (  # noqa: E402
+    _create_receiver_entry,
     _confirmed_receiver_name,
     _manual_port,
     _receiver_from_user_input,
     _receiver_from_zeroconf,
 )
+from custom_components.ha_tv_pip.discovery import ReceiverDiscovery
 
 
 @dataclass
@@ -70,7 +72,7 @@ def test_receiver_from_user_input_creates_manual_receiver() -> None:
     assert receiver.host == "10.0.0.236"
     assert receiver.port == 8765
     assert receiver.version == "unknown"
-    assert receiver.pairing == "disabled"
+    assert receiver.pairing == "required"
     assert receiver.api_version == 1
 
 
@@ -93,3 +95,33 @@ def test_confirmed_receiver_name_uses_user_value_or_fallback() -> None:
         _confirmed_receiver_name({"name": " "}, fallback="Nursery TV")
         == "Nursery TV"
     )
+
+
+def test_create_receiver_entry_stores_pairing_token_when_present() -> None:
+    class FakeFlow:
+        context: dict[str, Any] = {}
+
+        def async_create_entry(
+            self,
+            title: str,
+            data: dict[str, Any],
+        ) -> dict[str, Any]:
+            return {"title": title, "data": data}
+
+    entry = _create_receiver_entry(
+        FakeFlow(),  # type: ignore[arg-type]
+        ReceiverDiscovery(
+            device_id="receiver-id",
+            name="Nursery TV",
+            host="10.0.0.236",
+            port=8765,
+            version="0.16.0",
+            pairing="paired",
+            api_version=1,
+        ),
+        token="secret-token",
+    )
+
+    assert entry["title"] == "Nursery TV"
+    assert entry["data"]["pairing"] == "paired"
+    assert entry["data"]["token"] == "secret-token"

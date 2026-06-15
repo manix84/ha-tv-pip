@@ -78,8 +78,10 @@ class LocalControlServer(
         when {
             request.method == "GET" && request.path == "/" -> rootResponse()
             request.method == "GET" && request.path == "/status" -> statusResponse()
-            request.method == "POST" && request.path == "/show" -> showResponse(request.body)
-            request.method == "POST" && request.path == "/close" -> closeResponse()
+            request.method == "POST" && request.path == "/pair/start" -> pairStartResponse(request.body)
+            request.method == "POST" && request.path == "/pair/confirm" -> pairConfirmResponse(request.body)
+            request.method == "POST" && request.path == "/show" -> showResponse(request)
+            request.method == "POST" && request.path == "/close" -> closeResponse(request)
             request.path in KNOWN_ENDPOINTS -> HttpResponse.json(
                 status = 405,
                 body = JSONObject()
@@ -103,12 +105,14 @@ class LocalControlServer(
                 .put("app", "HA TV PiP Receiver")
                 .put("version", BuildConfig.VERSION_NAME)
                 .put("apiVersion", 1)
-                .put("pairingRequired", false)
+                .put("pairingRequired", PairingState.snapshot(context).pairingRequired)
                 .put(
                     "endpoints",
                     JSONArray()
                         .put(endpoint("GET", "/", "API metadata"))
                         .put(endpoint("GET", "/status", "Receiver and playback status"))
+                        .put(endpoint("POST", "/pair/start", "Start local pairing"))
+                        .put(endpoint("POST", "/pair/confirm", "Confirm local pairing code"))
                         .put(endpoint("POST", "/show", "Show an HLS stream"))
                         .put(endpoint("POST", "/close", "Close the active display"))
                 )
@@ -118,13 +122,21 @@ class LocalControlServer(
         val playback = ReceiverRuntimeState.snapshot()
         val control = ControlRuntimeState.snapshot()
         val discovery = DiscoveryRuntimeState.snapshot()
+        val pairing = PairingState.snapshot(context)
         val lastRequest = control.lastRequest
         val body = JSONObject()
             .put("app", "HA TV PiP Receiver")
             .put("version", BuildConfig.VERSION_NAME)
             .put("deviceId", ReceiverDeviceInfo.stableDeviceId(context))
             .put("deviceName", ReceiverDeviceInfo.deviceName(context))
-            .put("pairingRequired", false)
+            .put("pairingRequired", pairing.pairingRequired)
+            .put(
+                "pairing",
+                JSONObject()
+                    .put("state", pairing.state.wireName)
+                    .put("pendingClientName", pairing.pendingClientName)
+                    .put("pairedClientName", pairing.pairedClientName)
+            )
             .put("apiVersion", 1)
             .put("controlPort", port)
             .put("controlRunning", control.running)
@@ -157,8 +169,57 @@ class LocalControlServer(
         return HttpResponse.json(status = 200, body = body)
     }
 
-    private fun showResponse(body: String): HttpResponse {
-        val command = ShowCommand.fromJson(body).getOrElse { error ->
+    private fun pairStartResponse(body: String): HttpResponse {
+        val request = parsePairingStartRequest(body).getOrElse { error ->
+            return HttpResponse.json(
+                status = 400,
+                body = JSONObject().put("error", error.message ?: "Invalid pairing start request")
+            )
+        }
+
+        val pairing = PairingState.startPairing(context, request)
+        AppLog.pairingEvent("pairing_started", pairing.state.wireName)
+
+        return HttpResponse.json(
+            status = 202,
+            body = JSONObject()
+                .put("accepted", true)
+                .put("pairingState", pairing.state.wireName)
+                .put("expiresInSeconds", PAIRING_CODE_TTL_SECONDS)
+        )
+    }
+
+    private fun pairConfirmResponse(body: String): HttpResponse {
+        val request = parsePairingConfirmRequest(body).getOrElse { error ->
+            return HttpResponse.json(
+                status = 400,
+                body = JSONObject().put("error", error.message ?: "Invalid pairing confirm request")
+            )
+        }
+
+        val result = PairingState.confirmPairing(context, request).getOrElse { error ->
+            return HttpResponse.json(
+                status = 401,
+                body = JSONObject().put("error", error.message ?: "Pairing failed")
+            )
+        }
+        AppLog.pairingEvent("pairing_confirmed", PairingStatus.Paired.wireName)
+
+        return HttpResponse.json(
+            status = 200,
+            body = JSONObject()
+                .put("paired", true)
+                .put("clientId", result.clientId)
+                .put("clientName", result.clientName)
+                .put("token", result.token)
+        )
+    }
+
+    private fun showResponse(request: HttpRequest): HttpResponse {
+        val authFailure = authorizeRequest(body = request.body, request = request)
+        if (authFailure != null) return authFailure
+
+        val command = ShowCommand.fromJson(request.body).getOrElse { error ->
             return HttpResponse.json(
                 status = 400,
                 body = JSONObject().put("error", error.message ?: "Invalid show request")
@@ -188,7 +249,10 @@ class LocalControlServer(
         )
     }
 
-    private fun closeResponse(): HttpResponse {
+    private fun closeResponse(request: HttpRequest): HttpResponse {
+        val authFailure = authorizeRequest(body = request.body, request = request)
+        if (authFailure != null) return authFailure
+
         val playback = ReceiverRuntimeState.snapshot()
         val wasActive = playback.mode != ReceiverPlaybackMode.Idle
         onClose()
@@ -201,12 +265,35 @@ class LocalControlServer(
         )
     }
 
+    private fun authorizeRequest(body: String, request: HttpRequest?): HttpResponse? {
+        val pairing = PairingState.snapshot(context)
+        if (pairing.pairingRequired) {
+            return HttpResponse.json(
+                status = 401,
+                body = JSONObject()
+                    .put("error", "pairing_required")
+                    .put("pairingState", pairing.state.wireName)
+            )
+        }
+
+        val token = request?.bearerToken ?: tokenFromBody(body)
+        if (!PairingState.isAuthorized(context, token)) {
+            return HttpResponse.json(
+                status = 401,
+                body = JSONObject().put("error", "unauthorized")
+            )
+        }
+
+        return null
+    }
+
     private fun Socket.readHttpRequest(): HttpRequest {
         val reader = BufferedReader(InputStreamReader(getInputStream()))
         val requestLine = reader.readLine().orEmpty()
         val parts = requestLine.split(" ")
         val method = parts.getOrNull(0).orEmpty().uppercase(Locale.US)
         val path = parts.getOrNull(1).orEmpty().substringBefore("?")
+        val headers = mutableMapOf<String, String>()
         var contentLength = 0
 
         while (true) {
@@ -219,6 +306,7 @@ class LocalControlServer(
             if (name == "content-length") {
                 contentLength = value.toIntOrNull() ?: 0
             }
+            headers[name] = value
         }
 
         val body = if (contentLength > 0) {
@@ -234,7 +322,7 @@ class LocalControlServer(
             ""
         }
 
-        return HttpRequest(method = method, path = path, body = body)
+        return HttpRequest(method = method, path = path, headers = headers, body = body)
     }
 
     private fun Socket.writeHttpResponse(response: HttpResponse) {
@@ -251,7 +339,8 @@ class LocalControlServer(
     companion object {
         const val DEFAULT_PORT = 8765
         private const val ACCEPT_TIMEOUT_MS = 500
-        private val KNOWN_ENDPOINTS = setOf("/", "/status", "/show", "/close")
+        private const val PAIRING_CODE_TTL_SECONDS = 300
+        private val KNOWN_ENDPOINTS = setOf("/", "/status", "/pair/start", "/pair/confirm", "/show", "/close")
     }
 }
 
@@ -265,15 +354,26 @@ private fun allowedMethodsFor(path: String): JSONArray =
     JSONArray().apply {
         when (path) {
             "/", "/status" -> put("GET")
-            "/show", "/close" -> put("POST")
+            "/pair/start", "/pair/confirm", "/show", "/close" -> put("POST")
         }
     }
 
 private data class HttpRequest(
     val method: String,
     val path: String,
+    val headers: Map<String, String>,
     val body: String
-)
+) {
+    val bearerToken: String?
+        get() {
+            val authorization = headers["authorization"] ?: return null
+            return authorization
+                .takeIf { it.startsWith("Bearer ", ignoreCase = true) }
+                ?.substringAfter(" ")
+                ?.trim()
+                ?.takeIf { it.isNotEmpty() }
+        }
+}
 
 private data class HttpResponse(
     val status: Int,
@@ -288,6 +388,7 @@ private data class HttpResponse(
                     200 -> "OK"
                     202 -> "Accepted"
                     400 -> "Bad Request"
+                    401 -> "Unauthorized"
                     405 -> "Method Not Allowed"
                     404 -> "Not Found"
                     else -> "OK"
@@ -296,3 +397,27 @@ private data class HttpResponse(
             )
     }
 }
+
+private fun parsePairingStartRequest(body: String): Result<PairingStartRequest> =
+    runCatching {
+        val json = JSONObject(body.ifBlank { "{}" })
+        PairingStartRequest(
+            clientId = json.optString("clientId").ifBlank { "home-assistant" },
+            clientName = json.optString("clientName").ifBlank { "Home Assistant" }
+        )
+    }
+
+private fun parsePairingConfirmRequest(body: String): Result<PairingConfirmRequest> =
+    runCatching {
+        val json = JSONObject(body)
+        PairingConfirmRequest(
+            clientId = json.optString("clientId").ifBlank { "home-assistant" },
+            clientName = json.optString("clientName").ifBlank { "Home Assistant" },
+            code = json.getString("code").trim()
+        )
+    }
+
+private fun tokenFromBody(body: String): String? =
+    runCatching {
+        JSONObject(body).optString("token").takeIf { it.isNotBlank() }
+    }.getOrNull()

@@ -8,6 +8,7 @@ CONF_HOST = "host"
 CONF_NAME = "name"
 CONF_PAIRING = "pairing"
 CONF_PORT = "port"
+CONF_TOKEN = "token"
 CONF_VERSION = "version"
 
 DEFAULT_PORT = 8765

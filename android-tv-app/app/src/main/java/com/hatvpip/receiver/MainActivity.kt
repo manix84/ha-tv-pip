@@ -48,11 +48,13 @@ class MainActivity : ComponentActivity() {
     private var endpointInfo by mutableStateOf(ControlEndpointInfo())
     private var controlSnapshot by mutableStateOf(ControlRuntimeState.snapshot())
     private var discoverySnapshot by mutableStateOf(DiscoveryRuntimeState.snapshot())
+    private var pairingSnapshot by mutableStateOf<PairingSnapshot?>(null)
     private val controlSnapshotHandler = Handler(Looper.getMainLooper())
     private val controlSnapshotUpdater = object : Runnable {
         override fun run() {
             controlSnapshot = ControlRuntimeState.snapshot()
             discoverySnapshot = DiscoveryRuntimeState.snapshot()
+            pairingSnapshot = PairingState.snapshot(this@MainActivity)
             controlSnapshotHandler.postDelayed(this, CONTROL_STATUS_REFRESH_MS)
         }
     }
@@ -76,8 +78,10 @@ class MainActivity : ComponentActivity() {
                         endpointInfo = endpointInfo,
                         controlSnapshot = controlSnapshot,
                         discoverySnapshot = discoverySnapshot,
+                        pairingSnapshot = pairingSnapshot,
                         onRequestOverlayPermission = ::openOverlayPermissionSettings,
                         onStopOverlay = ::stopOverlayFallback,
+                        onResetPairing = ::resetPairing,
                         onPlayTestVideo = {
                             startActivity(
                                 PlayerActivity.createShowIntent(
@@ -109,6 +113,7 @@ class MainActivity : ComponentActivity() {
         endpointInfo = ControlEndpointInfo()
         controlSnapshot = ControlRuntimeState.snapshot()
         discoverySnapshot = DiscoveryRuntimeState.snapshot()
+        pairingSnapshot = PairingState.snapshot(this)
     }
 
     private fun openOverlayPermissionSettings() {
@@ -132,6 +137,12 @@ class MainActivity : ComponentActivity() {
                 .setAction(OverlayPlayerService.ACTION_STOP)
         )
     }
+
+    private fun resetPairing() {
+        PairingState.reset(this)
+        pairingSnapshot = PairingState.snapshot(this)
+        AppLog.pairingEvent("pairing_reset", pairingSnapshot?.state?.wireName ?: "unknown")
+    }
 }
 
 @Composable
@@ -140,8 +151,10 @@ private fun MainScreen(
     endpointInfo: ControlEndpointInfo,
     controlSnapshot: ControlServerSnapshot,
     discoverySnapshot: DiscoverySnapshot,
+    pairingSnapshot: PairingSnapshot?,
     onRequestOverlayPermission: () -> Unit,
     onStopOverlay: () -> Unit,
+    onResetPairing: () -> Unit,
     onPlayTestVideo: () -> Unit
 ) {
     val playButtonFocusRequester = remember { FocusRequester() }
@@ -185,6 +198,8 @@ private fun MainScreen(
                 controlSnapshot = controlSnapshot,
                 discoverySnapshot = discoverySnapshot
             )
+            Spacer(modifier = Modifier.height(18.dp))
+            PairingStatusPanel(pairingSnapshot = pairingSnapshot)
             Spacer(modifier = Modifier.height(24.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 TvActionButton(
@@ -210,12 +225,62 @@ private fun MainScreen(
                         minWidth = 180
                     )
                 }
+                if (pairingSnapshot?.state == PairingStatus.Paired) {
+                    TvActionButton(
+                        text = "Reset Pairing",
+                        onClick = onResetPairing,
+                        minWidth = 190
+                    )
+                }
             }
         }
     }
 }
 
 private const val CONTROL_STATUS_REFRESH_MS = 1_000L
+
+@Composable
+private fun PairingStatusPanel(pairingSnapshot: PairingSnapshot?) {
+    val snapshot = pairingSnapshot ?: return
+    Column(
+        modifier = Modifier.widthIn(max = 760.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "Pairing",
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "State: ${snapshot.state.wireName}",
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 16.sp
+        )
+        snapshot.pendingCode?.let { code ->
+            Text(
+                text = "Pairing code: $code",
+                color = MaterialTheme.colorScheme.tertiary,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        snapshot.pendingClientName?.let { clientName ->
+            Text(
+                text = "Waiting for: $clientName",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 15.sp
+            )
+        }
+        snapshot.pairedClientName?.let { clientName ->
+            Text(
+                text = "Paired with: $clientName",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 15.sp
+            )
+        }
+    }
+}
 
 @Composable
 private fun TvActionButton(

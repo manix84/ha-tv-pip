@@ -16,7 +16,8 @@ class DiscoveryAdvertiser(private val context: Context) {
             deviceId = ReceiverDeviceInfo.stableDeviceId(context),
             deviceName = ReceiverDeviceInfo.deviceName(context),
             appVersion = BuildConfig.VERSION_NAME,
-            port = port
+            port = port,
+            pairingStatus = PairingState.snapshot(context).state
         )
         DiscoveryRuntimeState.markRegistering(descriptor)
 

@@ -14,7 +14,8 @@ data class DiscoveryServiceDescriptor(
             deviceId: String,
             deviceName: String,
             appVersion: String,
-            port: Int
+            port: Int,
+            pairingStatus: PairingStatus = PairingStatus.Unpaired
         ): DiscoveryServiceDescriptor =
             DiscoveryServiceDescriptor(
                 serviceName = sanitizeServiceName(deviceName),
@@ -24,7 +25,7 @@ data class DiscoveryServiceDescriptor(
                     "id" to deviceId,
                     "name" to deviceName,
                     "version" to appVersion,
-                    "pairing" to "disabled",
+                    "pairing" to pairingStatus.wireName,
                     "api" to API_VERSION
                 )
             )

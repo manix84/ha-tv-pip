@@ -4,8 +4,12 @@
       "invalid_discovery": "Home Assistant found an HA TV PiP receiver, but the discovery data was incomplete."
     },
     "error": {
+      "cannot_connect": "Could not connect to the Android TV receiver.",
+      "invalid_client": "The receiver rejected this Home Assistant pairing session.",
+      "invalid_code": "Enter the six-digit pairing code shown on the TV.",
       "invalid_host": "Enter the Android TV receiver IP address or hostname.",
-      "invalid_port": "Enter a valid port between 1 and 65535."
+      "invalid_port": "Enter a valid port between 1 and 65535.",
+      "pairing_not_started": "Start pairing again and enter the new code shown on the TV."
     },
     "step": {
       "confirm": {
@@ -14,6 +18,13 @@
         },
         "description": "Home Assistant discovered {name} at {host}:{port}. Add this Android TV receiver?",
         "title": "Add discovered HA TV PiP receiver"
+      },
+      "pair": {
+        "data": {
+          "code": "Pairing code"
+        },
+        "description": "Enter the six-digit pairing code shown on {name}. The receiver is at {host}:{port}.",
+        "title": "Pair HA TV PiP receiver"
       },
       "user": {
         "data": {

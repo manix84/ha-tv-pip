@@ -11,7 +11,7 @@ def test_parse_discovery_properties_from_android_txt_records() -> None:
             "id": b"49e3b07d8f4b7d65",
             "name": b"Nursery TV",
             "version": b"0.7.0",
-            "pairing": b"disabled",
+            "pairing": b"required",
             "api": b"1",
         },
     )
@@ -21,7 +21,7 @@ def test_parse_discovery_properties_from_android_txt_records() -> None:
     assert receiver.host == "10.0.0.236"
     assert receiver.port == 8765
     assert receiver.version == "0.7.0"
-    assert receiver.pairing == "disabled"
+    assert receiver.pairing == "required"
     assert receiver.api_version == 1
 
 

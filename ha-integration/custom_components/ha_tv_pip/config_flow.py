@@ -9,6 +9,7 @@ from typing import Any, Protocol
 import voluptuous as vol  # type: ignore[import-not-found]
 from homeassistant import config_entries  # type: ignore[import-not-found]
 
+from .client import ReceiverClientError, async_confirm_pairing, async_start_pairing
 from .const import (
     CONF_API_VERSION,
     CONF_DEVICE_ID,
@@ -16,6 +17,7 @@ from .const import (
     CONF_NAME,
     CONF_PAIRING,
     CONF_PORT,
+    CONF_TOKEN,
     CONF_VERSION,
     DEFAULT_PORT,
     DOMAIN,
@@ -23,6 +25,8 @@ from .const import (
 from .discovery import ReceiverDiscovery, parse_discovery_properties
 
 _LOGGER = logging.getLogger(__name__)
+PAIRING_CLIENT_ID = "home-assistant"
+PAIRING_CLIENT_NAME = "Home Assistant"
 
 
 class ZeroconfDiscoveryInfo(Protocol):
@@ -38,6 +42,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
 
     VERSION = 1
     _discovered_receiver: ReceiverDiscovery | None = None
+    _pairing_receiver: ReceiverDiscovery | None = None
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> Any:
         """Handle manual setup when Zeroconf discovery is unavailable."""
@@ -51,7 +56,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
             else:
                 await self.async_set_unique_id(receiver.device_id)
                 self._abort_if_unique_id_configured()
-                return _create_receiver_entry(self, receiver)
+                if receiver.pairing == "disabled":
+                    return _create_receiver_entry(self, receiver)
+                self._pairing_receiver = receiver
+                return await self.async_step_pair()
 
         return self.async_show_form(
             step_id="user",
@@ -110,13 +118,14 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
             return self.async_abort(reason="invalid_discovery")
 
         if user_input is not None:
-            return _create_receiver_entry(
-                self,
-                replace(
-                    receiver,
-                    name=_confirmed_receiver_name(user_input, fallback=receiver.name),
-                ),
+            confirmed_receiver = replace(
+                receiver,
+                name=_confirmed_receiver_name(user_input, fallback=receiver.name),
             )
+            if confirmed_receiver.pairing == "disabled":
+                return _create_receiver_entry(self, confirmed_receiver)
+            self._pairing_receiver = confirmed_receiver
+            return await self.async_step_pair()
 
         return self.async_show_form(
             step_id="confirm",
@@ -133,22 +142,85 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
             errors={},
         )
 
+    async def async_step_pair(self, user_input: dict[str, Any] | None = None) -> Any:
+        """Start receiver pairing and ask the user for the TV-visible code."""
 
-def _create_receiver_entry(flow: ConfigFlow, receiver: ReceiverDiscovery) -> Any:
+        receiver = self._pairing_receiver
+        if receiver is None:
+            return self.async_abort(reason="invalid_discovery")
+
+        errors: dict[str, str] = {}
+        if user_input is None:
+            try:
+                await async_start_pairing(
+                    receiver.host,
+                    receiver.port,
+                    client_id=PAIRING_CLIENT_ID,
+                    client_name=PAIRING_CLIENT_NAME,
+                )
+            except ReceiverClientError as error:
+                _LOGGER.warning("Unable to start HA TV PiP pairing: %s", error)
+                errors["base"] = str(error)
+
+        if user_input is not None:
+            code = str(user_input.get("code", "")).strip()
+            if not code:
+                errors["code"] = "invalid_code"
+            else:
+                try:
+                    result = await async_confirm_pairing(
+                        receiver.host,
+                        receiver.port,
+                        client_id=PAIRING_CLIENT_ID,
+                        client_name=PAIRING_CLIENT_NAME,
+                        code=code,
+                    )
+                except ReceiverClientError as error:
+                    _LOGGER.warning("Unable to confirm HA TV PiP pairing: %s", error)
+                    errors["base"] = str(error)
+                else:
+                    return _create_receiver_entry(
+                        self,
+                        replace(receiver, pairing="paired"),
+                        token=result.token,
+                    )
+
+        return self.async_show_form(
+            step_id="pair",
+            data_schema=vol.Schema({vol.Required("code"): str}),
+            description_placeholders={
+                CONF_NAME: receiver.name,
+                CONF_HOST: receiver.host,
+                CONF_PORT: str(receiver.port),
+            },
+            errors=errors,
+        )
+
+
+def _create_receiver_entry(
+    flow: ConfigFlow,
+    receiver: ReceiverDiscovery,
+    *,
+    token: str | None = None,
+) -> Any:
     """Create a Home Assistant config entry from receiver details."""
+
+    data = {
+        CONF_DEVICE_ID: receiver.device_id,
+        CONF_HOST: receiver.host,
+        CONF_PORT: receiver.port,
+        CONF_NAME: receiver.name,
+        CONF_VERSION: receiver.version,
+        CONF_PAIRING: receiver.pairing,
+        CONF_API_VERSION: receiver.api_version,
+    }
+    if token is not None:
+        data[CONF_TOKEN] = token
 
     flow.context["title_placeholders"] = {"name": receiver.name}
     return flow.async_create_entry(
         title=receiver.name,
-        data={
-            CONF_DEVICE_ID: receiver.device_id,
-            CONF_HOST: receiver.host,
-            CONF_PORT: receiver.port,
-            CONF_NAME: receiver.name,
-            CONF_VERSION: receiver.version,
-            CONF_PAIRING: receiver.pairing,
-            CONF_API_VERSION: receiver.api_version,
-        },
+        data=data,
     )
 
 
@@ -176,7 +248,7 @@ def _receiver_from_user_input(user_input: dict[str, Any]) -> ReceiverDiscovery:
         host=host,
         port=port,
         version="unknown",
-        pairing="disabled",
+        pairing="required",
         api_version=1,
     )
 

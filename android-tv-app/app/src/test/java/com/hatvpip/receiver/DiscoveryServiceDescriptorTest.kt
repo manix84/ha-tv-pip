@@ -19,7 +19,7 @@ class DiscoveryServiceDescriptorTest {
         assertEquals("device-123", descriptor.attributes["id"])
         assertEquals("Nursery TV", descriptor.attributes["name"])
         assertEquals("0.6.0", descriptor.attributes["version"])
-        assertEquals("disabled", descriptor.attributes["pairing"])
+        assertEquals("required", descriptor.attributes["pairing"])
         assertEquals("1", descriptor.attributes["api"])
     }
 

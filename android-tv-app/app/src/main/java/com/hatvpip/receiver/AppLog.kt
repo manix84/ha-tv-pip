@@ -49,6 +49,10 @@ object AppLog {
         Log.w(TAG, "event=discovery_failed serviceName=$serviceName message=$message")
     }
 
+    fun pairingEvent(event: String, state: String) {
+        Log.i(TAG, "event=$event pairingState=$state")
+    }
+
     fun error(message: String, throwable: Throwable? = null) {
         Log.e(TAG, "event=error message=$message", throwable)
     }
