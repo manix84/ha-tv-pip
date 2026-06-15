@@ -64,6 +64,7 @@ Some Google TV devices, including Chromecast HD test hardware, do not expose And
 ## Local Control Testing 🌐
 
 The app starts a local HTTP server on port `8765` while the receiver service is running.
+The main screen shows the current LAN endpoint address when Android exposes a local IPv4 address.
 
 ```sh
 curl http://ANDROID_TV_IP:8765/status
@@ -79,6 +80,8 @@ curl -X POST http://ANDROID_TV_IP:8765/show \
 ```
 
 Stage 2 does not include pairing or authentication yet. Test this only on a trusted local network.
+
+Duplicate `/show` requests replace the current playback or overlay. `durationSeconds` is enforced for both full-screen playback and the overlay fallback.
 
 ## Stream Configuration 🎬
 

@@ -1,5 +1,15 @@
 # What's New ✨
 
+## 0.6.0 - Stage 2 Endpoint Hardening 🛠️
+
+The local control endpoint now handles the first round of real-device hardening after Chromecast validation.
+
+- Enforced `durationSeconds` for the overlay fallback path ⏱️
+- Added duplicate `/show` replacement feedback in API responses 🔁
+- Added local endpoint address display on the Android TV main screen 📍
+- Added `apiVersion` and `controlPort` to `/status` responses 📡
+- Added defensive local IP detection and endpoint display tests 🧪
+
 ## 0.5.0 - Stage 2 Local Control Begins 🌐
 
 Stage 2 has started with a developer-testable local HTTP endpoint in the Android TV app.
@@ -8,6 +18,8 @@ Stage 2 has started with a developer-testable local HTTP endpoint in the Android
 - Added `GET /status` for version, device, playback, and display-mode state 📡
 - Added `POST /show` for HLS playback commands 🎬
 - Added `POST /close` for stopping playback and overlay fallback 🛑
+- Added duplicate `/show` replacement feedback and overlay auto-close timing ⏱️
+- Added the local endpoint address to the Android TV main screen 📍
 - Added command validation and JVM unit tests for show requests 🧪
 - Kept pairing, authentication, discovery, and Home Assistant integration out of scope for now 🔒
 

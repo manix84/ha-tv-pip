@@ -852,3 +852,5 @@ curl -X POST http://ANDROID_TV_IP:8765/close
 ```
 
 The Stage 2 endpoint is intentionally unauthenticated. Pairing and request authentication belong to Phase 4.
+
+The Android TV main screen displays the local endpoint address when available. Duplicate `/show` requests replace current playback, and `durationSeconds` should close either full-screen playback or the overlay fallback.

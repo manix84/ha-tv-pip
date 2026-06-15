@@ -88,6 +88,8 @@ class LocalControlServer(
             .put("deviceId", stableDeviceId())
             .put("deviceName", Settings.Global.getString(context.contentResolver, Settings.Global.DEVICE_NAME) ?: "Android TV")
             .put("pairingRequired", false)
+            .put("apiVersion", 1)
+            .put("controlPort", port)
             .put("playbackState", playback.wirePlaybackState)
             .put("displayMode", playback.mode.wireName)
             .put("title", playback.title)
@@ -105,13 +107,25 @@ class LocalControlServer(
             )
         }
 
+        val replacedExistingPlayback = ReceiverRuntimeState.snapshot().mode != ReceiverPlaybackMode.Idle
+        ReceiverRuntimeState.update(
+            ReceiverPlaybackSnapshot(
+                status = PlaybackStatus.Buffering,
+                isPlaying = false,
+                mode = ReceiverPlaybackMode.FullScreen,
+                title = command.title,
+                url = command.url
+            )
+        )
         onShow(command)
         return HttpResponse.json(
             status = 202,
             body = JSONObject()
                 .put("accepted", true)
+                .put("replaced", replacedExistingPlayback)
                 .put("title", command.title)
                 .put("url", command.url)
+                .put("durationSeconds", command.durationSeconds)
                 .put("enterPip", command.enterPip)
         )
     }

@@ -66,6 +66,11 @@ class LocalControlService : Service() {
                     .setAction(OverlayPlayerService.ACTION_SHOW)
                     .putExtra(PlayerActivity.EXTRA_TITLE, command.title)
                     .putExtra(PlayerActivity.EXTRA_URL, command.url)
+                    .apply {
+                        command.durationSeconds?.let {
+                            putExtra(PlayerActivity.EXTRA_DURATION_SECONDS, it)
+                        }
+                    }
             )
             return
         }

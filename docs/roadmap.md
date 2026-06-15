@@ -140,6 +140,9 @@ Initial `0.5.0` behaviour:
 - `POST /show` accepts HLS commands.
 - `POST /close` closes playback and stops the overlay fallback.
 - On Google TV devices that reject native PiP, `enterPip: true` can start the overlay fallback directly.
+- Duplicate `/show` commands replace the current playback or overlay.
+- `durationSeconds` is enforced for both full-screen playback and the overlay fallback.
+- The Android TV main screen shows the local control endpoint address when available.
 
 ## Success Criteria
 

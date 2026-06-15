@@ -3,7 +3,9 @@ package com.hatvpip.receiver
 import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.view.Gravity
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -19,6 +21,8 @@ class OverlayPlayerService : Service() {
     private var player: ExoPlayer? = null
     private var title: String = "HA TV PiP"
     private var url: String = PlayerActivity.TEST_STREAM_URL
+    private var durationSeconds: Int? = null
+    private val autoCloseHandler = Handler(Looper.getMainLooper())
 
     override fun onCreate() {
         super.onCreate()
@@ -31,13 +35,17 @@ class OverlayPlayerService : Service() {
             else -> {
                 title = intent?.getStringExtra(PlayerActivity.EXTRA_TITLE) ?: title
                 url = intent?.getStringExtra(PlayerActivity.EXTRA_URL) ?: url
+                durationSeconds = intent?.takeIf {
+                    it.hasExtra(PlayerActivity.EXTRA_DURATION_SECONDS)
+                }?.getIntExtra(PlayerActivity.EXTRA_DURATION_SECONDS, 0)?.takeIf { it > 0 }
                 showOverlay()
             }
         }
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     override fun onDestroy() {
+        autoCloseHandler.removeCallbacksAndMessages(null)
         removeOverlay()
         super.onDestroy()
     }
@@ -98,6 +106,7 @@ class OverlayPlayerService : Service() {
                 )
             )
             AppLog.playbackStart(url)
+            scheduleAutoClose()
         }.onFailure { error ->
             AppLog.error("Unable to show overlay fallback", error)
             overlayPlayer.release()
@@ -115,6 +124,12 @@ class OverlayPlayerService : Service() {
         player = null
         ReceiverRuntimeState.markIdle()
         AppLog.playbackStop(reason = "overlay_service_stopped")
+    }
+
+    private fun scheduleAutoClose() {
+        autoCloseHandler.removeCallbacksAndMessages(null)
+        val duration = durationSeconds ?: return
+        autoCloseHandler.postDelayed({ stopSelf() }, duration * 1_000L)
     }
 
     companion object {

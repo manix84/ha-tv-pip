@@ -7,8 +7,12 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +21,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,6 +43,7 @@ import androidx.compose.ui.unit.sp
 
 class MainActivity : ComponentActivity() {
     private var compatibility by mutableStateOf<DeviceCompatibility?>(null)
+    private var endpointInfo by mutableStateOf(ControlEndpointInfo())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +61,7 @@ class MainActivity : ComponentActivity() {
                 compatibility?.let { currentCompatibility ->
                     MainScreen(
                         compatibility = currentCompatibility,
+                        endpointInfo = endpointInfo,
                         onRequestOverlayPermission = ::openOverlayPermissionSettings,
                         onStopOverlay = ::stopOverlayFallback,
                         onPlayTestVideo = {
@@ -77,6 +85,7 @@ class MainActivity : ComponentActivity() {
 
     private fun refreshCompatibility() {
         compatibility = DeviceCompatibilityEvaluator.from(this)
+        endpointInfo = ControlEndpointInfo()
     }
 
     private fun openOverlayPermissionSettings() {
@@ -105,11 +114,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun MainScreen(
     compatibility: DeviceCompatibility,
+    endpointInfo: ControlEndpointInfo,
     onRequestOverlayPermission: () -> Unit,
     onStopOverlay: () -> Unit,
     onPlayTestVideo: () -> Unit
 ) {
     val playButtonFocusRequester = remember { FocusRequester() }
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(Unit) {
         playButtonFocusRequester.requestFocus()
@@ -124,54 +135,106 @@ private fun MainScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 72.dp, vertical = 56.dp),
-            verticalArrangement = Arrangement.Center,
+                .verticalScroll(scrollState)
+                .padding(horizontal = 56.dp, vertical = 36.dp),
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
             Text(
                 text = "HA TV PiP Receiver",
                 color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 40.sp,
+                fontSize = 34.sp,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = "Stage 2 MVP: local HTTP control on port ${LocalControlServer.DEFAULT_PORT}, test HLS playback, and TV-safe display modes.",
                 color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 20.sp
+                fontSize = 18.sp
             )
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             CompatibilityStatus(compatibility = compatibility)
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(18.dp))
+            ControlEndpointStatus(endpointInfo = endpointInfo)
+            Spacer(modifier = Modifier.height(24.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Button(
+                TvActionButton(
+                    text = "Play Test Video",
                     onClick = onPlayTestVideo,
                     modifier = Modifier
-                        .widthIn(min = 220.dp)
                         .focusRequester(playButtonFocusRequester)
                         // Explicit focusability makes D-pad startup focus predictable on TV launchers.
-                        .focusable()
-                ) {
-                    Text(text = "Play Test Video", fontSize = 18.sp)
-                }
+                        .focusable(),
+                    minWidth = 220
+                )
                 if (compatibility.canRequestOverlayPermission) {
-                    Button(
+                    TvActionButton(
+                        text = "Open Overlay Settings",
                         onClick = onRequestOverlayPermission,
-                        modifier = Modifier.widthIn(min = 260.dp)
-                    ) {
-                        Text(text = "Open Overlay Settings", fontSize = 18.sp)
-                    }
+                        minWidth = 260
+                    )
                 }
                 if (compatibility.overlayPermission == CompatibilityState.Granted) {
-                    Button(
+                    TvActionButton(
+                        text = "Stop Overlay",
                         onClick = onStopOverlay,
-                        modifier = Modifier.widthIn(min = 180.dp)
-                    ) {
-                        Text(text = "Stop Overlay", fontSize = 18.sp)
-                    }
+                        minWidth = 180
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun TvActionButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    minWidth: Int
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+    val colors = MaterialTheme.colorScheme
+
+    Button(
+        onClick = onClick,
+        modifier = modifier.widthIn(min = minWidth.dp),
+        interactionSource = interactionSource,
+        border = BorderStroke(
+            width = if (isFocused) 4.dp else 1.dp,
+            color = if (isFocused) colors.tertiary else colors.outline
+        ),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isFocused) colors.tertiary else colors.primary,
+            contentColor = if (isFocused) colors.onTertiary else colors.onPrimary
+        )
+    ) {
+        Text(
+            text = text,
+            fontSize = 18.sp,
+            fontWeight = if (isFocused) FontWeight.Bold else FontWeight.Medium
+        )
+    }
+}
+
+@Composable
+private fun ControlEndpointStatus(endpointInfo: ControlEndpointInfo) {
+    Column(
+        modifier = Modifier.widthIn(max = 760.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "Local control endpoint",
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = endpointInfo.displayAddress,
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 16.sp
+        )
     }
 }
 
@@ -184,34 +247,34 @@ private fun CompatibilityStatus(compatibility: DeviceCompatibility) {
         Text(
             text = "Device compatibility",
             color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 22.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
         Text(
             text = compatibility.androidVersionLabel,
             color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 17.sp
+            fontSize = 16.sp
         )
         Text(
             text = "Native PiP: ${compatibility.nativePictureInPicture.label}",
             color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 17.sp
+            fontSize = 16.sp
         )
         Text(
             text = "Overlay permission: ${compatibility.overlayPermission.label}",
             color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 17.sp
+            fontSize = 16.sp
         )
         Text(
             text = "Recommended mode: ${compatibility.recommendedMode.label}",
             color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 17.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.Bold
         )
         Text(
             text = compatibility.statusText,
             color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 17.sp
+            fontSize = 16.sp
         )
     }
 }
