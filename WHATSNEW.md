@@ -1,5 +1,27 @@
 # What's New ✨
 
+## 0.18.0 - Stage 4 Complete 🔐
+
+- Completed local pairing hardening for the Android TV receiver ✅
+- Prevented remote clients from replacing an existing pairing without TV-side reset 🛡️
+- Refreshed mDNS discovery metadata when pairing state changes 🔎
+- Documented the Stage 4 pairing flow and reset process 📝
+- Excluded `.DS_Store` files from packaged integration zips 📦
+
+## 0.17.1 - Brand Icons And Pairing Polish 🎨
+
+- Added Home Assistant custom integration brand images under `custom_components/ha_tv_pip/brand/` 🏠
+- Confirmed Home Assistant shows the integration icon after restart 🧩
+- Kept the direct integration `icon.png` and `logo.png` assets for compatibility 📁
+
+## 0.17.0 - Local Receiver Pairing 🤝
+
+- Added `/pair/start` and `/pair/confirm` endpoints to the Android TV receiver 🔐
+- Showed the pairing code on the TV instead of exposing it in normal setup UX 📺
+- Required bearer-token auth for `/show` and `/close` once pairing is required or complete 🛡️
+- Added Home Assistant config-flow pairing and token storage 🏠
+- Added a TV-side `Reset Pairing` action 🔁
+
 ## 0.14.1 - Confirmation Modal Polish 🧭
 
 - Added a visible receiver-name field to the discovery confirmation modal so it is no longer blank 📝

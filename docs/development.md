@@ -202,13 +202,13 @@ npm run website:build:dry-run
 Quality tooling by area:
 
 - Android TV app: Android Gradle Plugin lint, JVM unit tests, and Kotlin debug compilation.
-- Home Assistant integration: Ruff, pytest, and MyPy against the placeholder custom integration package.
+- Home Assistant integration: Ruff, pytest, and MyPy against the custom integration package.
 - Website: ESLint for React/TypeScript, Vitest, and `tsc --noEmit` for type checking.
 
 Dry-run builds by area:
 
 - Android TV app: assembles the debug APK.
-- Home Assistant integration: packages the custom integration zip from the placeholder component path.
+- Home Assistant integration: packages the custom integration zip from `custom_components/ha_tv_pip/`.
 - Website: runs the Vite production build.
 
 GitHub Actions runs project-specific quality workflows for the Android TV app, Home Assistant integration, and website. Each workflow still exposes separate jobs, such as `website: lint`, `website: test`, `website: typecheck`, and `website: build dry-run`. The Website Deploy workflow only builds/deploys the site, and the Release workflow only packages release assets.
@@ -314,7 +314,7 @@ Files that should stay aligned:
 - `website/package.json`.
 - `website/package-lock.json`, if present.
 - Android `versionName` in `android-tv-app/app/build.gradle.kts`.
-- Home Assistant `manifest.json` version once the integration is implemented.
+- Home Assistant `manifest.json` version.
 
 Check version consistency with:
 
@@ -322,7 +322,7 @@ Check version consistency with:
 npm run version:check
 ```
 
-During Phase 1, the Home Assistant integration is only a placeholder. The version check warns when `ha-integration/custom_components/ha_tv_pip/manifest.json` does not exist instead of failing.
+The Home Assistant integration manifest version is kept in sync with the root package version.
 
 ## Pre-Commit Version Bumps 🔢
 
@@ -844,8 +844,8 @@ Choose the simplest implementation that supports future expansion.
 Current development target:
 
 ```txt
-Phase 3
-mDNS / Local Network Discovery
+Phase 5
+Home Assistant Service MVP
 ```
 
 Phase 1 is complete in `0.4.0`. It validated:
@@ -858,7 +858,7 @@ Remain stable across lifecycle events.
 Provide a foundation for future receiver control.
 ```
 
-Phase 2 is complete in `0.6.0`. It added local receiver control without implementing the Home Assistant integration.
+Phase 2 is complete in `0.6.0`. It added local receiver control.
 
 Stage 2 local endpoint testing:
 
@@ -867,12 +867,14 @@ curl http://ANDROID_TV_IP:8765/status
 
 curl -X POST http://ANDROID_TV_IP:8765/show \
   -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer TOKEN' \
   -d '{"title":"Front Door","url":"https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8","streamType":"hls","durationSeconds":30,"enterPip":true}'
 
-curl -X POST http://ANDROID_TV_IP:8765/close
+curl -X POST http://ANDROID_TV_IP:8765/close \
+  -H 'Authorization: Bearer TOKEN'
 ```
 
-The Stage 2 endpoint is intentionally unauthenticated. Pairing and request authentication belong to Phase 4.
+Stage 4 adds pairing and request authentication. Use `Reset Pairing` on the TV app when testing a fresh token exchange.
 
 The Android TV main screen displays the local endpoint address when available. Duplicate `/show` requests replace current playback, and `durationSeconds` should close either full-screen playback or the overlay fallback.
 
@@ -894,4 +896,4 @@ Check the `discovery` object in the response. A healthy Android-side advertiseme
 
 The Android TV main screen also reports whether discovery is advertising.
 
-The Home Assistant integration declares a Zeroconf matcher for `_ha-tv-pip._tcp.local.` and includes the first config flow slice. The local Python tests focus on discovery metadata parsing because the lightweight integration dev environment does not install the full Home Assistant runtime yet.
+The Home Assistant integration declares a Zeroconf matcher for `_ha-tv-pip._tcp.local.`, includes discovery setup, starts pairing, and stores the returned token after the user enters the TV-visible code. Local Python tests cover discovery metadata parsing, config-flow helpers, and receiver client error handling.

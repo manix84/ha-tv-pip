@@ -6,7 +6,9 @@ Phase 1 Android TV MVP for HA TV PiP. This app plays a public HLS test stream an
 
 Phase 2 adds the local HTTP control endpoint for developer testing.
 
-Stage 3 adds Android-side mDNS discovery advertising so the future Home Assistant integration can find the receiver on the LAN.
+Stage 3 adds Android-side mDNS discovery advertising so the Home Assistant integration can find the receiver on the LAN.
+
+Stage 4 adds local pairing and bearer-token authentication for remote `/show` and `/close` commands.
 
 ## Build 🛠️
 
@@ -80,10 +82,11 @@ Show the default public test stream:
 ```sh
 curl -X POST http://ANDROID_TV_IP:8765/show \
   -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer TOKEN' \
   -d '{"title":"Front Door","url":"https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8","streamType":"hls","durationSeconds":30,"enterPip":true}'
 ```
 
-Stage 2 does not include pairing or authentication yet. Test this only on a trusted local network.
+Stage 4 requires pairing before `/show` and `/close`. Start pairing from Home Assistant or call `/pair/start`; the pairing code is shown on the TV only and is not returned over HTTP.
 
 Duplicate `/show` requests replace the current playback or overlay. `durationSeconds` is enforced for both full-screen playback and the overlay fallback.
 `/status` also reports endpoint diagnostics, including control uptime, request count, and the previous request.
@@ -100,10 +103,30 @@ _ha-tv-pip._tcp.local.
 
 The advertisement includes the stable device id, device name, app version, pairing state, and API version. The main screen and `/status` response show whether discovery is currently advertising.
 
+## Pairing Testing 🔐
+
+Start pairing:
+
+```sh
+curl -X POST http://ANDROID_TV_IP:8765/pair/start \
+  -H 'Content-Type: application/json' \
+  -d '{"clientId":"home-assistant-dev","clientName":"Home Assistant Dev"}'
+```
+
+Enter the TV-visible code:
+
+```sh
+curl -X POST http://ANDROID_TV_IP:8765/pair/confirm \
+  -H 'Content-Type: application/json' \
+  -d '{"clientId":"home-assistant-dev","clientName":"Home Assistant Dev","code":"123456"}'
+```
+
+Use the returned token as `Authorization: Bearer TOKEN` for `/show` and `/close`.
+
 ## Stream Configuration 🎬
 
 The test stream URL is defined in `PlayerActivity.TEST_STREAM_URL`.
 
 ## Future Notes 🚧
 
-This app does not yet implement Home Assistant integration, pairing, authentication, camera support, snapshots, HLS from Home Assistant, or WebRTC.
+This app does not yet implement camera entity resolution, snapshots, HLS URL resolution from Home Assistant, or WebRTC.

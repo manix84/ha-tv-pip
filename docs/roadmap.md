@@ -159,9 +159,9 @@ Completed behaviour:
 
 ---
 
-# Phase 3: mDNS / Local Network Discovery
+# Phase 3: mDNS / Local Network Discovery ✅
 
-Status: Started in `0.7.0`.
+Status: Complete in `0.14.1`.
 
 ## Goal
 
@@ -199,6 +199,16 @@ Initial `0.8.0` Home Assistant behaviour:
 - The Home Assistant integration declares a Zeroconf matcher for `_ha-tv-pip._tcp.local.`.
 - The Home Assistant config flow can create or update a receiver config entry from discovered metadata.
 
+Completed behaviour:
+
+- The Android TV app advertises `_ha-tv-pip._tcp.local.` while the local control endpoint is running.
+- Advertised TXT metadata includes stable device id, receiver name, app version, pairing state, and API version.
+- `GET /status` reports discovery state and current service registration details.
+- Home Assistant discovers receivers automatically and shows a discovered device card.
+- Discovery setup confirms the receiver name before creating a config entry.
+- Existing config entries are updated when the same receiver is rediscovered with new host, port, version, pairing, or API metadata.
+- Multiple receivers can be represented independently by stable receiver id.
+
 ## Home Assistant Integration Requirements
 
 Add Zeroconf discovery support for:
@@ -222,9 +232,9 @@ When a device is discovered:
 
 ---
 
-# Phase 4: Device Pairing and Local Authentication
+# Phase 4: Device Pairing and Local Authentication ✅
 
-Status: Complete in `0.17.1`.
+Status: Complete in `0.18.0`.
 
 ## Goal
 
@@ -516,6 +526,7 @@ Make the app and integration easy for normal Home Assistant users to install.
 ## Home Assistant Integration
 
 - Prepare for HACS distribution.
+- Work toward official Home Assistant integration readiness.
 - Add documentation.
 - Add example automations.
 - Add diagnostics.
@@ -527,6 +538,14 @@ Make the app and integration easy for normal Home Assistant users to install.
 - User can install the app from the Android TV Play Store.
 - User can install the integration through HACS.
 - Setup is understandable without reading source code.
+
+## Official Home Assistant Track
+
+HACS is the practical first distribution target for the custom integration.
+
+Longer term, HA TV PiP should work toward official Home Assistant integration readiness. That means keeping the integration local-first, well tested, documented, secure by default, and aligned with Home Assistant architecture and quality expectations.
+
+Official inclusion should not block the MVP, Stage 5 service work, or HACS distribution, but design decisions should avoid making an upstream contribution harder later.
 
 ---
 
@@ -559,7 +578,7 @@ Provide a static project landing page suitable for GitHub Pages.
 
 - Website builds successfully.
 - Website reflects current MVP status honestly.
-- Website can be deployed to GitHub Pages in a future workflow.
+- Website can be deployed to GitHub Pages.
 
 ---
 
@@ -567,6 +586,8 @@ Provide a static project landing page suitable for GitHub Pages.
 
 These should not block the MVP.
 
+- Fire TV / Vega OS receiver app.
+- Exploratory Apple TV / tvOS receiver app.
 - Multiple camera layouts.
 - Cycling camera feeds.
 - Doorbell-specific mode.
@@ -586,3 +607,13 @@ These should not block the MVP.
 - Companion mobile app support.
 - Local-only privacy mode.
 - Import/export settings.
+
+## Additional TV Platforms
+
+HA TV PiP should avoid assuming Android TV and Google TV are the only possible receiver platforms.
+
+Fire TV and Vega OS are the most natural next platform family because they are closer to the Android receiver model and may be able to share protocol concepts, pairing flow, and Home Assistant integration behavior.
+
+Apple TV support is desirable but exploratory. tvOS has different constraints around background execution, Picture-in-Picture behavior, app distribution, and local-network control, so it may require a separate receiver design rather than a direct port.
+
+Future platform work should keep the local receiver protocol platform-neutral so Home Assistant can target receiver capabilities rather than Android-specific behavior.

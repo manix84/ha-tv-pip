@@ -4,9 +4,9 @@
 
 [![Android TV App Quality 📺](https://github.com/manix84/ha-tv-pip/actions/workflows/quality-android-tv-app.yml/badge.svg)](https://github.com/manix84/ha-tv-pip/actions/workflows/quality-android-tv-app.yml) [![Home Assistant Integration Quality 🏠](https://github.com/manix84/ha-tv-pip/actions/workflows/quality-ha-integration.yml/badge.svg)](https://github.com/manix84/ha-tv-pip/actions/workflows/quality-ha-integration.yml) [![Website Quality 🌐](https://github.com/manix84/ha-tv-pip/actions/workflows/quality-website.yml/badge.svg)](https://github.com/manix84/ha-tv-pip/actions/workflows/quality-website.yml)
 
-HA TV PiP is a planned Home Assistant companion project for showing short-lived camera feeds on Android TV and Google TV devices using Android Picture-in-Picture or a local overlay fallback.
+HA TV PiP is a local-first Home Assistant companion project for showing short-lived camera feeds on Android TV and Google TV devices using Android Picture-in-Picture or a local overlay fallback.
 
-This repository is a monorepo that contains the receiver app, future Home Assistant integration, and promotional website:
+This repository is a monorepo that contains the receiver app, Home Assistant integration, and promotional website:
 
 - `android-tv-app/`: Android TV Kotlin app 📱
 - `ha-integration/`: Home Assistant custom integration 🏠
@@ -20,9 +20,11 @@ Phase 1 is complete in `0.4.0`. The Android TV MVP proves that an Android TV app
 
 Phase 2 is complete in `0.6.0`. The Android TV app now includes a local HTTP control endpoint for developer testing, including status, show, close, API metadata, and clear error responses.
 
-Stage 3 has started in `0.7.0`. The Android TV app can advertise the receiver on the local network with Android NSD / mDNS so the future Home Assistant integration can discover it automatically.
+Stage 3 is complete in `0.14.1`. The Android TV app advertises the receiver on the local network with Android NSD / mDNS, and the Home Assistant integration discovers and configures receivers through Zeroconf.
 
-The Home Assistant integration, Home Assistant discovery flow, pairing, authentication, camera entity support, snapshots, and WebRTC support are not implemented yet.
+Stage 4 is complete in `0.18.0`. Discovered receivers use a TV-visible pairing code and bearer-token authentication, so unpaired LAN clients cannot trigger `/show` or `/close`.
+
+Stage 5 is the current target: add the Home Assistant service MVP so automations can call `ha_tv_pip.show_camera` for paired receivers.
 
 ## Monorepo Layout 🧱
 
@@ -103,20 +105,22 @@ Show a test HLS stream:
 ```sh
 curl -X POST http://ANDROID_TV_IP:8765/show \
   -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer TOKEN' \
   -d '{"title":"Front Door","url":"https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8","streamType":"hls","durationSeconds":30,"enterPip":true}'
 ```
 
 Close playback:
 
 ```sh
-curl -X POST http://ANDROID_TV_IP:8765/close
+curl -X POST http://ANDROID_TV_IP:8765/close \
+  -H 'Authorization: Bearer TOKEN'
 ```
 
-This endpoint is unauthenticated during Stage 2 and should only be used on a trusted local network.
+The receiver requires pairing before `/show` and `/close`. Start pairing from Home Assistant or with `POST /pair/start`; the pairing code is shown on the TV only.
 
 ## Local Discovery MVP 🔎
 
-Stage 3 begins with Android-side mDNS advertising while the local endpoint is running.
+Stage 3 added Android-side mDNS advertising while the local endpoint is running.
 
 ```txt
 Service type: _ha-tv-pip._tcp.local.
@@ -124,7 +128,19 @@ Port: 8765
 Metadata: id, name, version, pairing, api
 ```
 
-The receiver reports discovery state in `GET /status` and on the Android TV main screen. Home Assistant discovery support will be added in a later Stage 3 slice.
+The receiver reports discovery state in `GET /status` and on the Android TV main screen. Home Assistant uses Zeroconf discovery as the primary setup path.
+
+## Pairing 🔐
+
+Pairing is intentionally a one-time two-device flow:
+
+1. Home Assistant discovers the TV.
+2. The user confirms the receiver.
+3. The TV app shows a six-digit code.
+4. The user enters that code in Home Assistant.
+5. Home Assistant stores the returned local bearer token.
+
+Existing pairings cannot be replaced remotely. Use `Reset Pairing` in the Android TV app before pairing a different Home Assistant instance.
 
 ## Releases 📦
 
@@ -139,12 +155,12 @@ Play Store deployment is not implemented yet.
 
 ## Future Home Assistant Plan 🏠
 
-Future phases will add a Home Assistant custom integration and Android TV receiver control features:
+Future phases will expand the Home Assistant custom integration and Android TV receiver control features:
 
-- Local HTTP control endpoint 🌐
-- mDNS discovery 🔎
-- Device pairing 🤝
-- Home Assistant config flow 🧭
 - Home Assistant service: `ha_tv_pip.show_camera` 📹
 - HLS streams from Home Assistant 🎬
 - Snapshots and WebRTC support 🖼️
+- HACS distribution 🧩
+- Long-term official Home Assistant integration track 🏠
+- Fire TV / Vega OS receiver support 🔥
+- Exploratory Apple TV support 🍎

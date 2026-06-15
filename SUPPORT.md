@@ -9,6 +9,7 @@ For now, use GitHub issues for:
 - Android TV build problems.
 - PiP behavior bugs.
 - Test stream playback problems.
+- Discovery or pairing problems.
 - Documentation improvements.
 
 Please include:
@@ -21,12 +22,9 @@ Please include:
 
 ## Not Supported Yet 🚧
 
-These features are planned for later and are not supported in Phase 1:
+These features are planned for later and are not supported yet:
 
-- Home Assistant integration.
-- Camera feeds.
-- Device pairing.
-- Discovery.
-- WebSocket control.
+- Camera entity service calls.
+- Snapshot popups.
 - WebRTC.
 - Remote access.

@@ -31,7 +31,7 @@ npm run dev
 npm run build
 ```
 
-The site is static and ready for future GitHub Pages deployment.
+The site is static and deploys to GitHub Pages from the website workflow on pushes to `main`.
 
 ## Quality Checks ✅
 

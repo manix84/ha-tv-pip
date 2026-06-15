@@ -17,6 +17,14 @@ If a private maintainer contact is available in the GitHub repository, use that 
 
 ## Current Security Scope 🧪
 
-Phase 1 has no Home Assistant integration, pairing, authentication, camera support, cloud access, or remote control endpoint.
+The receiver exposes a local HTTP endpoint on the LAN. Since Stage 4, `/show` and `/close` require pairing and bearer-token authentication.
 
-Future phases that add local network control, pairing, or Home Assistant services will need deeper security review before release.
+Pairing uses a six-digit code shown on the TV. The pairing code is not returned over HTTP, and existing pairings cannot be replaced remotely; use `Reset Pairing` on the TV app first.
+
+Not yet implemented:
+
+- Camera entity service calls.
+- Snapshot display.
+- WebRTC.
+- Remote receiver mode.
+- Play Store or HACS distribution hardening.

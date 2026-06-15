@@ -54,10 +54,13 @@ This separation allows playback behaviour to evolve independently from Home Assi
 
 - Remote receiver support.
 - HACS distribution.
+- Long-term official Home Assistant integration readiness.
 - Play Store distribution.
 - WebRTC support.
 - Snapshot support.
 - Overlay and notification support.
+- Future Fire TV / Vega OS receiver support.
+- Exploratory Apple TV / tvOS receiver support.
 
 ## Non-Goals
 
@@ -186,6 +189,8 @@ Example:
 ```
 
 This keeps the receiver reusable and loosely coupled.
+
+Future receiver apps for Fire TV, Vega OS, or Apple TV should use the same high-level command model where possible. Platform-specific display behavior should stay inside each receiver implementation.
 
 ---
 
@@ -502,14 +507,21 @@ Phase 3 currently adds:
 - Home Assistant integration manifest Zeroconf matching
 - Home Assistant config flow creation from discovered receiver metadata
 
+Phase 4 currently adds:
+
+- TV-visible pairing code flow
+- Local bearer-token authentication for receiver control commands
+- Home Assistant config-flow pairing and token storage
+- Pairing reset from the Android TV app
+- Discovery metadata refresh when pairing state changes
+
 ## Planned
 
 Future phases will add:
 
-- Pairing
-- Home Assistant integration
-- Camera support
+- Home Assistant camera service control
 - Snapshot support
 - Remote operation
 - HACS distribution
+- Official Home Assistant integration readiness
 - Play Store release

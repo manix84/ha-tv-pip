@@ -2,11 +2,25 @@
 
 [![Home Assistant Integration Quality 🏠](https://github.com/manix84/ha-tv-pip/actions/workflows/quality-ha-integration.yml/badge.svg)](https://github.com/manix84/ha-tv-pip/actions/workflows/quality-ha-integration.yml) [![Release 📦](https://github.com/manix84/ha-tv-pip/actions/workflows/release.yml/badge.svg)](https://github.com/manix84/ha-tv-pip/actions/workflows/release.yml)
 
-This directory contains the early Home Assistant custom integration scaffold 🚧
+This directory contains the Home Assistant custom integration for HA TV PiP 🚧
 
-Stage 3 begins with Zeroconf discovery support 🔎. Home Assistant can match HA TV PiP receiver advertisements and create a config entry from the discovered device id, host, port, receiver name, app version, pairing state, and API version.
+Stage 3 added Zeroconf discovery support 🔎. Home Assistant can match HA TV PiP receiver advertisements and create or update a config entry from the discovered device id, host, port, receiver name, app version, pairing state, and API version.
 
-The integration does not control TVs yet. Future work is expected to add pairing 🤝, request authentication 🔐, receiver status polling 📡, and a `ha_tv_pip.show_camera` service 📹 for displaying camera feeds on paired Android TV or Google TV devices.
+Stage 4 added pairing 🤝 and request authentication 🔐. Setup starts pairing, asks for the six-digit code shown on the TV, stores the returned token, and keeps the token out of logs.
+
+Stage 5 will add the first control service: `ha_tv_pip.show_camera` 📹 for displaying camera feeds on paired Android TV or Google TV devices.
+
+Distribution goals are HACS first, then long-term official Home Assistant integration readiness once the integration is mature enough.
+
+## Brand Images 🎨
+
+Home Assistant 2026.3+ reads custom integration brand images from:
+
+```txt
+custom_components/ha_tv_pip/brand/
+```
+
+This integration includes `icon.png`, `icon@2x.png`, `logo.png`, and `logo@2x.png`.
 
 ## Quality Checks ✅
 
