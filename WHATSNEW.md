@@ -1,6 +1,12 @@
 # What's New ✨
 
-## Unreleased - Stage 5 Service MVP 📹
+## 0.21.1 - Stage 5 Stream Compatibility Polish 🎞️
+
+- Added receiver-side decoder fallback before reporting unsupported stream failures 📺
+- Added clearer TV overlay feedback for unsupported Reolink main streams 🩺
+- Documented that broad main-stream support needs future stream selection, restreaming, or transcoding 🧭
+
+## 0.21.0 - Stage 5 Service MVP 📹
 
 - Added the first `ha_tv_pip.show_camera` service implementation 🏠
 - Resolves Home Assistant camera HLS stream URLs and sends them to paired receivers 🎬
@@ -8,6 +14,7 @@
 - Added focused service and receiver-client tests 🧪
 - Verified the service path with a Reolink substream on Chromecast 📺
 - Added receiver playback diagnostics for unsupported stream codec errors 🩺
+- Enabled Media3 decoder fallback for receiver playback before reporting unsupported codec failures 🎞️
 
 ## 0.18.0 - Stage 4 Complete 🔐
 

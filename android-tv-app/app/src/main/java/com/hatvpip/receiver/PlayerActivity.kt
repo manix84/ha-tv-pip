@@ -155,7 +155,7 @@ class PlayerActivity : ComponentActivity() {
     private fun initializePlayer() {
         if (player != null) return
 
-        player = ExoPlayer.Builder(this).build().also { exoPlayer ->
+        player = buildReceiverPlayer(this).also { exoPlayer ->
             exoPlayer.addListener(
                 object : Player.Listener {
                     override fun onPlaybackStateChanged(playbackStateValue: Int) {

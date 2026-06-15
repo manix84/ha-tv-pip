@@ -60,7 +60,7 @@ class OverlayPlayerService : Service() {
             removeOverlay()
         }
 
-        val overlayPlayer = ExoPlayer.Builder(this).build().also { exoPlayer ->
+        val overlayPlayer = buildReceiverPlayer(this).also { exoPlayer ->
             exoPlayer.addListener(
                 object : Player.Listener {
                     override fun onPlaybackStateChanged(playbackState: Int) {
@@ -90,7 +90,7 @@ class OverlayPlayerService : Service() {
                             isPlaying = false,
                             errorMessage = message
                         )
-                        errorTextView?.text = "Playback error\n${error.errorCodeName}"
+                        errorTextView?.text = error.toOverlayMessage()
                         errorTextView?.visibility = TextView.VISIBLE
                         AppLog.error("Overlay playback failed: $message", error)
                     }
@@ -216,3 +216,10 @@ private fun Int.toPlaybackStatus(): PlaybackStatus =
 
 private fun PlaybackException.toDisplayMessage(): String =
     "$errorCodeName: ${message ?: "unknown playback error"}"
+
+private fun PlaybackException.toOverlayMessage(): String =
+    when (errorCode) {
+        PlaybackException.ERROR_CODE_DECODER_INIT_FAILED ->
+            "Unsupported video stream\nTry a Reolink substream or H.264 main stream"
+        else -> "Playback error\n$errorCodeName"
+    }

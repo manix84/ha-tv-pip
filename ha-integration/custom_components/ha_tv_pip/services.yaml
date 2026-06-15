@@ -13,7 +13,7 @@ show_camera:
         entity:
           domain: camera
       name: Camera entity
-      description: Camera entity to display on the paired receiver.
+      description: Camera entity to display on the paired receiver. Use a TV-compatible H.264 stream or substream where possible.
     duration_seconds:
       default: 30
       selector:

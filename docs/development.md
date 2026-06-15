@@ -909,7 +909,7 @@ data:
   enter_pip: true
 ```
 
-Use the Home Assistant device ID for `receiver_device_id` and a camera entity that exposes a TV-compatible HLS stream. Reolink substreams have been verified on Chromecast during Stage 5. Some Reolink main streams can fail with Android decoder initialisation errors when the codec/profile is not supported by the receiver device.
+Use the Home Assistant device ID for `receiver_device_id` and a camera entity that exposes a TV-compatible HLS stream. Reolink substreams have been verified on Chromecast during Stage 5. Some Reolink main streams can fail with Android decoder initialisation errors when the codec/profile is not supported by the receiver device. The Android receiver enables Media3 decoder fallback and shows a clear unsupported-stream message, but it cannot replace transcoding for unsupported camera formats.
 
 Receiver playback diagnostics:
 

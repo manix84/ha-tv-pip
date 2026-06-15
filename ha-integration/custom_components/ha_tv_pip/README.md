@@ -49,4 +49,4 @@ data:
 ```
 
 The service resolves an HLS stream URL through Home Assistant's camera stream API and sends it to the paired receiver with the stored bearer token.
-For cameras with multiple streams, use a TV-compatible H.264/HLS stream where possible. Reolink substreams have been verified during Stage 5; some Reolink main streams can fail on Chromecast devices with decoder initialisation errors.
+For cameras with multiple streams, use a TV-compatible H.264/HLS stream where possible. Reolink substreams have been verified during Stage 5; some Reolink main streams can fail on Chromecast devices with decoder initialisation errors. The receiver enables Media3 decoder fallback, but unsupported camera codecs still need a compatible camera profile or future transcoding support.
