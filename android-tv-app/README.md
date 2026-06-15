@@ -82,6 +82,7 @@ curl -X POST http://ANDROID_TV_IP:8765/show \
 Stage 2 does not include pairing or authentication yet. Test this only on a trusted local network.
 
 Duplicate `/show` requests replace the current playback or overlay. `durationSeconds` is enforced for both full-screen playback and the overlay fallback.
+`/status` also reports endpoint diagnostics, including control uptime, request count, and the previous request.
 
 ## Stream Configuration 🎬
 

@@ -8,6 +8,7 @@ The local control endpoint now handles the first round of real-device hardening 
 - Added duplicate `/show` replacement feedback in API responses 🔁
 - Added local endpoint address display on the Android TV main screen 📍
 - Added `apiVersion` and `controlPort` to `/status` responses 📡
+- Added endpoint uptime, request count, and previous request diagnostics to `/status` 🩺
 - Added defensive local IP detection and endpoint display tests 🧪
 
 ## 0.5.0 - Stage 2 Local Control Begins 🌐

@@ -34,6 +34,7 @@ class LocalControlServer(
                 ServerSocket(port, 0, InetAddress.getByName("0.0.0.0")).use { socket ->
                     serverSocket = socket
                     socket.soTimeout = ACCEPT_TIMEOUT_MS
+                    ControlRuntimeState.markStarted(port)
                     AppLog.controlServerStarted(port)
                     while (running) {
                         try {
@@ -55,6 +56,7 @@ class LocalControlServer(
         running = false
         runCatching { serverSocket?.close() }
         executor.shutdownNow()
+        ControlRuntimeState.markStopped()
         AppLog.controlServerStopped()
     }
 
@@ -63,6 +65,7 @@ class LocalControlServer(
             socket.use { client ->
                 val request = client.readHttpRequest()
                 val response = handle(request)
+                ControlRuntimeState.recordRequest(request.method, request.path, response.status)
                 AppLog.controlRequest(request.method, request.path, response.status)
                 client.writeHttpResponse(response)
             }
@@ -82,6 +85,8 @@ class LocalControlServer(
 
     private fun statusResponse(): HttpResponse {
         val playback = ReceiverRuntimeState.snapshot()
+        val control = ControlRuntimeState.snapshot()
+        val lastRequest = control.lastRequest
         val body = JSONObject()
             .put("app", "HA TV PiP Receiver")
             .put("version", BuildConfig.VERSION_NAME)
@@ -90,6 +95,18 @@ class LocalControlServer(
             .put("pairingRequired", false)
             .put("apiVersion", 1)
             .put("controlPort", port)
+            .put("controlRunning", control.running)
+            .put("controlUptimeSeconds", control.uptimeSeconds(System.currentTimeMillis()))
+            .put("requestCount", control.requestCount)
+            .put(
+                "lastRequest",
+                lastRequest?.let {
+                    JSONObject()
+                        .put("method", it.method)
+                        .put("path", it.path)
+                        .put("status", it.status)
+                }
+            )
             .put("playbackState", playback.wirePlaybackState)
             .put("displayMode", playback.mode.wireName)
             .put("title", playback.title)
