@@ -482,6 +482,41 @@ Include:
 
 ---
 
+# Future Goal: Receiver Management Mode
+
+## Goal
+
+Allow the Android TV receiver to behave more like an appliance than a normal foreground app after setup.
+
+## Ideas
+
+- Optional setting to hide the receiver app from the Android TV / Google TV launcher after pairing.
+- Clear instructions for how to find, reopen, or recover the app after it has been hidden.
+- Home Assistant controls to reopen receiver settings, diagnostics, pairing reset, or overlay permission guidance.
+- Receiver diagnostics exposed through Home Assistant so users do not need to open the TV app for routine troubleshooting.
+- A safe recovery path if Home Assistant is unavailable or pairing is broken.
+- Service-first receiver behavior so PiP / overlay requests keep working without the user manually opening the app.
+
+## Notes
+
+This needs careful UX design. If the app can be hidden from the launcher, users still need a reliable way to access settings, reset pairing, view debug information, and recover from bad configuration.
+
+The hide option should include explicit instructions before and after it is enabled. Users should know where the receiver can still be found, how Home Assistant can reopen it, and what fallback path exists if Home Assistant cannot reach it.
+
+The receiver service must continue to start and accept authenticated local commands after reboot without requiring a user to open the app first. Hiding the launcher icon must not make PiP or overlay requests depend on foreground app launch.
+
+Implementation may require Android manifest alias components or launcher category toggling. This should be tested carefully on Android TV, Google TV, Fire TV / Vega OS, and any future receiver platforms because launcher behavior varies by vendor.
+
+## Success Criteria
+
+- Users can optionally hide the app from the TV launcher.
+- Home Assistant can request the receiver settings or diagnostics screen to open.
+- Users can recover access without ADB.
+- Debug and pairing reset workflows remain available after hiding the launcher icon.
+- PiP and overlay commands still work after reboot without manually opening the app.
+
+---
+
 # Phase 9: Remote Access
 
 ## Goal
