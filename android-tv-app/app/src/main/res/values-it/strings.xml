@@ -22,6 +22,7 @@
     <string name="action_show_launcher_icon">Mostra icona launcher</string>
     <string name="action_reset_pairing">Reimposta associazione</string>
     <string name="action_cancel">Annulla</string>
+    <string name="action_keep_waiting">Continua ad attendere</string>
     <string name="confirm_clear_remote_title">Cancellare le impostazioni del ricevitore remoto?</string>
     <string name="confirm_clear_remote_message">Questo rimuoverà da questa TV l’URL di Home Assistant e il token di accesso salvati. I comandi del ricevitore remoto smetteranno di funzionare finché Home Assistant non sincronizzerà di nuovo la configurazione.</string>
     <string name="confirm_reset_pairing_title">Reimpostare l’associazione Home Assistant?</string>
@@ -67,6 +68,10 @@
     <string name="pairing_code_value">Codice di associazione: %1$s</string>
     <string name="waiting_for_value">In attesa di: %1$s</string>
     <string name="paired_with_value">Associato con: %1$s</string>
+    <string name="pairing_dialog_title">Associa questo ricevitore</string>
+    <string name="pairing_dialog_requested_by">Richiesto da: %1$s</string>
+    <string name="pairing_dialog_instruction">Inserisci questo codice in Home Assistant per completare l’associazione.</string>
+    <string name="pairing_dialog_expiry">Questo codice scade dopo pochi minuti. Puoi nascondere questo popup e continuare l’associazione dal dashboard.</string>
     <string name="diagnostics_endpoint">Endpoint</string>
     <string name="diagnostics_local_control">Controllo locale</string>
     <string name="diagnostics_local_control_value">Stato: %1$s | Attivo da: %2$ds | Richieste: %3$d</string>

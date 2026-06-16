@@ -22,6 +22,7 @@
     <string name="action_show_launcher_icon">Afficher l’icône du lanceur</string>
     <string name="action_reset_pairing">Réinitialiser l’association</string>
     <string name="action_cancel">Annuler</string>
+    <string name="action_keep_waiting">Continuer à attendre</string>
     <string name="confirm_clear_remote_title">Effacer les paramètres du récepteur distant ?</string>
     <string name="confirm_clear_remote_message">Cela supprimera l’URL Home Assistant et le jeton d’accès enregistrés sur ce téléviseur. Les commandes du récepteur distant ne fonctionneront plus tant que Home Assistant n’aura pas resynchronisé la configuration.</string>
     <string name="confirm_reset_pairing_title">Réinitialiser l’association Home Assistant ?</string>
@@ -67,6 +68,10 @@
     <string name="pairing_code_value">Code d’association : %1$s</string>
     <string name="waiting_for_value">En attente de : %1$s</string>
     <string name="paired_with_value">Associé à : %1$s</string>
+    <string name="pairing_dialog_title">Associer ce récepteur</string>
+    <string name="pairing_dialog_requested_by">Demandé par : %1$s</string>
+    <string name="pairing_dialog_instruction">Saisissez ce code dans Home Assistant pour terminer l’association.</string>
+    <string name="pairing_dialog_expiry">Ce code expire après quelques minutes. Vous pouvez masquer ce popup et continuer l’association depuis le tableau de bord.</string>
     <string name="diagnostics_endpoint">Point de terminaison</string>
     <string name="diagnostics_local_control">Commande locale</string>
     <string name="diagnostics_local_control_value">État : %1$s | Durée : %2$ds | Requêtes : %3$d</string>

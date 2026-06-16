@@ -281,6 +281,17 @@ private fun MainScreen(
         }
     }
 
+    val pendingPairingCode = pairingSnapshot
+        ?.takeIf { it.state == PairingStatus.Pending && it.pendingCode != null }
+        ?.pendingCode
+    var dismissedPairingCode by remember { mutableStateOf<String?>(null) }
+    if (pendingPairingCode != null && dismissedPairingCode != pendingPairingCode) {
+        PairingCodeDialog(
+            pairingSnapshot = pairingSnapshot,
+            onDismiss = { dismissedPairingCode = pendingPairingCode }
+        )
+    }
+
     val colors = MaterialTheme.colorScheme
     val backgroundGradient = Brush.verticalGradient(
         colors = listOf(
@@ -407,6 +418,52 @@ private fun MainScreen(
             )
         }
     }
+}
+
+@Composable
+private fun PairingCodeDialog(
+    pairingSnapshot: PairingSnapshot,
+    onDismiss: () -> Unit
+) {
+    val code = pairingSnapshot.pendingCode ?: return
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(R.string.pairing_dialog_title),
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                pairingSnapshot.pendingClientName?.let { clientName ->
+                    Text(
+                        text = stringResource(R.string.pairing_dialog_requested_by, clientName),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+                Text(
+                    text = stringResource(R.string.pairing_dialog_instruction),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = code,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    fontSize = 42.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = stringResource(R.string.pairing_dialog_expiry),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.action_keep_waiting))
+            }
+        }
+    )
 }
 
 @Composable

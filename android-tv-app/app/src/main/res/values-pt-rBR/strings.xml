@@ -22,6 +22,7 @@
     <string name="action_show_launcher_icon">Mostrar ícone do inicializador</string>
     <string name="action_reset_pairing">Redefinir pareamento</string>
     <string name="action_cancel">Cancelar</string>
+    <string name="action_keep_waiting">Continuar aguardando</string>
     <string name="confirm_clear_remote_title">Limpar as configurações do receptor remoto?</string>
     <string name="confirm_clear_remote_message">Isso removerá a URL do Home Assistant e o token de acesso salvos nesta TV. Os comandos do receptor remoto deixarão de funcionar até que o Home Assistant sincronize a configuração novamente.</string>
     <string name="confirm_reset_pairing_title">Redefinir o pareamento com o Home Assistant?</string>
@@ -67,6 +68,10 @@
     <string name="pairing_code_value">Código de pareamento: %1$s</string>
     <string name="waiting_for_value">Aguardando: %1$s</string>
     <string name="paired_with_value">Pareado com: %1$s</string>
+    <string name="pairing_dialog_title">Parear este receptor</string>
+    <string name="pairing_dialog_requested_by">Solicitado por: %1$s</string>
+    <string name="pairing_dialog_instruction">Digite este código no Home Assistant para concluir o pareamento.</string>
+    <string name="pairing_dialog_expiry">Este código expira após alguns minutos. Você pode ocultar este popup e continuar o pareamento pelo painel.</string>
     <string name="diagnostics_endpoint">Endpoint</string>
     <string name="diagnostics_local_control">Controle local</string>
     <string name="diagnostics_local_control_value">Estado: %1$s | Tempo ativo: %2$ds | Requisições: %3$d</string>

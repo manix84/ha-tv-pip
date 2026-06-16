@@ -14,7 +14,7 @@ Stage 8 adds receiver management support so Home Assistant can reopen the receiv
 
 Phase 9 adds optional remote receiver mode. The app can connect outbound to the user's own Home Assistant WebSocket API so external TVs can receive PiP commands without router port forwarding.
 
-Phase 10 continues the Android TV polish pass. The main screen is now a TV-first dashboard with primary PiP controls near the top, receiver status cards, launcher controls, remote receiver status, and lower-priority diagnostics separated from everyday actions.
+Phase 10 continues the Android TV polish pass. The main screen is now a TV-first dashboard with primary PiP controls near the top, receiver status cards, launcher controls, remote receiver status, and lower-priority diagnostics separated from everyday actions. Onboarding, pairing, and troubleshooting are intentionally handled as dashboard sections for now instead of separate screens, keeping the app simple to navigate with a TV remote.
 
 ## Build 🛠️
 
@@ -102,6 +102,7 @@ curl -X POST http://ANDROID_TV_IP:8765/show \
 ```
 
 Stage 4 requires pairing before `/show` and `/close`. Start pairing from Home Assistant or call `/pair/start`; the pairing code is shown on the TV only and is not returned over HTTP.
+During an active pairing request, the app shows a TV-side pairing popup with the code. If the popup is dismissed, the same code remains visible in the Pairing dashboard section until it expires or pairing completes.
 
 Duplicate `/show` requests replace the current playback or overlay. `durationSeconds` is enforced for both full-screen playback and the overlay fallback.
 `/status` also reports endpoint diagnostics, including control uptime, request count, and the previous request.

@@ -943,6 +943,8 @@ Phase 10
 Distribution polish and TV-first setup
 ```
 
+Phase 10 keeps onboarding, pairing, and troubleshooting inside the main Android TV dashboard for now. Separate screens are deferred until the setup flow becomes large enough to justify deeper navigation.
+
 Phase 1 is complete in `0.4.0`. It validated:
 
 ```txt

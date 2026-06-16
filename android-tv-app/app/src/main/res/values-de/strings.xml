@@ -22,6 +22,7 @@
     <string name="action_show_launcher_icon">Launcher-Symbol anzeigen</string>
     <string name="action_reset_pairing">Kopplung zurücksetzen</string>
     <string name="action_cancel">Abbrechen</string>
+    <string name="action_keep_waiting">Weiter warten</string>
     <string name="confirm_clear_remote_title">Remote-Receiver-Einstellungen löschen?</string>
     <string name="confirm_clear_remote_message">Dadurch werden die gespeicherte Home Assistant-URL und das Zugriffstoken von diesem TV entfernt. Remote-Receiver-Befehle funktionieren erst wieder, wenn Home Assistant die Einrichtung erneut synchronisiert.</string>
     <string name="confirm_reset_pairing_title">Home Assistant-Kopplung zurücksetzen?</string>
@@ -67,6 +68,10 @@
     <string name="pairing_code_value">Kopplungscode: %1$s</string>
     <string name="waiting_for_value">Wartet auf: %1$s</string>
     <string name="paired_with_value">Gekoppelt mit: %1$s</string>
+    <string name="pairing_dialog_title">Diesen Receiver koppeln</string>
+    <string name="pairing_dialog_requested_by">Angefordert von: %1$s</string>
+    <string name="pairing_dialog_instruction">Gib diesen Code in Home Assistant ein, um die Kopplung abzuschließen.</string>
+    <string name="pairing_dialog_expiry">Dieser Code läuft nach einigen Minuten ab. Du kannst dieses Popup ausblenden und die Kopplung im Dashboard fortsetzen.</string>
     <string name="diagnostics_endpoint">Endpunkt</string>
     <string name="diagnostics_local_control">Lokale Steuerung</string>
     <string name="diagnostics_local_control_value">Status: %1$s | Laufzeit: %2$ds | Anfragen: %3$d</string>

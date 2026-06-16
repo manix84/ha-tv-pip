@@ -8,6 +8,8 @@
 - Added Home Assistant-assisted remote receiver config sync and made manual URL/token entry an advanced fallback 🔐
 - Hid manual remote receiver fields behind an advanced setup action so normal TV setup stays cleaner 📺
 - Added Tier 1 website locale content modules with browser language detection and manual language override 🌍
+- Documented the Stage 10 decision to keep onboarding, pairing, and troubleshooting as dashboard sections instead of separate TV screens 🧭
+- Added a TV-side pairing popup that prominently shows the active Home Assistant pairing code 📺
 
 ## 0.28.0 - Phase 9 Documentation And FAQ Polish 📚
 

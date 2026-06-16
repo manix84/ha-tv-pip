@@ -22,6 +22,7 @@
     <string name="action_show_launcher_icon">Mostrar icono del lanzador</string>
     <string name="action_reset_pairing">Restablecer emparejamiento</string>
     <string name="action_cancel">Cancelar</string>
+    <string name="action_keep_waiting">Seguir esperando</string>
     <string name="confirm_clear_remote_title">¿Borrar la configuración del receptor remoto?</string>
     <string name="confirm_clear_remote_message">Esto eliminará la URL de Home Assistant y el token de acceso guardados en este televisor. Los comandos del receptor remoto dejarán de funcionar hasta que Home Assistant sincronice la configuración otra vez.</string>
     <string name="confirm_reset_pairing_title">¿Restablecer el emparejamiento con Home Assistant?</string>
@@ -67,6 +68,10 @@
     <string name="pairing_code_value">Código de emparejamiento: %1$s</string>
     <string name="waiting_for_value">Esperando a: %1$s</string>
     <string name="paired_with_value">Emparejado con: %1$s</string>
+    <string name="pairing_dialog_title">Emparejar este receptor</string>
+    <string name="pairing_dialog_requested_by">Solicitado por: %1$s</string>
+    <string name="pairing_dialog_instruction">Introduce este código en Home Assistant para terminar el emparejamiento.</string>
+    <string name="pairing_dialog_expiry">Este código caduca después de unos minutos. Puedes ocultar esta ventana y continuar el emparejamiento desde el panel.</string>
     <string name="diagnostics_endpoint">Endpoint</string>
     <string name="diagnostics_local_control">Control local</string>
     <string name="diagnostics_local_control_value">Estado: %1$s | Tiempo activo: %2$ds | Solicitudes: %3$d</string>

@@ -623,9 +623,7 @@ This is also the main translation implementation pass. Tier 1 languages should b
 - Keep verbose endpoint, discovery, and compatibility data in a diagnostics area instead of the top of the screen.
 - Prepare Play Store release.
 - Add app icon and banner.
-- Add onboarding screen.
-- Add pairing screen.
-- Add troubleshooting screen.
+- Add onboarding, pairing, and troubleshooting UX.
 - Simplify remote receiver setup so normal users do not need to type long URLs or long-lived tokens with a TV remote.
 - Treat manual remote receiver token entry as an advanced fallback, not the target setup UX.
 - Move user-facing strings into Android resources.
@@ -644,6 +642,7 @@ This is also the main translation implementation pass. Tier 1 languages should b
 - Tier 1 Android resource folders now exist for German, Dutch, French, Spanish, Italian, Brazilian Portuguese, and Polish.
 - Player screen, playback status, notification, compatibility, overlay, setup, and troubleshooting strings now use Android resources.
 - The dashboard now includes lightweight setup guidance and troubleshooting sections for common discovery, remote receiver, and hidden launcher recovery paths.
+- Stage 10 uses dashboard sections for onboarding, pairing, and troubleshooting instead of separate screens. This keeps the TV receiver app shallow, D-pad friendly, and focused on receiver controls. Separate screens remain a future option if the setup flow becomes too large for the dashboard.
 
 ## Remote Setup Direction
 

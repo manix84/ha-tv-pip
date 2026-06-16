@@ -22,6 +22,7 @@
     <string name="action_show_launcher_icon">Launchericoon tonen</string>
     <string name="action_reset_pairing">Koppeling resetten</string>
     <string name="action_cancel">Annuleren</string>
+    <string name="action_keep_waiting">Blijven wachten</string>
     <string name="confirm_clear_remote_title">Remote receiver-instellingen wissen?</string>
     <string name="confirm_clear_remote_message">Dit verwijdert de opgeslagen Home Assistant-URL en het toegangstoken van deze tv. Remote receiver-opdrachten werken niet meer totdat Home Assistant de setup opnieuw synchroniseert.</string>
     <string name="confirm_reset_pairing_title">Home Assistant-koppeling resetten?</string>
@@ -67,6 +68,10 @@
     <string name="pairing_code_value">Koppelcode: %1$s</string>
     <string name="waiting_for_value">Wacht op: %1$s</string>
     <string name="paired_with_value">Gekoppeld met: %1$s</string>
+    <string name="pairing_dialog_title">Deze receiver koppelen</string>
+    <string name="pairing_dialog_requested_by">Aangevraagd door: %1$s</string>
+    <string name="pairing_dialog_instruction">Voer deze code in Home Assistant in om het koppelen te voltooien.</string>
+    <string name="pairing_dialog_expiry">Deze code verloopt na enkele minuten. Je kunt deze popup verbergen en verder koppelen via het dashboard.</string>
     <string name="diagnostics_endpoint">Endpoint</string>
     <string name="diagnostics_local_control">Lokale bediening</string>
     <string name="diagnostics_local_control_value">Status: %1$s | Uptime: %2$ds | Verzoeken: %3$d</string>

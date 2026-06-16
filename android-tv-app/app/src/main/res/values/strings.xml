@@ -24,6 +24,7 @@
     <string name="action_show_launcher_icon">Show Launcher Icon</string>
     <string name="action_reset_pairing">Reset Pairing</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_keep_waiting">Keep Waiting</string>
     <string name="action_enter_pip">Enter PiP</string>
     <string name="action_show_overlay">Show Overlay</string>
     <string name="action_try_pip">Try PiP</string>
@@ -77,6 +78,10 @@
     <string name="pairing_code_value">Pairing code: %1$s</string>
     <string name="waiting_for_value">Waiting for: %1$s</string>
     <string name="paired_with_value">Paired with: %1$s</string>
+    <string name="pairing_dialog_title">Pair this receiver</string>
+    <string name="pairing_dialog_requested_by">Requested by: %1$s</string>
+    <string name="pairing_dialog_instruction">Enter this code in Home Assistant to finish pairing.</string>
+    <string name="pairing_dialog_expiry">This code expires after a few minutes. You can hide this popup and keep pairing from the dashboard.</string>
 
     <string name="diagnostics_endpoint">Endpoint</string>
     <string name="diagnostics_local_control">Local control</string>

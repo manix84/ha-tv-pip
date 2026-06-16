@@ -22,6 +22,7 @@
     <string name="action_show_launcher_icon">Pokaż ikonę launchera</string>
     <string name="action_reset_pairing">Resetuj parowanie</string>
     <string name="action_cancel">Anuluj</string>
+    <string name="action_keep_waiting">Czekaj dalej</string>
     <string name="confirm_clear_remote_title">Wyczyścić ustawienia odbiornika zdalnego?</string>
     <string name="confirm_clear_remote_message">To usunie z tego telewizora zapisaną URL Home Assistant i token dostępu. Polecenia odbiornika zdalnego przestaną działać, dopóki Home Assistant ponownie nie zsynchronizuje konfiguracji.</string>
     <string name="confirm_reset_pairing_title">Zresetować parowanie z Home Assistant?</string>
@@ -67,6 +68,10 @@
     <string name="pairing_code_value">Kod parowania: %1$s</string>
     <string name="waiting_for_value">Oczekiwanie na: %1$s</string>
     <string name="paired_with_value">Sparowano z: %1$s</string>
+    <string name="pairing_dialog_title">Sparuj ten odbiornik</string>
+    <string name="pairing_dialog_requested_by">Żądanie od: %1$s</string>
+    <string name="pairing_dialog_instruction">Wpisz ten kod w Home Assistant, aby zakończyć parowanie.</string>
+    <string name="pairing_dialog_expiry">Ten kod wygaśnie po kilku minutach. Możesz ukryć ten popup i kontynuować parowanie z poziomu panelu.</string>
     <string name="diagnostics_endpoint">Endpoint</string>
     <string name="diagnostics_local_control">Sterowanie lokalne</string>
     <string name="diagnostics_local_control_value">Stan: %1$s | Czas działania: %2$ds | Żądania: %3$d</string>
