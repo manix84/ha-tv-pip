@@ -15,6 +15,8 @@
     <string name="action_stop_overlay">Overlay stoppen</string>
     <string name="action_save_remote">Remote speichern</string>
     <string name="action_clear_remote">Remote löschen</string>
+    <string name="action_show_manual_remote_setup">Erweiterte manuelle Einrichtung</string>
+    <string name="action_hide_manual_remote_setup">Manuelle Einrichtung ausblenden</string>
     <string name="action_hide_launcher_icon">Launcher-Symbol ausblenden</string>
     <string name="action_show_launcher_icon">Launcher-Symbol anzeigen</string>
     <string name="action_reset_pairing">Kopplung zurücksetzen</string>
@@ -48,7 +50,7 @@
     <string name="remote_details_saved">Remote-Receiver-Details sind gespeichert</string>
     <string name="remote_details_not_configured">Remote-Receiver-Details sind nicht konfiguriert</string>
     <string name="remote_details_saved_description">Dieser TV kann sich für externe PiP-Befehle ausgehend mit Home Assistant verbinden.</string>
-    <string name="remote_details_not_configured_description">Synchronisiere die Remote-Einrichtung über Home Assistant oder fülle die Felder unten aus.</string>
+    <string name="remote_details_not_configured_description">Synchronisiere die Remote-Einrichtung über Home Assistant. Manuelle URL- und Token-Eingabe ist als erweiterter Fallback verfügbar.</string>
     <string name="label_home_assistant_url">Home Assistant-URL</string>
     <string name="label_access_token">Zugriffstoken</string>
     <string name="label_long_lived_access_token">Langfristiges Zugriffstoken</string>

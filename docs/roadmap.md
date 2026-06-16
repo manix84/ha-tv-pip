@@ -639,6 +639,7 @@ This is also the main translation implementation pass. Tier 1 languages should b
 - Receiver health is summarized in TV-readable status cards.
 - Pairing, launcher controls, remote receiver settings, and diagnostics are split into separate sections.
 - Remote receiver token entry is masked on screen.
+- Manual remote receiver URL/token entry is hidden behind an advanced setup action.
 - Main dashboard user-facing strings have been moved into Android string resources.
 - Tier 1 Android resource folders now exist for German, Dutch, French, Spanish, Italian, Brazilian Portuguese, and Polish.
 - Player screen, playback status, notification, compatibility, overlay, setup, and troubleshooting strings now use Android resources.

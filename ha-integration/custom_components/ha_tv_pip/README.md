@@ -102,4 +102,4 @@ Remote mode is not a HA TV PiP cloud service. It uses the user's Home Assistant 
 
 English is the source language for the integration.
 
-Home Assistant UI strings should live in `strings.json` and `translations/*.json`. Tier 1 translation targets are planned for the Phase 10 polish pass and tracked in `../../../docs/translations.md`.
+Home Assistant UI strings live in `strings.json` and `translations/*.json`. Tier 1 translation files are in place for the Phase 10 polish pass and tracked in `../../../docs/translations.md`.

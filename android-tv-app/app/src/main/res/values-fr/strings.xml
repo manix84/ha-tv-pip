@@ -15,6 +15,8 @@
     <string name="action_stop_overlay">Arrêter la superposition</string>
     <string name="action_save_remote">Enregistrer le distant</string>
     <string name="action_clear_remote">Effacer le distant</string>
+    <string name="action_show_manual_remote_setup">Configuration manuelle avancée</string>
+    <string name="action_hide_manual_remote_setup">Masquer la configuration manuelle</string>
     <string name="action_hide_launcher_icon">Masquer l’icône du lanceur</string>
     <string name="action_show_launcher_icon">Afficher l’icône du lanceur</string>
     <string name="action_reset_pairing">Réinitialiser l’association</string>
@@ -48,7 +50,7 @@
     <string name="remote_details_saved">Les détails du récepteur distant sont enregistrés</string>
     <string name="remote_details_not_configured">Les détails du récepteur distant ne sont pas configurés</string>
     <string name="remote_details_saved_description">Ce téléviseur peut se connecter en sortie à Home Assistant pour les commandes PiP externes.</string>
-    <string name="remote_details_not_configured_description">Synchronisez la configuration distante avec Home Assistant ou remplissez les champs ci-dessous.</string>
+    <string name="remote_details_not_configured_description">Synchronisez la configuration distante avec Home Assistant. La saisie manuelle de l’URL et du jeton reste disponible comme solution avancée.</string>
     <string name="label_home_assistant_url">URL Home Assistant</string>
     <string name="label_access_token">Jeton d’accès</string>
     <string name="label_long_lived_access_token">Jeton d’accès longue durée</string>

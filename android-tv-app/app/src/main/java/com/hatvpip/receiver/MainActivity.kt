@@ -605,6 +605,7 @@ private fun RemoteConnectionPanel(
     var accessToken by remember(remoteConfig.accessToken) {
         mutableStateOf(remoteConfig.accessToken)
     }
+    var showManualSetup by remember { mutableStateOf(false) }
 
     SectionCard(title = stringResource(R.string.section_remote_receiver)) {
         RemoteReceiverStatusBanner(
@@ -637,27 +638,41 @@ private fun RemoteConnectionPanel(
                 label = stringResource(R.string.label_access_token),
                 value = stringResource(R.string.status_saved)
             )
+            TvActionButton(
+                text = stringResource(R.string.action_clear_remote),
+                onClick = onClearRemoteConfig,
+                minWidth = 190
+            )
         }
-        OutlinedTextField(
-            value = homeAssistantUrl,
-            onValueChange = { homeAssistantUrl = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .bringIntoViewOnFocus(),
-            label = { Text(stringResource(R.string.label_home_assistant_url)) },
-            singleLine = true
+        TvActionButton(
+            text = if (showManualSetup) {
+                stringResource(R.string.action_hide_manual_remote_setup)
+            } else {
+                stringResource(R.string.action_show_manual_remote_setup)
+            },
+            onClick = { showManualSetup = !showManualSetup },
+            minWidth = 290
         )
-        OutlinedTextField(
-            value = accessToken,
-            onValueChange = { accessToken = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .bringIntoViewOnFocus(),
-            label = { Text(stringResource(R.string.label_long_lived_access_token)) },
-            visualTransformation = PasswordVisualTransformation(),
-            singleLine = true
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        if (showManualSetup) {
+            OutlinedTextField(
+                value = homeAssistantUrl,
+                onValueChange = { homeAssistantUrl = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .bringIntoViewOnFocus(),
+                label = { Text(stringResource(R.string.label_home_assistant_url)) },
+                singleLine = true
+            )
+            OutlinedTextField(
+                value = accessToken,
+                onValueChange = { accessToken = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .bringIntoViewOnFocus(),
+                label = { Text(stringResource(R.string.label_long_lived_access_token)) },
+                visualTransformation = PasswordVisualTransformation(),
+                singleLine = true
+            )
             TvActionButton(
                 text = stringResource(R.string.action_save_remote),
                 onClick = {
@@ -668,11 +683,6 @@ private fun RemoteConnectionPanel(
                         )
                     )
                 },
-                minWidth = 190
-            )
-            TvActionButton(
-                text = stringResource(R.string.action_clear_remote),
-                onClick = onClearRemoteConfig,
                 minWidth = 190
             )
         }

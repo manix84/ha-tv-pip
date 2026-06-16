@@ -17,6 +17,8 @@
     <string name="action_stop_overlay">Stop Overlay</string>
     <string name="action_save_remote">Save Remote</string>
     <string name="action_clear_remote">Clear Remote</string>
+    <string name="action_show_manual_remote_setup">Advanced Manual Setup</string>
+    <string name="action_hide_manual_remote_setup">Hide Manual Setup</string>
     <string name="action_hide_launcher_icon">Hide Launcher Icon</string>
     <string name="action_show_launcher_icon">Show Launcher Icon</string>
     <string name="action_reset_pairing">Reset Pairing</string>
@@ -56,7 +58,7 @@
     <string name="remote_details_saved">Remote receiver details are saved</string>
     <string name="remote_details_not_configured">Remote receiver details are not configured</string>
     <string name="remote_details_saved_description">This TV can connect outbound to Home Assistant for external PiP commands.</string>
-    <string name="remote_details_not_configured_description">Use Home Assistant to sync the remote setup, or fill in the fields below.</string>
+    <string name="remote_details_not_configured_description">Use Home Assistant to sync the remote setup. Manual URL and token entry is available as an advanced fallback.</string>
 
     <string name="label_home_assistant_url">Home Assistant URL</string>
     <string name="label_access_token">Access token</string>

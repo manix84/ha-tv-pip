@@ -939,8 +939,8 @@ Choose the simplest implementation that supports future expansion.
 Current development target:
 
 ```txt
-Phase 9
-Remote receiver transport
+Phase 10
+Distribution polish and TV-first setup
 ```
 
 Phase 1 is complete in `0.4.0`. It validated:
@@ -1025,9 +1025,11 @@ Check the `remote` object:
 }
 ```
 
-After entering a Home Assistant external URL and long-lived access token in the Android TV app, the status should move through `connecting` to `connected`.
+After syncing remote config from Home Assistant, the Android TV app should show saved remote receiver details and the status should move through `connecting` to `connected`.
 
 Remote mode uses Home Assistant's own WebSocket API and the existing receiver pairing token. It should not be described as a HA TV PiP cloud service.
+
+Manual remote receiver URL/token entry remains available under the Android TV app's advanced manual setup control for troubleshooting. It is not the preferred setup path for normal users.
 
 Receiver playback diagnostics:
 

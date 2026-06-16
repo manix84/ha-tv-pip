@@ -15,6 +15,8 @@
     <string name="action_stop_overlay">Overlay stoppen</string>
     <string name="action_save_remote">Remote opslaan</string>
     <string name="action_clear_remote">Remote wissen</string>
+    <string name="action_show_manual_remote_setup">Geavanceerde handmatige setup</string>
+    <string name="action_hide_manual_remote_setup">Handmatige setup verbergen</string>
     <string name="action_hide_launcher_icon">Launchericoon verbergen</string>
     <string name="action_show_launcher_icon">Launchericoon tonen</string>
     <string name="action_reset_pairing">Koppeling resetten</string>
@@ -48,7 +50,7 @@
     <string name="remote_details_saved">Remote receiver-gegevens zijn opgeslagen</string>
     <string name="remote_details_not_configured">Remote receiver-gegevens zijn niet geconfigureerd</string>
     <string name="remote_details_saved_description">Deze tv kan uitgaand verbinden met Home Assistant voor externe PiP-opdrachten.</string>
-    <string name="remote_details_not_configured_description">Synchroniseer de remote-instelling via Home Assistant of vul de velden hieronder in.</string>
+    <string name="remote_details_not_configured_description">Synchroniseer de remote-instelling via Home Assistant. Handmatige URL- en tokeninvoer is beschikbaar als geavanceerde fallback.</string>
     <string name="label_home_assistant_url">Home Assistant-URL</string>
     <string name="label_access_token">Toegangstoken</string>
     <string name="label_long_lived_access_token">Langlevend toegangstoken</string>

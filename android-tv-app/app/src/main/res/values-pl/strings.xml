@@ -15,6 +15,8 @@
     <string name="action_stop_overlay">Zatrzymaj nakładkę</string>
     <string name="action_save_remote">Zapisz zdalne</string>
     <string name="action_clear_remote">Wyczyść zdalne</string>
+    <string name="action_show_manual_remote_setup">Zaawansowana konfiguracja ręczna</string>
+    <string name="action_hide_manual_remote_setup">Ukryj konfigurację ręczną</string>
     <string name="action_hide_launcher_icon">Ukryj ikonę launchera</string>
     <string name="action_show_launcher_icon">Pokaż ikonę launchera</string>
     <string name="action_reset_pairing">Resetuj parowanie</string>
@@ -48,7 +50,7 @@
     <string name="remote_details_saved">Szczegóły odbiornika zdalnego są zapisane</string>
     <string name="remote_details_not_configured">Szczegóły odbiornika zdalnego nie są skonfigurowane</string>
     <string name="remote_details_saved_description">Ten telewizor może łączyć się wychodząco z Home Assistant dla zewnętrznych poleceń PiP.</string>
-    <string name="remote_details_not_configured_description">Zsynchronizuj konfigurację zdalną z Home Assistant albo wypełnij pola poniżej.</string>
+    <string name="remote_details_not_configured_description">Zsynchronizuj konfigurację zdalną z Home Assistant. Ręczne wpisanie URL i tokenu jest dostępne jako zaawansowany fallback.</string>
     <string name="label_home_assistant_url">Adres URL Home Assistant</string>
     <string name="label_access_token">Token dostępu</string>
     <string name="label_long_lived_access_token">Długoterminowy token dostępu</string>

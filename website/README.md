@@ -57,4 +57,4 @@ The displayed version comes from the root `package.json` at build time through `
 
 The landing page includes a FAQ for setup concerns, privacy expectations, remote receiver mode, and common stream compatibility questions.
 
-Translation planning is documented in `../docs/translations.md`. The Phase 10 polish pass should add Tier 1 static locale routes without adding a heavy framework or backend.
+Translation planning is documented in `../docs/translations.md`. The Phase 10 polish pass added Tier 1 static locale routes and localized TypeScript content modules without adding a heavy framework or backend.

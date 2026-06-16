@@ -15,6 +15,8 @@
     <string name="action_stop_overlay">Parar sobreposição</string>
     <string name="action_save_remote">Salvar remoto</string>
     <string name="action_clear_remote">Limpar remoto</string>
+    <string name="action_show_manual_remote_setup">Configuração manual avançada</string>
+    <string name="action_hide_manual_remote_setup">Ocultar configuração manual</string>
     <string name="action_hide_launcher_icon">Ocultar ícone do inicializador</string>
     <string name="action_show_launcher_icon">Mostrar ícone do inicializador</string>
     <string name="action_reset_pairing">Redefinir pareamento</string>
@@ -48,7 +50,7 @@
     <string name="remote_details_saved">Os detalhes do receptor remoto estão salvos</string>
     <string name="remote_details_not_configured">Os detalhes do receptor remoto não estão configurados</string>
     <string name="remote_details_saved_description">Esta TV pode se conectar de saída ao Home Assistant para comandos PiP externos.</string>
-    <string name="remote_details_not_configured_description">Sincronize a configuração remota pelo Home Assistant ou preencha os campos abaixo.</string>
+    <string name="remote_details_not_configured_description">Sincronize a configuração remota pelo Home Assistant. A entrada manual de URL e token fica disponível como fallback avançado.</string>
     <string name="label_home_assistant_url">URL do Home Assistant</string>
     <string name="label_access_token">Token de acesso</string>
     <string name="label_long_lived_access_token">Token de acesso de longa duração</string>

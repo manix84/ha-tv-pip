@@ -14,7 +14,7 @@ Stage 8 adds receiver management support so Home Assistant can reopen the receiv
 
 Phase 9 adds optional remote receiver mode. The app can connect outbound to the user's own Home Assistant WebSocket API so external TVs can receive PiP commands without router port forwarding.
 
-Phase 10 starts the Android TV polish pass. The main screen is being reshaped into a TV-first dashboard with primary PiP controls near the top, receiver status cards, launcher controls, remote receiver settings, and lower-priority diagnostics separated from everyday actions.
+Phase 10 continues the Android TV polish pass. The main screen is now a TV-first dashboard with primary PiP controls near the top, receiver status cards, launcher controls, remote receiver status, and lower-priority diagnostics separated from everyday actions.
 
 ## Build 🛠️
 
@@ -69,6 +69,7 @@ During the Phase 10 polish pass, also confirm:
 - Summary cards are readable from a TV viewing distance 🧭
 - D-pad navigation can reach pairing, launcher, remote receiver, and diagnostics controls 🎮
 - Focusing controls no longer drags the screen past important status text 🧪
+- Remote receiver manual URL/token fields stay hidden until advanced setup is opened 🔐
 
 ## PiP and Overlay Testing 🪟
 
@@ -157,23 +158,24 @@ If the launcher icon is hidden, recover access with Home Assistant's Open Launch
 
 Remote receiver mode is optional and local-first remains the default.
 
+Preferred setup:
+
 1. Pair the receiver with Home Assistant locally first.
-2. Create a Home Assistant long-lived access token for testing.
-3. Open the Android TV app and enter the Home Assistant external URL.
-4. Enter the long-lived access token.
-5. Select `Save Remote`.
-6. Confirm the remote state changes to `connected`.
-7. Trigger `ha_tv_pip.show_camera` or `ha_tv_pip.show_snapshot` from Home Assistant.
+2. Enter the Home Assistant external URL and long-lived access token in the integration options flow.
+3. Use the Home Assistant `Sync Remote Config` button on the receiver device.
+4. Confirm the Android TV Remote receiver section says the details are saved.
+5. Confirm the remote state changes to `connected`.
+6. Trigger `ha_tv_pip.show_camera` or `ha_tv_pip.show_snapshot` from Home Assistant.
 
 The receiver connects outbound to the user's own Home Assistant instance. HA TV PiP does not provide or depend on a hosted cloud relay.
 
-Manual token entry is an advanced fallback for now. A later Phase 10 setup pass should let Home Assistant assist or provision remote receiver settings so normal users do not need to type long URLs or tokens with a TV remote.
+Manual URL and token entry remains available from `Advanced Manual Setup` on the TV for troubleshooting, but it is no longer the normal setup path.
 
 ## Translations 🌍
 
 English is the source language.
 
-During the Phase 10 polish pass, user-facing Compose strings should move into Android string resources under `app/src/main/res/values/strings.xml`, with Tier 1 translations added before broad release. See `../docs/translations.md`.
+User-facing Compose strings live in Android string resources under `app/src/main/res/values/strings.xml`, with Tier 1 translation files for German, Dutch, French, Spanish, Italian, Brazilian Portuguese, and Polish. See `../docs/translations.md`.
 
 ## Stream Configuration 🎬
 

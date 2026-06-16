@@ -5,7 +5,9 @@
 - Started a TV-first receiver dashboard with summary cards, primary PiP controls, launcher controls, remote receiver settings, and diagnostics separated from everyday actions 📺
 - Moved verbose endpoint, discovery, and compatibility details into a dedicated diagnostics section 🧰
 - Improved D-pad startup focus by keeping `Play Test Video` in the first action group 🎮
-- Marked manual remote receiver token entry as an advanced fallback while Stage 10 designs easier Home Assistant-assisted setup 🔐
+- Added Home Assistant-assisted remote receiver config sync and made manual URL/token entry an advanced fallback 🔐
+- Hid manual remote receiver fields behind an advanced setup action so normal TV setup stays cleaner 📺
+- Added Tier 1 website locale content modules with browser language detection and manual language override 🌍
 
 ## 0.28.0 - Phase 9 Documentation And FAQ Polish 📚
 
