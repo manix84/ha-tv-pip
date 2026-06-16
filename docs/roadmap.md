@@ -607,7 +607,7 @@ HA TV PiP should not become a hosted cloud relay. Remote mode uses the user's ow
 
 ---
 
-# Phase 10: App Store / Distribution Polish
+# Phase 10: App Store / Distribution Polish 🚧
 
 ## Goal
 
@@ -617,19 +617,20 @@ This is also the main translation implementation pass. Tier 1 languages should b
 
 ## Android TV App
 
-- Redesign the main screen as a TV-first receiver dashboard.
-- Separate primary PiP controls, launcher controls, remote receiver settings, and diagnostics.
-- Make D-pad focus and scrolling predictable on 1080p and 4K TVs.
-- Keep verbose endpoint, discovery, and compatibility data in a diagnostics area instead of the top of the screen.
-- Prepare Play Store release.
-- Add app icon and banner.
-- Add onboarding, pairing, and troubleshooting UX.
-- Simplify remote receiver setup so normal users do not need to type long URLs or long-lived tokens with a TV remote.
-- Treat manual remote receiver token entry as an advanced fallback, not the target setup UX.
-- Move user-facing strings into Android resources.
-- Add Tier 1 Android translations.
-- Add privacy-friendly messaging.
-- Add crash-safe logging.
+- ✅ Redesign the main screen as a TV-first receiver dashboard.
+- ✅ Separate primary PiP controls, launcher controls, remote receiver settings, and diagnostics.
+- ✅ Make D-pad focus and scrolling more predictable for TV remotes.
+- ✅ Keep verbose endpoint, discovery, and compatibility data in a diagnostics area instead of the top of the screen.
+- ⏳ Prepare Play Store release.
+- ✅ Add app icon and banner.
+- ✅ Add onboarding, pairing, and troubleshooting UX.
+- ✅ Simplify remote receiver setup so normal users do not need to type long URLs or long-lived tokens with a TV remote.
+- ✅ Treat manual remote receiver token entry as an advanced fallback, not the target setup UX.
+- ✅ Move user-facing strings into Android resources.
+- ✅ Add Tier 1 Android translations.
+- ✅ Add privacy-friendly messaging.
+- ✅ Add crash-safe logging.
+- ✅ Completed manual Android TV D-pad testing on the receiver dashboard.
 
 ## Initial Android UX Polish
 
@@ -643,6 +644,10 @@ This is also the main translation implementation pass. Tier 1 languages should b
 - Player screen, playback status, notification, compatibility, overlay, setup, and troubleshooting strings now use Android resources.
 - The dashboard now includes lightweight setup guidance and troubleshooting sections for common discovery, remote receiver, and hidden launcher recovery paths.
 - Stage 10 uses dashboard sections for onboarding, pairing, and troubleshooting instead of separate screens. This keeps the TV receiver app shallow, D-pad friendly, and focused on receiver controls. Separate screens remain a future option if the setup flow becomes too large for the dashboard.
+- Section cards now use a TV-friendly glass treatment with clearer focus states.
+- All dashboard sections are focusable containers, with D-pad navigation moving from section to controls and back in a predictable order.
+- `Reset Pairing` and `Clear Remote` now show confirmation warnings before taking destructive action.
+- Active pairing requests now show a TV-side pairing popup with the six-digit code while keeping the code visible in the Pairing dashboard section as a fallback.
 
 ## Remote Setup Direction
 
@@ -660,15 +665,15 @@ Preferred direction:
 
 ## Home Assistant Integration
 
-- Prepare for HACS distribution.
-- Work toward official Home Assistant integration readiness.
-- Add documentation.
-- Add example automations.
-- Add diagnostics.
-- Expand Home Assistant translation files.
-- Add Tier 1 Home Assistant translations.
-- Add issue templates.
-- Add release notes.
+- ⏳ Prepare for HACS distribution.
+- ⏳ Work toward official Home Assistant integration readiness.
+- ✅ Add documentation.
+- ✅ Add example automations.
+- ✅ Add diagnostics.
+- ✅ Expand Home Assistant translation files.
+- ✅ Add Tier 1 Home Assistant translations.
+- ✅ Add issue templates.
+- ✅ Add release notes.
 
 ## Translation Progress
 
@@ -684,9 +689,9 @@ Preferred direction:
 
 ## Success Criteria
 
-- User can install the app from the Android TV Play Store.
-- User can install the integration through HACS.
-- Setup is understandable without reading source code.
+- ⏳ User can install the app from the Android TV Play Store.
+- ⏳ User can install the integration through HACS.
+- ✅ Setup is understandable without reading source code.
 
 ## Official Home Assistant Track
 

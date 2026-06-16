@@ -34,7 +34,7 @@ Stage 8 is complete in `0.26.0`. Each paired receiver now exposes Home Assistant
 
 Phase 9 is complete in `0.27.0`. Remote receiver mode lets a TV connect outbound to the user's own Home Assistant WebSocket API, so Home Assistant can send PiP commands to an external TV without router port forwarding. This is not a HA TV PiP cloud service; the Home Assistant integration remains local-first and declares `iot_class: local_push`.
 
-Phase 10 is in progress. The Android TV app has moved from a developer-style status page to a TV-first receiver dashboard with clear PiP controls, launcher controls, remote receiver status, and diagnostics kept out of the way of everyday actions. Remote receiver setup now prefers Home Assistant-assisted config sync, with manual URL/token entry kept as an advanced TV-side fallback. Onboarding, pairing, and troubleshooting are currently implemented as dashboard sections rather than separate screens to keep the TV app shallow and D-pad friendly.
+Phase 10 is in progress. The Android TV app has moved from a developer-style status page to a TV-first receiver dashboard with clear PiP controls, launcher controls, remote receiver status, and diagnostics kept out of the way of everyday actions. Remote receiver setup now prefers Home Assistant-assisted config sync, with manual URL/token entry kept as an advanced TV-side fallback. Onboarding, pairing, and troubleshooting are currently implemented as dashboard sections rather than separate screens to keep the TV app shallow and D-pad friendly. The remaining Phase 10 work is distribution prep for HACS and Play Store release materials.
 
 ## Monorepo Layout 🧱
 
@@ -128,6 +128,7 @@ curl -X POST http://ANDROID_TV_IP:8765/close \
 ```
 
 The receiver requires pairing before `/show` and `/close`. Start pairing from Home Assistant or with `POST /pair/start`; the pairing code is shown on the TV only.
+During an active pairing request, the TV app also shows a pairing popup with the six-digit code. If that popup is dismissed, the code remains visible in the Pairing dashboard section until the pairing session expires or completes.
 
 ## Local Discovery MVP 🔎
 

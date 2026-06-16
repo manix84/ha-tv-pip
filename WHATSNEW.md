@@ -10,6 +10,10 @@
 - Added Tier 1 website locale content modules with browser language detection and manual language override 🌍
 - Documented the Stage 10 decision to keep onboarding, pairing, and troubleshooting as dashboard sections instead of separate TV screens 🧭
 - Added a TV-side pairing popup that prominently shows the active Home Assistant pairing code 📺
+- Added glass-style dashboard cards with stronger TV focus treatment ✨
+- Made dashboard sections selectable containers so D-pad navigation can move from section to controls and back more predictably 🎮
+- Added confirmation warnings before `Reset Pairing` and `Clear Remote` run destructive actions ⚠️
+- Completed manual Android TV D-pad testing on the receiver dashboard ✅
 
 ## 0.28.0 - Phase 9 Documentation And FAQ Polish 📚
 

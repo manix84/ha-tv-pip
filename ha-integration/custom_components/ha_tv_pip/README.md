@@ -8,9 +8,17 @@ Stage 3 added Zeroconf discovery support 🔎. Home Assistant can match HA TV Pi
 
 Stage 4 added pairing 🤝 and request authentication 🔐. Setup starts pairing, asks for the six-digit code shown on the TV, stores the returned token, and keeps the token out of logs.
 
-Stage 5 adds the first control service: `ha_tv_pip.show_camera` 📹 for displaying camera feeds on paired Android TV or Google TV devices.
+Stage 5 added the first control service: `ha_tv_pip.show_camera` 📹 for displaying camera feeds on paired Android TV or Google TV devices.
 
-Distribution goals are HACS first, then long-term official Home Assistant integration readiness once the integration is mature enough.
+Stage 6 and Stage 7 added snapshot support, snapshot previews, and stream type options 🖼️.
+
+Stage 8 added receiver entities, PiP controls, launcher controls, and diagnostics 🧰.
+
+Phase 9 added optional remote receiver transport over the user's own Home Assistant WebSocket API 🌍.
+
+Phase 10 adds distribution polish, Tier 1 translations, clearer docs, and preparation for HACS and longer-term official Home Assistant readiness ✨.
+
+Distribution goals are HACS first, then long-term official Home Assistant integration readiness once the integration is mature enough. HACS packaging prep remains part of the remaining Phase 10 work.
 
 ## Brand Images 🎨
 

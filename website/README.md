@@ -4,6 +4,8 @@
 
 Promotional Vite website for HA TV PiP.
 
+The site currently acts as the project landing page, documentation entry point, FAQ, roadmap preview, and translation-aware promotional surface for Phase 10 polish.
+
 ## Tech Stack 🛠️
 
 - Vite

@@ -14,7 +14,7 @@ Stage 8 adds receiver management support so Home Assistant can reopen the receiv
 
 Phase 9 adds optional remote receiver mode. The app can connect outbound to the user's own Home Assistant WebSocket API so external TVs can receive PiP commands without router port forwarding.
 
-Phase 10 continues the Android TV polish pass. The main screen is now a TV-first dashboard with primary PiP controls near the top, receiver status cards, launcher controls, remote receiver status, and lower-priority diagnostics separated from everyday actions. Onboarding, pairing, and troubleshooting are intentionally handled as dashboard sections for now instead of separate screens, keeping the app simple to navigate with a TV remote.
+Phase 10 continues the Android TV polish pass. The main screen is now a TV-first dashboard with primary PiP controls near the top, receiver status cards, launcher controls, remote receiver status, and lower-priority diagnostics separated from everyday actions. Onboarding, pairing, and troubleshooting are intentionally handled as dashboard sections for now instead of separate screens, keeping the app simple to navigate with a TV remote. Active pairing requests also show a prominent TV-side pairing popup.
 
 ## Build 🛠️
 
@@ -70,6 +70,7 @@ During the Phase 10 polish pass, also confirm:
 - D-pad navigation can reach pairing, launcher, remote receiver, and diagnostics controls 🎮
 - Focusing controls no longer drags the screen past important status text 🧪
 - Remote receiver manual URL/token fields stay hidden until advanced setup is opened 🔐
+- `Reset Pairing` and `Clear Remote` show warning confirmations before they make changes ⚠️
 
 ## PiP and Overlay Testing 🪟
 
@@ -184,4 +185,4 @@ The test stream URL is defined in `PlayerActivity.TEST_STREAM_URL`.
 
 ## Future Notes 🚧
 
-This app does not yet implement WebRTC or polished remote onboarding.
+This app does not yet implement WebRTC, Play Store distribution, or production signing automation.
