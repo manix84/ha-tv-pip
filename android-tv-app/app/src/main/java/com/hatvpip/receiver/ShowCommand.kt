@@ -108,7 +108,7 @@ data class NotificationStyle(
     val titleSize: Int = 24,
     val messageColor: String = "#fbf5f5",
     val messageSize: Int = 18,
-    val backgroundColor: String = "#0f0e0e",
+    val backgroundColor: String = "#B30F0E0E",
     val width: Int? = null,
     val height: Int? = null
 ) {
@@ -120,7 +120,7 @@ data class NotificationStyle(
                 titleSize = json.optInt("titleSize", 24).coerceIn(10, 48),
                 messageColor = json.optString("messageColor", "#fbf5f5"),
                 messageSize = json.optInt("messageSize", 18).coerceIn(10, 40),
-                backgroundColor = json.optString("backgroundColor", "#0f0e0e"),
+                backgroundColor = json.optString("backgroundColor", "#B30F0E0E"),
                 width = json.optionalDimension("width", 240, 1600),
                 height = json.optionalDimension("height", 120, 900)
             )

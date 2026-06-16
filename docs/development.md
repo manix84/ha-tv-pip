@@ -875,7 +875,7 @@ Future enhanced notifications should extend this model with optional presentatio
   "message": "",
   "messageColor": "#fbf5f5",
   "messageSize": 14,
-  "backgroundColor": "#0f0e0e"
+  "backgroundColor": "#B30F0E0E"
 }
 ```
 

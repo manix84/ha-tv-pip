@@ -10,6 +10,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
@@ -25,7 +26,7 @@ import java.net.URL
 
 class OverlayPlayerService : Service() {
     private lateinit var windowManager: WindowManager
-    private var overlayView: FrameLayout? = null
+    private var overlayView: ViewGroup? = null
     private var player: ExoPlayer? = null
     private var errorTextView: TextView? = null
     private var title: String = ""
@@ -60,7 +61,7 @@ class OverlayPlayerService : Service() {
                     titleSize = intent?.getIntExtra(PlayerActivity.EXTRA_TITLE_SIZE, 24)?.coerceIn(10, 48) ?: 24,
                     messageColor = intent?.getStringExtra(PlayerActivity.EXTRA_MESSAGE_COLOR) ?: "#fbf5f5",
                     messageSize = intent?.getIntExtra(PlayerActivity.EXTRA_MESSAGE_SIZE, 18)?.coerceIn(10, 40) ?: 18,
-                    backgroundColor = intent?.getStringExtra(PlayerActivity.EXTRA_BACKGROUND_COLOR) ?: "#0f0e0e",
+                    backgroundColor = intent?.getStringExtra(PlayerActivity.EXTRA_BACKGROUND_COLOR) ?: DEFAULT_BACKGROUND_COLOR,
                     width = intent?.takeIf {
                         it.hasExtra(PlayerActivity.EXTRA_WIDTH)
                     }?.getIntExtra(PlayerActivity.EXTRA_WIDTH, 0)?.takeIf { it > 0 },
@@ -95,40 +96,34 @@ class OverlayPlayerService : Service() {
             removeOverlay()
         }
 
-        val root = FrameLayout(this).apply {
-            setBackgroundColor(
-                if (streamType == StreamType.Notification) {
-                    Color.TRANSPARENT
-                } else {
-                    Color.BLACK
-                }
-            )
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            background = roundedBackground()
+            // Overlay video uses a texture-backed PlayerView so the outer outline can clip
+            // the whole notification into a single rounded glass container.
+            clipToOutline = true
         }
         if (streamType == StreamType.Notification) {
-            addNotificationView(root)
-        } else if (streamType == StreamType.Snapshot) {
-            addSnapshotView(root, url, updateStateOnLoad = true)
+            addNotificationContent(root, fillHeight = style.height != null)
         } else {
-            addPlayerView(root)
-        }
-        if (streamType != StreamType.Notification && !message.isNullOrBlank()) {
-            addNotificationView(root)
-        }
+            val mediaContainer = FrameLayout(this).apply {
+                setBackgroundColor(Color.BLACK)
+                layoutParams = mediaLayoutParams()
+            }
+            if (streamType == StreamType.Snapshot) {
+                addSnapshotView(mediaContainer, url, updateStateOnLoad = true)
+            } else {
+                addPlayerView(mediaContainer)
+            }
 
-        errorTextView = TextView(this).apply {
-            setTextColor(android.graphics.Color.WHITE)
-            setBackgroundColor(0xCC000000.toInt())
-            textSize = 14f
-            gravity = Gravity.CENTER
-            setPadding(16, 12, 16, 12)
-            visibility = TextView.GONE
-            layoutParams = FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                Gravity.BOTTOM
-            )
+            errorTextView = buildErrorTextView()
+            mediaContainer.addView(errorTextView)
+            root.addView(mediaContainer)
+
+            if (!message.isNullOrBlank()) {
+                addNotificationContent(root, fillHeight = false)
+            }
         }
-        root.addView(errorTextView)
 
         val params = WindowManager.LayoutParams(
             overlayWidth(),
@@ -162,22 +157,38 @@ class OverlayPlayerService : Service() {
         }
     }
 
-    private fun addNotificationView(root: FrameLayout) {
-        val card = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            background = GradientDrawable().apply {
-                setColor(parseColorOrDefault(style.backgroundColor, Color.rgb(15, 14, 14)))
-                cornerRadius = NOTIFICATION_CORNER_RADIUS_PX
-            }
-            setPadding(24, 20, 24, 20)
+    private fun roundedBackground(): GradientDrawable =
+        GradientDrawable().apply {
+            setColor(parseColorOrDefault(style.backgroundColor, DEFAULT_BACKGROUND_COLOR_INT))
+            cornerRadius = NOTIFICATION_CORNER_RADIUS_PX
+        }
+
+    private fun buildErrorTextView(): TextView =
+        TextView(this).apply {
+            setTextColor(Color.WHITE)
+            setBackgroundColor(0xCC000000.toInt())
+            textSize = 14f
+            gravity = Gravity.CENTER
+            setPadding(16, 12, 16, 12)
+            visibility = TextView.GONE
             layoutParams = FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                if (streamType == StreamType.Notification && style.height != null) {
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                Gravity.BOTTOM
+            )
+        }
+
+    private fun addNotificationContent(root: LinearLayout, fillHeight: Boolean) {
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(24, 20, 24, 20)
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                if (fillHeight) {
                     ViewGroup.LayoutParams.MATCH_PARENT
                 } else {
                     ViewGroup.LayoutParams.WRAP_CONTENT
-                },
-                notificationCardGravity()
+                }
             )
         }
         TextView(this).apply {
@@ -186,7 +197,7 @@ class OverlayPlayerService : Service() {
             textSize = style.titleSize.toFloat()
             typeface = android.graphics.Typeface.DEFAULT_BOLD
             includeFontPadding = false
-            card.addView(this)
+            content.addView(this)
         }
         message?.takeIf { it.isNotBlank() }?.let { body ->
             TextView(this).apply {
@@ -195,10 +206,10 @@ class OverlayPlayerService : Service() {
                 textSize = style.messageSize.toFloat()
                 setPadding(0, 10, 0, 0)
                 includeFontPadding = false
-                card.addView(this)
+                content.addView(this)
             }
         }
-        root.addView(card)
+        root.addView(content)
     }
 
     private fun addPlayerView(root: FrameLayout) {
@@ -270,7 +281,9 @@ class OverlayPlayerService : Service() {
         }
         player = overlayPlayer
 
-        playerView = PlayerView(this).apply {
+        playerView = LayoutInflater.from(this)
+            .inflate(R.layout.overlay_player_view, root, false) as PlayerView
+        playerView.apply {
             layoutParams = FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
@@ -387,16 +400,24 @@ class OverlayPlayerService : Service() {
     private fun overlayHeight(): Int =
         style.height ?: if (streamType == StreamType.Notification) {
             WindowManager.LayoutParams.WRAP_CONTENT
+        } else if (!message.isNullOrBlank()) {
+            WindowManager.LayoutParams.WRAP_CONTENT
         } else {
             OVERLAY_HEIGHT_PX
         }
 
-    private fun notificationCardGravity(): Int =
-        when (style.position) {
-            NotificationPosition.TopRight,
-            NotificationPosition.TopLeft -> Gravity.TOP
-            NotificationPosition.BottomRight,
-            NotificationPosition.BottomLeft -> Gravity.BOTTOM
+    private fun mediaLayoutParams(): LinearLayout.LayoutParams =
+        if (!message.isNullOrBlank() && style.height == null) {
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                OVERLAY_HEIGHT_PX
+            )
+        } else {
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
         }
 
     companion object {
@@ -407,6 +428,8 @@ class OverlayPlayerService : Service() {
         private const val NOTIFICATION_WIDTH_PX = 512
         private const val NOTIFICATION_CORNER_RADIUS_PX = 18f
         private const val OVERLAY_MARGIN_PX = 48
+        private const val DEFAULT_BACKGROUND_COLOR = "#B30F0E0E"
+        private val DEFAULT_BACKGROUND_COLOR_INT = 0xB30F0E0E.toInt()
     }
 }
 

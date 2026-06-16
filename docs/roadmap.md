@@ -827,7 +827,7 @@ Current optional fields:
   "titleSize": 24,
   "messageColor": "#fbf5f5",
   "messageSize": 18,
-  "backgroundColor": "#0f0e0e",
+  "backgroundColor": "#B30F0E0E",
   "width": 512,
   "height": 240,
   "durationSeconds": 15,
@@ -840,7 +840,7 @@ Current optional fields:
 - `position` controls the popup corner: `top_right`, `top_left`, `bottom_right`, or `bottom_left`.
 - `title` is the larger heading text.
 - `message` is the smaller body text.
-- `titleColor`, `messageColor`, and `backgroundColor` should accept validated hex colors only.
+- `titleColor`, `messageColor`, and `backgroundColor` should accept validated hex or alpha-hex colors.
 - `titleSize` and `messageSize` should be clamped to TV-readable ranges.
 - `width` and `height` are optional pixel dimensions. Text-only notifications default to `512px` wide and content height; media popups default to `640x360`.
 - These options can be reused by camera/snapshot overlays when `message` is provided.
@@ -863,7 +863,7 @@ action:
       message: Someone is at the door
       duration_seconds: 15
       position: top_right
-      background_color: "#0f0e0e"
+      background_color: "#B30F0E0E"
       title_color: "#50BFF2"
       message_color: "#fbf5f5"
 ```

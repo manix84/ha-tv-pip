@@ -68,7 +68,7 @@ class ShowCommandTest {
               "titleSize": 26,
               "messageColor": "#fbf5f5",
               "messageSize": 18,
-              "backgroundColor": "#0f0e0e",
+              "backgroundColor": "#B30F0E0E",
               "width": 512,
               "height": 240,
               "durationSeconds": 15,
@@ -86,7 +86,7 @@ class ShowCommandTest {
         assertEquals(26, command.style.titleSize)
         assertEquals("#fbf5f5", command.style.messageColor)
         assertEquals(18, command.style.messageSize)
-        assertEquals("#0f0e0e", command.style.backgroundColor)
+        assertEquals("#B30F0E0E", command.style.backgroundColor)
         assertEquals(512, command.style.width)
         assertEquals(240, command.style.height)
     }
@@ -103,7 +103,7 @@ class ShowCommandTest {
               "position": "bottom_left",
               "titleColor": "#50BFF2",
               "messageColor": "#fbf5f5",
-              "backgroundColor": "#0f0e0e",
+              "backgroundColor": "#B30F0E0E",
               "width": 720,
               "height": 360
             }
@@ -115,7 +115,7 @@ class ShowCommandTest {
         assertEquals(NotificationPosition.BottomLeft, command.style.position)
         assertEquals("#50BFF2", command.style.titleColor)
         assertEquals("#fbf5f5", command.style.messageColor)
-        assertEquals("#0f0e0e", command.style.backgroundColor)
+        assertEquals("#B30F0E0E", command.style.backgroundColor)
         assertEquals(720, command.style.width)
         assertEquals(360, command.style.height)
     }

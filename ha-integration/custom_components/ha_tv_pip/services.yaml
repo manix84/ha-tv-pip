@@ -108,11 +108,11 @@ show_camera:
       name: Message size
       description: Message text size.
     background_color:
-      default: "#0f0e0e"
+      default: "#B30F0E0E"
       selector:
         text:
       name: Background color
-      description: Hex color for the optional text overlay background.
+      description: Hex or alpha-hex color for the optional text overlay background.
     width:
       required: false
       selector:
@@ -220,11 +220,11 @@ show_snapshot:
       name: Message size
       description: Message text size.
     background_color:
-      default: "#0f0e0e"
+      default: "#B30F0E0E"
       selector:
         text:
       name: Background color
-      description: Hex color for the optional text overlay background.
+      description: Hex or alpha-hex color for the optional text overlay background.
     width:
       required: false
       selector:
@@ -325,11 +325,11 @@ show_notification:
       name: Message size
       description: Message text size.
     background_color:
-      default: "#0f0e0e"
+      default: "#B30F0E0E"
       selector:
         text:
       name: Background color
-      description: Hex color for the notification background.
+      description: Hex or alpha-hex color for the notification background. Defaults to a translucent glass-style background.
     width:
       required: false
       selector:

@@ -380,7 +380,7 @@ private fun Intent.toShowCommand(): ShowCommand =
             titleSize = getIntExtra(PlayerActivity.EXTRA_TITLE_SIZE, 24).coerceIn(10, 48),
             messageColor = getStringExtra(PlayerActivity.EXTRA_MESSAGE_COLOR) ?: "#fbf5f5",
             messageSize = getIntExtra(PlayerActivity.EXTRA_MESSAGE_SIZE, 18).coerceIn(10, 40),
-            backgroundColor = getStringExtra(PlayerActivity.EXTRA_BACKGROUND_COLOR) ?: "#0f0e0e",
+            backgroundColor = getStringExtra(PlayerActivity.EXTRA_BACKGROUND_COLOR) ?: "#B30F0E0E",
             width = if (hasExtra(PlayerActivity.EXTRA_WIDTH)) {
                 getIntExtra(PlayerActivity.EXTRA_WIDTH, 0).takeIf { it > 0 }
             } else {

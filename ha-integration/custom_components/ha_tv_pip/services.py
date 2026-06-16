@@ -58,8 +58,8 @@ ATTR_TITLE_COLOR = "title_color"
 ATTR_TITLE_SIZE = "title_size"
 ATTR_WIDTH = "width"
 CAMERA_DOMAIN = "camera"
-COLOR_PATTERN = re.compile(r"^#[0-9a-fA-F]{6}$")
-DEFAULT_NOTIFICATION_BACKGROUND_COLOR = "#0f0e0e"
+COLOR_PATTERN = re.compile(r"^#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$")
+DEFAULT_NOTIFICATION_BACKGROUND_COLOR = "#B30F0E0E"
 DEFAULT_NOTIFICATION_MESSAGE_COLOR = "#fbf5f5"
 DEFAULT_NOTIFICATION_TITLE = "Home Assistant"
 DEFAULT_NOTIFICATION_TITLE_COLOR = "#50BFF2"
@@ -76,7 +76,9 @@ ERROR_MESSAGES = {
     ),
     "invalid_camera_entity": "The selected entity is not a camera.",
     "invalid_duration": "Duration must be at least 1 second.",
-    "invalid_color": "Notification colors must be six-digit hex values.",
+    "invalid_color": (
+        "Notification colors must be six-digit or eight-digit hex values."
+    ),
     "invalid_notification_size": (
         "Notification text sizes are outside the supported range."
     ),

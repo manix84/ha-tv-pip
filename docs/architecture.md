@@ -287,7 +287,7 @@ Future enhanced-notification services should support optional presentation field
   "message": "",
   "messageColor": "#fbf5f5",
   "messageSize": 14,
-  "backgroundColor": "#0f0e0e"
+  "backgroundColor": "#B30F0E0E"
 }
 ```
 

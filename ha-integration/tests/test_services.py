@@ -174,7 +174,7 @@ def test_request_from_call_accepts_overlay_message_style() -> None:
                 ATTR_TITLE_SIZE: 28,
                 ATTR_MESSAGE_COLOR: "#fbf5f5",
                 ATTR_MESSAGE_SIZE: 20,
-                ATTR_BACKGROUND_COLOR: "#0f0e0e",
+                ATTR_BACKGROUND_COLOR: "#B30F0E0E",
                 ATTR_WIDTH: 720,
                 ATTR_HEIGHT: 360,
             }
@@ -187,7 +187,7 @@ def test_request_from_call_accepts_overlay_message_style() -> None:
     assert request.title_size == 28
     assert request.message_color == "#fbf5f5"
     assert request.message_size == 20
-    assert request.background_color == "#0f0e0e"
+    assert request.background_color == "#B30F0E0E"
     assert request.width == 720
     assert request.height == 360
 
@@ -232,7 +232,7 @@ def test_notification_request_from_call_accepts_style_defaults_and_target() -> N
                 ATTR_TITLE_SIZE: 26,
                 ATTR_MESSAGE_COLOR: "#fbf5f5",
                 ATTR_MESSAGE_SIZE: 18,
-                ATTR_BACKGROUND_COLOR: "#0f0e0e",
+                ATTR_BACKGROUND_COLOR: "#B30F0E0E",
                 ATTR_WIDTH: 512,
                 ATTR_HEIGHT: 240,
             },
@@ -249,7 +249,7 @@ def test_notification_request_from_call_accepts_style_defaults_and_target() -> N
     assert request.title_size == 26
     assert request.message_color == "#fbf5f5"
     assert request.message_size == 18
-    assert request.background_color == "#0f0e0e"
+    assert request.background_color == "#B30F0E0E"
     assert request.width == 512
     assert request.height == 240
     assert request.device_ids == ("device-1",)

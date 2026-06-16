@@ -26,7 +26,7 @@ action:
       height: 405
 ```
 
-Replace `receiver_device_id` and `camera_entity` with values from your Home Assistant instance. `stream_type` defaults to `auto`; use `hls` to force video or `snapshot` to force a still image through the camera service. `snapshot_camera_entity` is optional and defaults to the main camera entity. Optional notification fields such as `message`, `position`, colors, `width`, and `height` add a rounded text card over the video or snapshot popup and can resize the receiver overlay. For cameras with multiple stream profiles, use a TV-compatible H.264 or lower-resolution stream where possible; high-resolution main streams can exceed what Android TV devices can decode directly.
+Replace `receiver_device_id` and `camera_entity` with values from your Home Assistant instance. `stream_type` defaults to `auto`; use `hls` to force video or `snapshot` to force a still image through the camera service. `snapshot_camera_entity` is optional and defaults to the main camera entity. Optional notification fields such as `message`, `position`, colors, `width`, and `height` add text below the video or snapshot inside the same rounded glass popup and can resize the receiver overlay. For cameras with multiple stream profiles, use a TV-compatible H.264 or lower-resolution stream where possible; high-resolution main streams can exceed what Android TV devices can decode directly.
 
 Snapshot alert example:
 
@@ -65,7 +65,7 @@ action:
       title_size: 24
       message_color: "#fbf5f5"
       message_size: 18
-      background_color: "#0f0e0e"
+      background_color: "#B30F0E0E"
       width: 512
       height: 240
 ```
