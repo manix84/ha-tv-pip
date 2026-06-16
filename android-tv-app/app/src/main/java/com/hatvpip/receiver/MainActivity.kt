@@ -52,8 +52,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
@@ -75,6 +76,7 @@ class MainActivity : ComponentActivity() {
             discoverySnapshot = DiscoveryRuntimeState.snapshot()
             pairingSnapshot = PairingState.snapshot(this@MainActivity)
             launcherVisible = LauncherVisibility.isVisible(this@MainActivity)
+            remoteConfig = RemoteConnectionSettings.load(this@MainActivity)
             remoteSnapshot = RemoteConnectionRuntimeState.snapshot()
             controlSnapshotHandler.postDelayed(this, CONTROL_STATUS_REFRESH_MS)
         }
@@ -268,6 +270,7 @@ private fun MainScreen(
         ) {
             ReceiverHeader(
                 pairingSnapshot = pairingSnapshot,
+                remoteConfig = remoteConfig,
                 remoteSnapshot = remoteSnapshot,
                 launcherVisible = launcherVisible
             )
@@ -285,6 +288,7 @@ private fun MainScreen(
                 controlSnapshot = controlSnapshot,
                 discoverySnapshot = discoverySnapshot,
                 pairingSnapshot = pairingSnapshot,
+                remoteConfig = remoteConfig,
                 remoteSnapshot = remoteSnapshot
             )
 
@@ -318,6 +322,7 @@ private fun MainScreen(
 @Composable
 private fun ReceiverHeader(
     pairingSnapshot: PairingSnapshot?,
+    remoteConfig: RemoteConnectionConfig,
     remoteSnapshot: RemoteConnectionSnapshot,
     launcherVisible: Boolean
 ) {
@@ -332,7 +337,7 @@ private fun ReceiverHeader(
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = "Receiver is ${pairingSnapshot?.state?.wireName ?: "unknown"} | Remote ${remoteSnapshot.status.wireName} | Launcher ${if (launcherVisible) "visible" else "hidden"}",
+            text = "Receiver is ${pairingSnapshot?.state?.wireName ?: "unknown"} | Remote ${remoteHeaderStatus(remoteConfig, remoteSnapshot)} | Launcher ${if (launcherVisible) "visible" else "hidden"}",
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = 17.sp
         )
@@ -382,6 +387,7 @@ private fun StatusOverview(
     controlSnapshot: ControlServerSnapshot,
     discoverySnapshot: DiscoverySnapshot,
     pairingSnapshot: PairingSnapshot?,
+    remoteConfig: RemoteConnectionConfig,
     remoteSnapshot: RemoteConnectionSnapshot
 ) {
     Column(
@@ -413,11 +419,38 @@ private fun StatusOverview(
             )
             SummaryCard(
                 title = "Remote",
-                value = remoteSnapshot.status.wireName,
-                detail = remoteSnapshot.lastError ?: "External receiver"
+                value = remoteSummaryValue(remoteConfig, remoteSnapshot),
+                detail = remoteSummaryDetail(remoteConfig, remoteSnapshot)
             )
         }
     }
+}
+
+private fun remoteHeaderStatus(
+    remoteConfig: RemoteConnectionConfig,
+    remoteSnapshot: RemoteConnectionSnapshot
+): String = when {
+    remoteSnapshot.status == RemoteConnectionStatus.Connected -> "connected"
+    remoteConfig.enabled -> "configured (${remoteSnapshot.status.wireName})"
+    else -> "not configured"
+}
+
+private fun remoteSummaryValue(
+    remoteConfig: RemoteConnectionConfig,
+    remoteSnapshot: RemoteConnectionSnapshot
+): String = when {
+    remoteSnapshot.status == RemoteConnectionStatus.Connected -> "Connected"
+    remoteConfig.enabled -> "Configured"
+    else -> "Not configured"
+}
+
+private fun remoteSummaryDetail(
+    remoteConfig: RemoteConnectionConfig,
+    remoteSnapshot: RemoteConnectionSnapshot
+): String = when {
+    remoteSnapshot.lastError != null -> remoteSnapshot.lastError
+    remoteConfig.enabled -> "Remote setup saved"
+    else -> "Use HA to sync setup"
 }
 
 @Composable
@@ -522,6 +555,10 @@ private fun RemoteConnectionPanel(
     }
 
     SectionCard(title = "Remote receiver") {
+        RemoteReceiverStatusBanner(
+            remoteConfig = remoteConfig,
+            remoteSnapshot = remoteSnapshot
+        )
         Text(
             text = "State: ${remoteSnapshot.status.wireName}",
             color = MaterialTheme.colorScheme.onSurface,
@@ -539,6 +576,16 @@ private fun RemoteConnectionPanel(
             color = MaterialTheme.colorScheme.onSurface,
             fontSize = 15.sp
         )
+        if (remoteConfig.enabled) {
+            RemoteConfigDetailRow(
+                label = "Home Assistant URL",
+                value = remoteConfig.homeAssistantUrl
+            )
+            RemoteConfigDetailRow(
+                label = "Access token",
+                value = "Saved"
+            )
+        }
         OutlinedTextField(
             value = homeAssistantUrl,
             onValueChange = { homeAssistantUrl = it },
@@ -577,6 +624,112 @@ private fun RemoteConnectionPanel(
                 minWidth = 190
             )
         }
+    }
+}
+
+@Composable
+private fun RemoteReceiverStatusBanner(
+    remoteConfig: RemoteConnectionConfig,
+    remoteSnapshot: RemoteConnectionSnapshot
+) {
+    val colors = MaterialTheme.colorScheme
+    val provisioned = remoteConfig.enabled
+    val connected = remoteSnapshot.status == RemoteConnectionStatus.Connected
+    val containerColor = when {
+        connected -> colors.primaryContainer
+        provisioned -> colors.secondaryContainer
+        else -> colors.surfaceVariant
+    }
+    val contentColor = when {
+        connected -> colors.onPrimaryContainer
+        provisioned -> colors.onSecondaryContainer
+        else -> colors.onSurfaceVariant
+    }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = containerColor.copy(alpha = 0.92f)),
+        border = BorderStroke(1.dp, contentColor.copy(alpha = 0.28f))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = if (provisioned) {
+                        "Remote receiver details are saved"
+                    } else {
+                        "Remote receiver details are not configured"
+                    },
+                    color = contentColor,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = if (provisioned) {
+                        "This TV can connect outbound to Home Assistant for external PiP commands."
+                    } else {
+                        "Use Home Assistant to sync the remote setup, or fill in the fields below."
+                    },
+                    color = contentColor,
+                    fontSize = 14.sp
+                )
+            }
+            StatusPill(
+                text = remoteSummaryValue(remoteConfig, remoteSnapshot),
+                containerColor = contentColor.copy(alpha = 0.16f),
+                contentColor = contentColor
+            )
+        }
+    }
+}
+
+@Composable
+private fun RemoteConfigDetailRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier.width(190.dp),
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = value,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontSize = 14.sp
+        )
+    }
+}
+
+@Composable
+private fun StatusPill(
+    text: String,
+    containerColor: Color,
+    contentColor: Color
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = containerColor),
+        border = BorderStroke(1.dp, contentColor.copy(alpha = 0.32f))
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
+            color = contentColor,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 

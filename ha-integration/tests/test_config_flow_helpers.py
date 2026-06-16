@@ -2,10 +2,13 @@
 
 # ruff: noqa: E402, I001
 
+import asyncio
 import sys
 import types
 from dataclasses import dataclass
 from typing import Any
+
+import pytest
 
 homeassistant = types.ModuleType("homeassistant")
 config_entries = types.ModuleType("homeassistant.config_entries")
@@ -18,7 +21,13 @@ class FakeConfigFlow:
 
 
 class FakeOptionsFlow:
-    pass
+    config_entry: Any
+
+    def async_show_form(self, **kwargs: Any) -> dict[str, Any]:
+        return {"type": "form", **kwargs}
+
+    def async_create_entry(self, **kwargs: Any) -> dict[str, Any]:
+        return {"type": "create_entry", **kwargs}
 
 
 config_entries.ConfigFlow = FakeConfigFlow  # type: ignore[attr-defined]
@@ -32,11 +41,14 @@ sys.modules.setdefault("homeassistant.config_entries", config_entries)
 sys.modules.setdefault("voluptuous", voluptuous)
 
 from custom_components.ha_tv_pip.config_flow import (  # noqa: E402
+    ConfigFlow,
+    ReceiverOptionsFlow,
     _create_receiver_entry,
     _confirmed_receiver_name,
     _manual_port,
     _receiver_from_user_input,
     _receiver_from_zeroconf,
+    async_get_options_flow,
 )
 from custom_components.ha_tv_pip.discovery import ReceiverDiscovery
 
@@ -130,3 +142,32 @@ def test_create_receiver_entry_stores_pairing_token_when_present() -> None:
     assert entry["title"] == "Nursery TV"
     assert entry["data"]["pairing"] == "paired"
     assert entry["data"]["token"] == "secret-token"
+
+
+def test_options_flow_factory_is_exposed_at_module_and_class_level() -> None:
+    entry = object()
+    module_flow = async_get_options_flow(entry)
+    class_flow = ConfigFlow.async_get_options_flow(entry)
+
+    assert isinstance(module_flow, ReceiverOptionsFlow)
+    assert isinstance(class_flow, ReceiverOptionsFlow)
+
+
+def test_options_flow_init_step_returns_remote_setup_form(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    flow = ReceiverOptionsFlow()
+    flow.hass = object()
+    flow.config_entry = types.SimpleNamespace(options={})
+    monkeypatch.setattr(
+        "custom_components.ha_tv_pip.config_flow.suggested_remote_home_assistant_url",
+        lambda hass: "https://example.ui.nabu.casa",
+    )
+
+    result = asyncio.run(flow.async_step_init())
+
+    assert result["type"] == "form"
+    assert result["step_id"] == "init"
+    assert result["description_placeholders"] == {
+        "suggested_url": "https://example.ui.nabu.casa"
+    }

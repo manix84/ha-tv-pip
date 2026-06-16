@@ -14,6 +14,7 @@ from custom_components.ha_tv_pip.const import (
 from custom_components.ha_tv_pip.remote_setup import (
     async_sync_remote_setup,
     async_sync_remote_setup_values,
+    has_remote_setup_options,
     resolved_remote_setup,
 )
 
@@ -53,6 +54,16 @@ def test_resolved_remote_setup_falls_back_to_suggested_url(monkeypatch) -> None:
 
     assert remote_url == "https://suggested.example.test"
     assert remote_token == "remote-token"
+
+
+def test_has_remote_setup_options_detects_explicit_options() -> None:
+    assert has_remote_setup_options(FakeEntry(data={}, options={})) is False
+    assert (
+        has_remote_setup_options(
+            FakeEntry(data={}, options={CONF_REMOTE_ACCESS_TOKEN: "remote-token"})
+        )
+        is True
+    )
 
 
 def test_async_sync_remote_setup_pushes_receiver_settings(monkeypatch) -> None:  # type: ignore[no-untyped-def]
@@ -103,6 +114,19 @@ def test_async_sync_remote_setup_pushes_receiver_settings(monkeypatch) -> None: 
     }
 
 
+def test_async_sync_remote_setup_noops_without_options() -> None:
+    entry = FakeEntry(
+        data={
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "pairing-token",
+        },
+        options={},
+    )
+
+    assert asyncio.run(async_sync_remote_setup(object(), entry)) is True
+
+
 def test_async_sync_remote_setup_clears_receiver_settings(monkeypatch) -> None:  # type: ignore[no-untyped-def]
     captured: dict[str, Any] = {}
     entry = FakeEntry(
@@ -111,7 +135,6 @@ def test_async_sync_remote_setup_clears_receiver_settings(monkeypatch) -> None: 
             CONF_PORT: 8765,
             CONF_TOKEN: "pairing-token",
         },
-        options={},
     )
 
     async def fake_clear_remote_configuration(
@@ -128,7 +151,10 @@ def test_async_sync_remote_setup_clears_receiver_settings(monkeypatch) -> None: 
         fake_clear_remote_configuration,
     )
 
-    assert asyncio.run(async_sync_remote_setup(object(), entry)) is True
+    assert (
+        asyncio.run(async_sync_remote_setup_values(object(), entry, "", ""))
+        is True
+    )
     assert captured == {
         "host": "10.0.0.236",
         "port": 8765,

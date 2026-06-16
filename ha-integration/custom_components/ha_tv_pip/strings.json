@@ -36,5 +36,21 @@
         "title": "Add HA TV PiP receiver"
       }
     }
+  },
+  "options": {
+    "error": {
+      "cannot_connect": "Could not send the remote receiver settings to the Android TV receiver. Check that the TV is online and paired.",
+      "remote_fields_required": "Enter both the Home Assistant external URL and access token, or leave both blank to disable remote receiver mode."
+    },
+    "step": {
+      "init": {
+        "data": {
+          "remote_access_token": "Home Assistant long-lived access token",
+          "remote_home_assistant_url": "Home Assistant external URL"
+        },
+        "description": "Configure remote receiver mode for this TV. Home Assistant will send these settings to the paired receiver over the local connection. Suggested external URL: {suggested_url}",
+        "title": "Remote receiver setup"
+      }
+    }
   }
 }

@@ -43,6 +43,12 @@ class ZeroconfDiscoveryInfo(Protocol):
     properties: dict[str, Any]
 
 
+def async_get_options_flow(config_entry: Any) -> Any:
+    """Return the options flow for a configured receiver."""
+
+    return ReceiverOptionsFlow()
+
+
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call-arg,misc]
     """Handle a config flow for HA TV PiP."""
 
@@ -54,7 +60,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
     def async_get_options_flow(config_entry: Any) -> Any:
         """Return the options flow for a configured receiver."""
 
-        return ReceiverOptionsFlow(config_entry)
+        return async_get_options_flow(config_entry)
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> Any:
         """Handle manual setup when Zeroconf discovery is unavailable."""
@@ -208,11 +214,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
             errors=errors,
         )
 
+
 class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
     """Options flow for remote receiver provisioning."""
-
-    def __init__(self, config_entry: Any) -> None:
-        self.config_entry = config_entry
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> Any:
         """Configure remote receiver provisioning from Home Assistant."""
@@ -244,13 +248,17 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
                     options[CONF_REMOTE_HOME_ASSISTANT_URL] = remote_url
                     options[CONF_REMOTE_ACCESS_TOKEN] = remote_token
 
-                await async_sync_remote_setup_values(
+                if not await async_sync_remote_setup_values(
                     self.hass,
                     self.config_entry,
                     remote_url,
                     remote_token,
-                )
-                return self.async_create_entry(title="", data=options)
+                ):
+                    errors["base"] = "cannot_connect"
+                    current_url = remote_url or suggested_url
+                    current_token = remote_token
+                else:
+                    return self.async_create_entry(title="", data=options)
 
             current_url = raw_remote_url or suggested_url
             current_token = remote_token

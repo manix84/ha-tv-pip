@@ -12,6 +12,7 @@ from .client import (
 )
 from .const import CONF_TOKEN
 from .entity import ReceiverEntity
+from .remote_setup import async_sync_remote_setup, has_remote_setup_options
 
 if TYPE_CHECKING:
 
@@ -23,11 +24,15 @@ if TYPE_CHECKING:
 
         CONFIG = "config"
 
+    class HomeAssistantError(Exception):
+        """Fallback Home Assistant error for unit tests."""
+
 
 else:
     try:
         from homeassistant.components.button import ButtonEntity
         from homeassistant.const import EntityCategory
+        from homeassistant.exceptions import HomeAssistantError
     except ModuleNotFoundError:
 
         class ButtonEntity:
@@ -37,6 +42,9 @@ else:
             """Fallback entity category for unit tests outside Home Assistant."""
 
             CONFIG = "config"
+
+        class HomeAssistantError(Exception):
+            """Fallback Home Assistant error for unit tests."""
 
 
 TEST_STREAM_URL = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
@@ -48,6 +56,7 @@ async def async_setup_entry(hass: Any, entry: Any, async_add_entities: Any) -> N
     async_add_entities(
         [
             ReceiverOpenButton(entry),
+            ReceiverSyncRemoteButton(hass, entry),
             ReceiverTestButton(entry),
             ReceiverCloseButton(entry),
         ]
@@ -69,6 +78,28 @@ class ReceiverOpenButton(ReceiverEntity, ButtonEntity):
             self.port,
             token=str(self.entry.data[CONF_TOKEN]),
         )
+
+
+class ReceiverSyncRemoteButton(ReceiverEntity, ButtonEntity):
+    """Button that retries remote receiver settings provisioning."""
+
+    def __init__(self, hass: Any, entry: Any) -> None:
+        super().__init__(entry, key="sync_remote_config", name="Sync Remote Config")
+        self.hass = hass
+        self._attr_entity_category = EntityCategory.CONFIG
+
+    async def async_press(self) -> None:
+        """Push the configured remote receiver settings to the TV."""
+
+        if not has_remote_setup_options(self.entry):
+            raise HomeAssistantError(
+                "Configure remote receiver settings before syncing."
+            )
+
+        if not await async_sync_remote_setup(self.hass, self.entry):
+            raise HomeAssistantError(
+                "Could not send remote receiver settings to the TV."
+            )
 
 
 class ReceiverTestButton(ReceiverEntity, ButtonEntity):

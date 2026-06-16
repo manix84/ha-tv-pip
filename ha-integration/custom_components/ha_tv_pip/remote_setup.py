@@ -52,8 +52,21 @@ def resolved_remote_setup(entry: Any, hass: Any) -> tuple[str, str]:
     return remote_url, remote_token
 
 
+def has_remote_setup_options(entry: Any) -> bool:
+    """Return whether the entry has explicit remote setup options."""
+
+    options = getattr(entry, "options", {})
+    return (
+        CONF_REMOTE_HOME_ASSISTANT_URL in options
+        or CONF_REMOTE_ACCESS_TOKEN in options
+    )
+
+
 async def async_sync_remote_setup(hass: Any, entry: Any) -> bool:
     """Push remote setup from the config entry to the paired receiver."""
+    if not has_remote_setup_options(entry):
+        return True
+
     return await async_sync_remote_setup_values(
         hass,
         entry,

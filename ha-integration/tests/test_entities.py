@@ -17,6 +17,8 @@ from custom_components.ha_tv_pip.const import (
     CONF_HOST,
     CONF_NAME,
     CONF_PORT,
+    CONF_REMOTE_ACCESS_TOKEN,
+    CONF_REMOTE_HOME_ASSISTANT_URL,
     CONF_TOKEN,
 )
 
@@ -25,6 +27,7 @@ from custom_components.ha_tv_pip.const import (
 class FakeEntry:
     entry_id: str
     data: dict[str, Any]
+    options: dict[str, Any] | None = None
 
 
 def _entry() -> FakeEntry:
@@ -37,7 +40,17 @@ def _entry() -> FakeEntry:
             CONF_PORT: 8765,
             CONF_TOKEN: "secret-token",
         },
+        options={},
     )
+
+
+def _entry_with_remote_options() -> FakeEntry:
+    entry = _entry()
+    entry.options = {
+        CONF_REMOTE_HOME_ASSISTANT_URL: "https://example.ui.nabu.casa",
+        CONF_REMOTE_ACCESS_TOKEN: "remote-token",
+    }
+    return entry
 
 
 def _status() -> ReceiverStatus:
@@ -84,17 +97,20 @@ def test_button_setup_adds_open_test_and_close_buttons() -> None:
 
     assert [entity._attr_unique_id for entity in added] == [
         "device-1_open_launcher",
+        "device-1_sync_remote_config",
         "device-1_test_pip",
         "device-1_close_pip",
     ]
     assert [entity._attr_name for entity in added] == [
         "Open Launcher",
+        "Sync Remote Config",
         "Test PiP",
         "Close PiP",
     ]
     assert added[0]._attr_entity_category == "config"
-    assert not hasattr(added[1], "_attr_entity_category")
+    assert added[1]._attr_entity_category == "config"
     assert not hasattr(added[2], "_attr_entity_category")
+    assert not hasattr(added[3], "_attr_entity_category")
 
 
 def test_switch_setup_adds_launcher_visibility_switch() -> None:
@@ -179,6 +195,48 @@ def test_open_button_opens_receiver_management(monkeypatch) -> None:  # type: ig
         "port": 8765,
         "token": "secret-token",
     }
+
+
+def test_sync_remote_button_pushes_remote_config(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    captured: dict[str, Any] = {}
+    hass = object()
+    entry = _entry_with_remote_options()
+
+    async def fake_sync(received_hass: Any, received_entry: Any) -> bool:
+        captured.update({"hass": received_hass, "entry": received_entry})
+        return True
+
+    monkeypatch.setattr(button, "async_sync_remote_setup", fake_sync)
+
+    asyncio.run(button.ReceiverSyncRemoteButton(hass, entry).async_press())
+
+    assert captured == {"hass": hass, "entry": entry}
+
+
+def test_sync_remote_button_fails_without_remote_options() -> None:
+    entity = button.ReceiverSyncRemoteButton(object(), _entry())
+
+    try:
+        asyncio.run(entity.async_press())
+    except button.HomeAssistantError as error:
+        assert "Configure remote receiver settings" in str(error)
+    else:
+        raise AssertionError("Expected HomeAssistantError")
+
+
+def test_sync_remote_button_fails_when_push_fails(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    async def fake_sync(received_hass: Any, received_entry: Any) -> bool:
+        return False
+
+    monkeypatch.setattr(button, "async_sync_remote_setup", fake_sync)
+    entity = button.ReceiverSyncRemoteButton(object(), _entry_with_remote_options())
+
+    try:
+        asyncio.run(entity.async_press())
+    except button.HomeAssistantError as error:
+        assert "Could not send remote receiver settings" in str(error)
+    else:
+        raise AssertionError("Expected HomeAssistantError")
 
 
 def test_close_button_sends_close_command(monkeypatch) -> None:  # type: ignore[no-untyped-def]
