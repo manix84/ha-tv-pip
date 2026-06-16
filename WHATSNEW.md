@@ -1,6 +1,6 @@
 # What's New ✨
 
-## Unreleased - Phase 10 Android TV UX Polish 🎨
+## 0.39.1 - Phase 10 Distribution Polish 🎨
 
 - Started a TV-first receiver dashboard with summary cards, primary PiP controls, launcher controls, remote receiver settings, and diagnostics separated from everyday actions 📺
 - Moved verbose endpoint, discovery, and compatibility details into a dedicated diagnostics section 🧰
@@ -19,6 +19,8 @@
 - Added HACS custom-repository install docs 📝
 - Changed release automation to run on pushes to `main`, creating or updating the versioned GitHub Release with Android and HACS assets 🚀
 - Added Play Store release-prep materials covering listing copy, privacy wording, screenshots, signing, and release notes 📺
+- Added Android release App Bundle build scripts for Play Store prep 📦
+- Added official Home Assistant integration readiness checklist 🏠
 
 ## 0.28.0 - Phase 9 Documentation And FAQ Polish 📚
 

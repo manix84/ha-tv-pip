@@ -150,6 +150,18 @@ Current release builds produce an unsigned APK. Before Play Store upload:
 4. Build an Android App Bundle (`.aab`) for Play Store upload.
 5. Keep debug, release, upload-key, and Play signing responsibilities documented separately.
 
+Local bundle build:
+
+```sh
+npm run android:bundle:release
+```
+
+Current output:
+
+```txt
+android-tv-app/app/build/outputs/bundle/release/app-release.aab
+```
+
 Do not commit keystores, passwords, generated signing reports, or Play Console credentials.
 
 Future automation should use GitHub Actions secrets for signing only after the release process is stable.
@@ -194,7 +206,6 @@ Production release notes should include:
 
 - Play Store deployment.
 - Production signing automation.
-- Android App Bundle build script.
 - Play Console metadata upload.
 - Store screenshot generation automation.
 - Public production release approval.

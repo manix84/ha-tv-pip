@@ -36,6 +36,7 @@ From the monorepo root, the equivalent command is:
 
 ```sh
 npm run android:assemble
+npm run android:bundle:release
 ```
 
 ## Quality Checks ✅
@@ -50,6 +51,7 @@ npm run android:build:dry-run
 Android lint uses the Android Gradle plugin. Type checking compiles the debug Kotlin sources.
 Unit tests run on the JVM with Gradle's debug unit test task.
 The dry-run build assembles the debug APK.
+The release bundle command builds the unsigned `.aab` used for future Play Store prep.
 
 ## Run 🚀
 

@@ -124,7 +124,7 @@ Current Phase 10 status:
 - Users can override the detected language from the website language selector.
 - The website build creates `dist/de/`, `dist/nl/`, `dist/fr/`, `dist/es/`, `dist/it/`, `dist/pt-br/`, and `dist/pl/` entry points for GitHub Pages.
 - Tier 1 website copy exists in separate TypeScript locale modules.
-- Native-speaker review is still required before broad release.
+- Native-speaker review is skipped for Stage 10 because it is not currently available. Future community/native review should happen before broad public release where possible.
 
 Website translation content now covered:
 

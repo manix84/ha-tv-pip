@@ -1,6 +1,6 @@
 {
   "name": "@ha-tv-pip/android-tv-app",
-  "version": "0.39.1",
+  "version": "0.40.0",
   "private": true,
   "description": "Android TV Kotlin receiver app for HA TV PiP.",
   "license": "MIT",
@@ -8,6 +8,7 @@
     "assemble": "./gradlew assembleDebug",
     "assemble:debug": "./gradlew assembleDebug",
     "assemble:release": "./gradlew assembleRelease",
+    "bundle:release": "./gradlew bundleRelease",
     "check": "npm run lint && npm run typecheck && npm run test",
     "clean": "./gradlew clean",
     "lint": "./gradlew lintDebug",

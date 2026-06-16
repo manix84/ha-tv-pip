@@ -667,7 +667,7 @@ Preferred direction:
 ## Home Assistant Integration
 
 - ✅ Prepare for HACS distribution.
-- ⏳ Work toward official Home Assistant integration readiness.
+- ✅ Document official Home Assistant integration readiness path.
 - ✅ Add documentation.
 - ✅ Add example automations.
 - ✅ Add diagnostics.
@@ -686,19 +686,27 @@ Preferred direction:
 - Home Assistant service names, descriptions, and field labels are mirrored into translation metadata with Tier 1 labels.
 - Website Tier 1 static locale routes are generated at build time with localized TypeScript content modules.
 - Website locale selection uses URL locale first, then saved user override, then browser language detection.
-- Remaining translation work includes final native-speaker review.
+- Native-speaker translation review is skipped for Stage 10 because it is not currently available. Treat translations as implementation-complete but awaiting future community/native review before broad public release.
 
 ## Success Criteria
 
-- ⏳ User can install the app from the Android TV Play Store.
+- 🚧 User can install the app from the Android TV Play Store. Actual Play Store deployment is deferred until Play Console setup, signing automation, and release-track testing are ready.
 - ✅ User can install the integration through HACS as a custom repository using the stable release zip.
 - ✅ Setup is understandable without reading source code.
+
+## Stage 10 Wrap-Up
+
+- ✅ HACS custom-repository distribution prep is complete.
+- ✅ Play Store listing, privacy, screenshot, signing, release-note, and App Bundle prep is complete.
+- ✅ Official Home Assistant readiness path is documented.
+- ✅ Native-speaker translation review is skipped for this stage and left for future community/native review.
+- 🚧 Actual Play Store deployment remains out of scope.
 
 ## Official Home Assistant Track
 
 HACS is the practical first distribution target for the custom integration.
 
-Longer term, HA TV PiP should work toward official Home Assistant integration readiness. That means keeping the integration local-first, well tested, documented, secure by default, and aligned with Home Assistant architecture and quality expectations.
+Longer term, HA TV PiP should work toward official Home Assistant integration readiness. That means keeping the integration local-first, well tested, documented, secure by default, and aligned with Home Assistant architecture and quality expectations. The readiness checklist is tracked in `docs/home-assistant-official-readiness.md`.
 
 Official inclusion should not block the MVP, Stage 5 service work, or HACS distribution, but design decisions should avoid making an upstream contribution harder later.
 
