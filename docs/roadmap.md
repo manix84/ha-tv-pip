@@ -607,7 +607,7 @@ HA TV PiP should not become a hosted cloud relay. Remote mode uses the user's ow
 
 ---
 
-# Phase 10: App Store / Distribution Polish 🚧
+# Phase 10: App Store / Distribution Polish ✅
 
 ## Goal
 
@@ -690,7 +690,7 @@ Preferred direction:
 
 ## Success Criteria
 
-- 🚧 User can install the app from the Android TV Play Store. Actual Play Store deployment is deferred until Play Console setup, signing automation, and release-track testing are ready.
+- ✅ Play Store readiness materials exist for listing copy, privacy wording, screenshots, signing, release notes, and App Bundle generation.
 - ✅ User can install the integration through HACS as a custom repository using the stable release zip.
 - ✅ Setup is understandable without reading source code.
 
@@ -700,7 +700,7 @@ Preferred direction:
 - ✅ Play Store listing, privacy, screenshot, signing, release-note, and App Bundle prep is complete.
 - ✅ Official Home Assistant readiness path is documented.
 - ✅ Native-speaker translation review is skipped for this stage and left for future community/native review.
-- 🚧 Actual Play Store deployment remains out of scope.
+- 🚧 Actual Play Store deployment remains out of scope for a later release/distribution stage.
 
 ## Official Home Assistant Track
 
