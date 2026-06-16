@@ -1,0 +1,56 @@
+{
+  "config": {
+    "abort": {
+      "invalid_discovery": "Home Assistant heeft een HA TV PiP receiver gevonden, maar de ontdekkingsgegevens waren onvolledig."
+    },
+    "error": {
+      "already_paired": "Deze receiver is al gekoppeld. Gebruik Koppeling resetten in de tv-app en probeer het opnieuw.",
+      "cannot_connect": "Kan geen verbinding maken met de Android TV receiver.",
+      "invalid_client": "De receiver heeft deze Home Assistant-koppelsessie geweigerd.",
+      "invalid_code": "Voer de zescijferige koppelcode in die op de tv wordt getoond.",
+      "invalid_host": "Voer het IP-adres of de hostnaam van de Android TV receiver in.",
+      "invalid_port": "Voer een geldige poort tussen 1 en 65535 in.",
+      "pairing_not_started": "Start het koppelen opnieuw en voer de nieuwe code in die op de tv wordt getoond."
+    },
+    "step": {
+      "confirm": {
+        "data": {
+          "name": "Receivernaam"
+        },
+        "description": "Home Assistant heeft {name} gevonden op {host}:{port}. Deze Android TV receiver toevoegen?",
+        "title": "Gevonden HA TV PiP receiver toevoegen"
+      },
+      "pair": {
+        "data": {
+          "code": "Koppelcode"
+        },
+        "description": "Voer de zescijferige koppelcode in die op {name} wordt getoond. De receiver is bereikbaar op {host}:{port}.",
+        "title": "HA TV PiP receiver koppelen"
+      },
+      "user": {
+        "data": {
+          "host": "Receiverhost",
+          "port": "Receiverpoort"
+        },
+        "description": "Gebruik handmatige setup als Home Assistant de Android TV receiver niet automatisch heeft ontdekt.",
+        "title": "HA TV PiP receiver toevoegen"
+      }
+    }
+  },
+  "options": {
+    "error": {
+      "cannot_connect": "Kan de remote receiver-instellingen niet naar de Android TV receiver sturen. Controleer of de tv online en gekoppeld is.",
+      "remote_fields_required": "Voer zowel de externe Home Assistant-URL als het toegangstoken in, of laat beide leeg om remote receiver-modus uit te schakelen."
+    },
+    "step": {
+      "init": {
+        "data": {
+          "remote_access_token": "Langlevend Home Assistant-toegangstoken",
+          "remote_home_assistant_url": "Externe Home Assistant-URL"
+        },
+        "description": "Configureer remote receiver-modus voor deze tv. Home Assistant stuurt deze instellingen via de lokale verbinding naar de gekoppelde receiver. Voorgestelde externe URL: {suggested_url}",
+        "title": "Remote receiver instellen"
+      }
+    }
+  }
+}

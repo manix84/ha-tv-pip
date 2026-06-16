@@ -1,4 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">HA TV PiP Receiver</string>
+    <string name="main_title">HA TV PiP Receiver</string>
+    <string name="main_status_summary">Receiver is %1$s | Remote %2$s | Launcher %3$s</string>
+
+    <string name="section_pip_controls">PiP controls</string>
+    <string name="section_remote_receiver">Remote receiver</string>
+    <string name="section_launcher_controls">Launcher controls</string>
+    <string name="section_pairing">Pairing</string>
+    <string name="section_diagnostics">Diagnostics</string>
+    <string name="section_setup_guide">Setup guide</string>
+    <string name="section_troubleshooting">Troubleshooting</string>
+
+    <string name="action_play_test_video">Play Test Video</string>
+    <string name="action_overlay_settings">Overlay Settings</string>
+    <string name="action_stop_overlay">Stop Overlay</string>
+    <string name="action_save_remote">Save Remote</string>
+    <string name="action_clear_remote">Clear Remote</string>
+    <string name="action_hide_launcher_icon">Hide Launcher Icon</string>
+    <string name="action_show_launcher_icon">Show Launcher Icon</string>
+    <string name="action_reset_pairing">Reset Pairing</string>
+    <string name="action_enter_pip">Enter PiP</string>
+    <string name="action_show_overlay">Show Overlay</string>
+    <string name="action_try_pip">Try PiP</string>
+
+    <string name="summary_local_title">Local</string>
+    <string name="summary_discovery_title">Discovery</string>
+    <string name="summary_pairing_title">Pairing</string>
+    <string name="summary_display_title">Display</string>
+    <string name="summary_remote_title">Remote</string>
+    <string name="summary_port">Port %1$d</string>
+    <string name="summary_no_paired_client">No paired client</string>
+    <string name="summary_overlay_state">Overlay %1$s</string>
+
+    <string name="status_unknown">unknown</string>
+    <string name="status_visible">visible</string>
+    <string name="status_hidden">hidden</string>
+    <string name="status_running">Running</string>
+    <string name="status_running_lower">running</string>
+    <string name="status_stopped">Stopped</string>
+    <string name="status_stopped_lower">stopped</string>
+    <string name="status_advertising">Advertising</string>
+    <string name="status_advertising_lower">advertising</string>
+    <string name="status_connected">Connected</string>
+    <string name="status_connected_lower">connected</string>
+    <string name="status_configured">Configured</string>
+    <string name="status_configured_with_state">configured (%1$s)</string>
+    <string name="status_not_configured">Not configured</string>
+    <string name="status_not_configured_lower">not configured</string>
+    <string name="status_saved">Saved</string>
+
+    <string name="remote_setup_saved">Remote setup saved</string>
+    <string name="remote_use_ha_to_sync">Use HA to sync setup</string>
+    <string name="remote_receiver_help">Home Assistant can provision this for you. Manual setup remains available here for advanced troubleshooting. Remote mode connects outbound to your own Home Assistant instance; it is not a HA TV PiP cloud service.</string>
+    <string name="remote_details_saved">Remote receiver details are saved</string>
+    <string name="remote_details_not_configured">Remote receiver details are not configured</string>
+    <string name="remote_details_saved_description">This TV can connect outbound to Home Assistant for external PiP commands.</string>
+    <string name="remote_details_not_configured_description">Use Home Assistant to sync the remote setup, or fill in the fields below.</string>
+
+    <string name="label_home_assistant_url">Home Assistant URL</string>
+    <string name="label_access_token">Access token</string>
+    <string name="label_long_lived_access_token">Long-lived access token</string>
+
+    <string name="state_value">State: %1$s</string>
+    <string name="last_error_value">Last error: %1$s</string>
+    <string name="launcher_icon_value">Launcher icon: %1$s</string>
+    <string name="launcher_help">If hidden, Home Assistant can reopen this screen with the Open Launcher button. You can also recover from Android Settings &gt; Apps &gt; HA TV PiP.</string>
+    <string name="pairing_code_value">Pairing code: %1$s</string>
+    <string name="waiting_for_value">Waiting for: %1$s</string>
+    <string name="paired_with_value">Paired with: %1$s</string>
+
+    <string name="diagnostics_endpoint">Endpoint</string>
+    <string name="diagnostics_local_control">Local control</string>
+    <string name="diagnostics_local_control_value">State: %1$s | Uptime: %2$ds | Requests: %3$d</string>
+    <string name="diagnostics_last_request">Last request</string>
+    <string name="diagnostics_last_request_value">%1$s %2$s -&gt; %3$d</string>
+    <string name="diagnostics_discovery">Discovery</string>
+    <string name="diagnostics_discovery_value">%1$s | %2$s</string>
+    <string name="diagnostics_service">Service</string>
+    <string name="discovery_error_value">Discovery error: %1$s</string>
+    <string name="diagnostics_android">Android</string>
+    <string name="diagnostics_native_pip">Native PiP</string>
+    <string name="diagnostics_compatibility">Compatibility</string>
+
+    <string name="test_video_title">Test Video</string>
+    <string name="pip_subtitle_camera_preview">Smart home camera preview</string>
+    <string name="notification_title">HA TV PiP Receiver</string>
+    <string name="notification_local_control_running">Local control endpoint running on port %1$d</string>
+    <string name="notification_channel_local_control">Local Control</string>
+
+    <string name="compatibility_supported">Supported</string>
+    <string name="compatibility_not_supported">Not supported</string>
+    <string name="compatibility_granted">Granted</string>
+    <string name="compatibility_not_granted">Not granted</string>
+    <string name="display_mode_native_pip">Native PiP</string>
+    <string name="display_mode_overlay_fallback">Overlay fallback</string>
+    <string name="display_mode_full_screen_fallback">Full-screen fallback</string>
+    <string name="compatibility_native_pip_available">Native Android TV Picture-in-Picture is available.</string>
+    <string name="compatibility_overlay_fallback_available">Native PiP is not exposed, so the app will use the floating overlay fallback.</string>
+    <string name="compatibility_overlay_permission_needed">Native PiP is not exposed. Grant overlay permission to enable the no-ADB floating fallback.</string>
+
+    <string name="playback_idle">Idle</string>
+    <string name="playback_buffering">Buffering</string>
+    <string name="playback_ready">Ready</string>
+    <string name="playback_ended">Ended</string>
+    <string name="playback_error">Error</string>
+    <string name="playback_playing">playing</string>
+    <string name="playback_paused">paused</string>
+    <string name="playback_state_value">Playback state: %1$s - %2$s</string>
+
+    <string name="error_unknown_reason">unknown reason</string>
+    <string name="error_pip_requires_android_o">Picture-in-Picture requires Android 8.0 or newer</string>
+    <string name="error_pip_rejected">System rejected Picture-in-Picture request</string>
+    <string name="error_pip_request_failed">Picture-in-Picture request failed: %1$s</string>
+    <string name="error_pip_params_rejected">Picture-in-Picture parameters were rejected: %1$s</string>
+    <string name="error_overlay_fallback_failed">Overlay fallback failed: %1$s</string>
+    <string name="snapshot_fallback_after_video_error">Showing snapshot fallback after video error: %1$s</string>
+    <string name="video_unavailable_showing_snapshot">Video stream unavailable; showing snapshot fallback</string>
+    <string name="error_snapshot_unsupported_image">Snapshot response was not a supported image</string>
+    <string name="error_unknown_snapshot">unknown snapshot error</string>
+    <string name="snapshot_unavailable">Snapshot unavailable</string>
+    <string name="error_unsupported_video_stream">Unsupported video stream\nTry a compatible lower-resolution or H.264 stream</string>
+    <string name="error_playback_error_code">Playback error\n%1$s</string>
+
+    <string name="setup_step_pair">1. Pair this receiver from Home Assistant after discovery.</string>
+    <string name="setup_step_overlay">2. Grant overlay permission if your TV does not expose native PiP.</string>
+    <string name="setup_step_remote">3. Use Home Assistant to sync remote receiver settings when you want this TV to receive external PiP commands.</string>
+    <string name="troubleshooting_discovery">Discovery: keep the TV and Home Assistant on the same network and make sure the local endpoint is running.</string>
+    <string name="troubleshooting_remote">Remote receiver: check that Home Assistant saved the external URL and token, then use Sync Remote Config.</string>
+    <string name="troubleshooting_launcher">Hidden launcher: use Home Assistant Open Launcher or Android Settings &gt; Apps &gt; HA TV PiP to reopen this screen.</string>
 </resources>

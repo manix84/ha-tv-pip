@@ -1,0 +1,56 @@
+{
+  "config": {
+    "abort": {
+      "invalid_discovery": "Home Assistant znalazł odbiornik HA TV PiP, ale dane wykrywania były niekompletne."
+    },
+    "error": {
+      "already_paired": "Ten odbiornik jest już sparowany. Użyj Resetuj parowanie w aplikacji TV i spróbuj ponownie.",
+      "cannot_connect": "Nie można połączyć się z odbiornikiem Android TV.",
+      "invalid_client": "Odbiornik odrzucił tę sesję parowania Home Assistant.",
+      "invalid_code": "Wpisz sześciocyfrowy kod parowania widoczny na telewizorze.",
+      "invalid_host": "Wpisz adres IP lub nazwę hosta odbiornika Android TV.",
+      "invalid_port": "Wpisz prawidłowy port od 1 do 65535.",
+      "pairing_not_started": "Uruchom parowanie ponownie i wpisz nowy kod widoczny na telewizorze."
+    },
+    "step": {
+      "confirm": {
+        "data": {
+          "name": "Nazwa odbiornika"
+        },
+        "description": "Home Assistant wykrył {name} pod adresem {host}:{port}. Dodać ten odbiornik Android TV?",
+        "title": "Dodaj wykryty odbiornik HA TV PiP"
+      },
+      "pair": {
+        "data": {
+          "code": "Kod parowania"
+        },
+        "description": "Wpisz sześciocyfrowy kod parowania widoczny na {name}. Odbiornik jest pod adresem {host}:{port}.",
+        "title": "Sparuj odbiornik HA TV PiP"
+      },
+      "user": {
+        "data": {
+          "host": "Host odbiornika",
+          "port": "Port odbiornika"
+        },
+        "description": "Użyj konfiguracji ręcznej, jeśli Home Assistant nie wykrył automatycznie odbiornika Android TV.",
+        "title": "Dodaj odbiornik HA TV PiP"
+      }
+    }
+  },
+  "options": {
+    "error": {
+      "cannot_connect": "Nie można wysłać ustawień odbiornika zdalnego do odbiornika Android TV. Sprawdź, czy telewizor jest online i sparowany.",
+      "remote_fields_required": "Wpisz zewnętrzny adres URL Home Assistant oraz token dostępu albo pozostaw oba pola puste, aby wyłączyć tryb odbiornika zdalnego."
+    },
+    "step": {
+      "init": {
+        "data": {
+          "remote_access_token": "Długoterminowy token dostępu Home Assistant",
+          "remote_home_assistant_url": "Zewnętrzny adres URL Home Assistant"
+        },
+        "description": "Skonfiguruj tryb odbiornika zdalnego dla tego telewizora. Home Assistant wyśle te ustawienia do sparowanego odbiornika przez połączenie lokalne. Sugerowany zewnętrzny adres URL: {suggested_url}",
+        "title": "Konfiguracja odbiornika zdalnego"
+      }
+    }
+  }
+}

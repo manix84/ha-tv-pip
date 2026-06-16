@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -202,8 +203,8 @@ class PlayerActivity : ComponentActivity() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             paramsBuilder
-                .setTitle("HA TV PiP")
-                .setSubtitle("Smart home camera preview")
+                .setTitle(getString(R.string.app_name))
+                .setSubtitle(getString(R.string.pip_subtitle_camera_preview))
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -222,7 +223,7 @@ class PlayerActivity : ComponentActivity() {
         }
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            val message = "Picture-in-Picture requires Android 8.0 or newer"
+            val message = getString(R.string.error_pip_requires_android_o)
             viewModel.setPlaybackError(message)
             AppLog.error(message)
             return
@@ -234,16 +235,22 @@ class PlayerActivity : ComponentActivity() {
             if (entered) {
                 AppLog.enterPip(trigger = trigger)
             } else {
-                val message = "System rejected Picture-in-Picture request"
+                val message = getString(R.string.error_pip_rejected)
                 viewModel.setPlaybackError(message)
                 AppLog.error(message)
             }
         } catch (error: IllegalStateException) {
-            val message = "Picture-in-Picture request failed: ${error.message ?: "unknown reason"}"
+            val message = getString(
+                R.string.error_pip_request_failed,
+                error.message ?: getString(R.string.error_unknown_reason)
+            )
             viewModel.setPlaybackError(message)
             AppLog.error(message, error)
         } catch (error: IllegalArgumentException) {
-            val message = "Picture-in-Picture parameters were rejected: ${error.message ?: "unknown reason"}"
+            val message = getString(
+                R.string.error_pip_params_rejected,
+                error.message ?: getString(R.string.error_unknown_reason)
+            )
             viewModel.setPlaybackError(message)
             AppLog.error(message, error)
         }
@@ -262,7 +269,10 @@ class PlayerActivity : ComponentActivity() {
             AppLog.playbackStop(reason = "overlay_fallback_started")
             moveTaskToBack(true)
         }.onFailure { error ->
-            val message = "Overlay fallback failed: ${error.message ?: "unknown reason"}"
+            val message = getString(
+                R.string.error_overlay_fallback_failed,
+                error.message ?: getString(R.string.error_unknown_reason)
+            )
             viewModel.setPlaybackError(message)
             AppLog.error(message, error)
         }
@@ -360,9 +370,9 @@ private fun PlayerScreen(
 ) {
     val pipButtonFocusRequester = remember { FocusRequester() }
     val displayActionLabel = when (compatibility.recommendedMode) {
-        ReceiverDisplayMode.NativePictureInPicture -> "Enter PiP"
-        ReceiverDisplayMode.OverlayFallback -> "Show Overlay"
-        ReceiverDisplayMode.FullScreenFallback -> "Try PiP"
+        ReceiverDisplayMode.NativePictureInPicture -> stringResource(R.string.action_enter_pip)
+        ReceiverDisplayMode.OverlayFallback -> stringResource(R.string.action_show_overlay)
+        ReceiverDisplayMode.FullScreenFallback -> stringResource(R.string.action_try_pip)
     }
 
     LaunchedEffect(Unit) {
@@ -409,12 +419,12 @@ private fun PlayerScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = "Playback state: ${playbackState.displayText}",
+                        text = playbackState.localizedDisplayText(),
                         color = Color.White,
                         fontSize = 18.sp
                     )
                     Text(
-                        text = compatibility.statusText,
+                        text = compatibility.localizedStatusText(),
                         color = Color.White,
                         fontSize = 16.sp
                     )

@@ -1,0 +1,56 @@
+{
+  "config": {
+    "abort": {
+      "invalid_discovery": "Home Assistant ha trovato un ricevitore HA TV PiP, ma i dati di rilevamento erano incompleti."
+    },
+    "error": {
+      "already_paired": "Questo ricevitore è già associato. Usa Reimposta associazione nell’app TV e riprova.",
+      "cannot_connect": "Impossibile connettersi al ricevitore Android TV.",
+      "invalid_client": "Il ricevitore ha rifiutato questa sessione di associazione di Home Assistant.",
+      "invalid_code": "Inserisci il codice di associazione a sei cifre mostrato sulla TV.",
+      "invalid_host": "Inserisci l’indirizzo IP o il nome host del ricevitore Android TV.",
+      "invalid_port": "Inserisci una porta valida tra 1 e 65535.",
+      "pairing_not_started": "Avvia di nuovo l’associazione e inserisci il nuovo codice mostrato sulla TV."
+    },
+    "step": {
+      "confirm": {
+        "data": {
+          "name": "Nome ricevitore"
+        },
+        "description": "Home Assistant ha rilevato {name} su {host}:{port}. Aggiungere questo ricevitore Android TV?",
+        "title": "Aggiungi ricevitore HA TV PiP rilevato"
+      },
+      "pair": {
+        "data": {
+          "code": "Codice di associazione"
+        },
+        "description": "Inserisci il codice di associazione a sei cifre mostrato su {name}. Il ricevitore è su {host}:{port}.",
+        "title": "Associa ricevitore HA TV PiP"
+      },
+      "user": {
+        "data": {
+          "host": "Host ricevitore",
+          "port": "Porta ricevitore"
+        },
+        "description": "Usa la configurazione manuale se Home Assistant non ha rilevato automaticamente il ricevitore Android TV.",
+        "title": "Aggiungi ricevitore HA TV PiP"
+      }
+    }
+  },
+  "options": {
+    "error": {
+      "cannot_connect": "Impossibile inviare le impostazioni del ricevitore remoto al ricevitore Android TV. Controlla che la TV sia online e associata.",
+      "remote_fields_required": "Inserisci sia l’URL esterno di Home Assistant sia il token di accesso, oppure lascia entrambi i campi vuoti per disattivare la modalità ricevitore remoto."
+    },
+    "step": {
+      "init": {
+        "data": {
+          "remote_access_token": "Token di accesso a lunga durata di Home Assistant",
+          "remote_home_assistant_url": "URL esterno di Home Assistant"
+        },
+        "description": "Configura la modalità ricevitore remoto per questa TV. Home Assistant invierà queste impostazioni al ricevitore associato tramite la connessione locale. URL esterno suggerito: {suggested_url}",
+        "title": "Configurazione ricevitore remoto"
+      }
+    }
+  }
+}

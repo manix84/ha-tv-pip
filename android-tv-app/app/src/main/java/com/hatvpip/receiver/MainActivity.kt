@@ -53,6 +53,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -115,7 +116,7 @@ class MainActivity : ComponentActivity() {
                             startActivity(
                                 PlayerActivity.createShowIntent(
                                     context = this,
-                                    command = ShowCommand.testVideo()
+                                    command = ShowCommand.testVideo(getString(R.string.test_video_title))
                                 )
                             )
                         }
@@ -283,6 +284,8 @@ private fun MainScreen(
                 onStopOverlay = onStopOverlay
             )
 
+            SetupGuidePanel()
+
             StatusOverview(
                 compatibility = compatibility,
                 controlSnapshot = controlSnapshot,
@@ -309,6 +312,8 @@ private fun MainScreen(
                 onClearRemoteConfig = onClearRemoteConfig
             )
 
+            TroubleshootingPanel()
+
             DiagnosticsPanel(
                 endpointInfo = endpointInfo,
                 controlSnapshot = controlSnapshot,
@@ -317,6 +322,33 @@ private fun MainScreen(
             )
         }
     }
+}
+
+@Composable
+private fun SetupGuidePanel() {
+    SectionCard(title = stringResource(R.string.section_setup_guide)) {
+        GuidanceText(text = stringResource(R.string.setup_step_pair))
+        GuidanceText(text = stringResource(R.string.setup_step_overlay))
+        GuidanceText(text = stringResource(R.string.setup_step_remote))
+    }
+}
+
+@Composable
+private fun TroubleshootingPanel() {
+    SectionCard(title = stringResource(R.string.section_troubleshooting)) {
+        GuidanceText(text = stringResource(R.string.troubleshooting_discovery))
+        GuidanceText(text = stringResource(R.string.troubleshooting_remote))
+        GuidanceText(text = stringResource(R.string.troubleshooting_launcher))
+    }
+}
+
+@Composable
+private fun GuidanceText(text: String) {
+    Text(
+        text = text,
+        color = MaterialTheme.colorScheme.onSurface,
+        fontSize = 15.sp
+    )
 }
 
 @Composable
@@ -331,13 +363,22 @@ private fun ReceiverHeader(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "HA TV PiP Receiver",
+            text = stringResource(R.string.main_title),
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = 34.sp,
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = "Receiver is ${pairingSnapshot?.state?.wireName ?: "unknown"} | Remote ${remoteHeaderStatus(remoteConfig, remoteSnapshot)} | Launcher ${if (launcherVisible) "visible" else "hidden"}",
+            text = stringResource(
+                R.string.main_status_summary,
+                pairingSnapshot?.state?.wireName ?: stringResource(R.string.status_unknown),
+                remoteHeaderStatus(remoteConfig, remoteSnapshot),
+                if (launcherVisible) {
+                    stringResource(R.string.status_visible)
+                } else {
+                    stringResource(R.string.status_hidden)
+                }
+            ),
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = 17.sp
         )
@@ -352,10 +393,10 @@ private fun PrimaryActions(
     onRequestOverlayPermission: () -> Unit,
     onStopOverlay: () -> Unit
 ) {
-    SectionCard(title = "PiP controls") {
+    SectionCard(title = stringResource(R.string.section_pip_controls)) {
         Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             TvActionButton(
-                text = "Play Test Video",
+                text = stringResource(R.string.action_play_test_video),
                 onClick = onPlayTestVideo,
                 modifier = Modifier
                     .focusRequester(playButtonFocusRequester),
@@ -363,7 +404,7 @@ private fun PrimaryActions(
             )
             if (compatibility.canRequestOverlayPermission) {
                 TvActionButton(
-                    text = "Overlay Settings",
+                    text = stringResource(R.string.action_overlay_settings),
                     onClick = onRequestOverlayPermission,
                     minWidth = 220
                 )
@@ -372,7 +413,7 @@ private fun PrimaryActions(
         Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             if (compatibility.overlayPermission == CompatibilityState.Granted) {
                 TvActionButton(
-                    text = "Stop Overlay",
+                    text = stringResource(R.string.action_stop_overlay),
                     onClick = onStopOverlay,
                     minWidth = 180
                 )
@@ -396,29 +437,37 @@ private fun StatusOverview(
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             SummaryCard(
-                title = "Local",
-                value = if (controlSnapshot.running) "Running" else "Stopped",
-                detail = "Port ${controlSnapshot.port}"
+                title = stringResource(R.string.summary_local_title),
+                value = if (controlSnapshot.running) {
+                    stringResource(R.string.status_running)
+                } else {
+                    stringResource(R.string.status_stopped)
+                },
+                detail = stringResource(R.string.summary_port, controlSnapshot.port)
             )
             SummaryCard(
-                title = "Discovery",
-                value = if (discoverySnapshot.running) "Advertising" else "Stopped",
+                title = stringResource(R.string.summary_discovery_title),
+                value = if (discoverySnapshot.running) {
+                    stringResource(R.string.status_advertising)
+                } else {
+                    stringResource(R.string.status_stopped)
+                },
                 detail = discoverySnapshot.serviceType
             )
             SummaryCard(
-                title = "Pairing",
-                value = pairingSnapshot?.state?.wireName ?: "unknown",
-                detail = pairingSnapshot?.pairedClientName ?: "No paired client"
+                title = stringResource(R.string.summary_pairing_title),
+                value = pairingSnapshot?.state?.wireName ?: stringResource(R.string.status_unknown),
+                detail = pairingSnapshot?.pairedClientName ?: stringResource(R.string.summary_no_paired_client)
             )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             SummaryCard(
-                title = "Display",
-                value = compatibility.recommendedMode.label,
-                detail = "Overlay ${compatibility.overlayPermission.label}"
+                title = stringResource(R.string.summary_display_title),
+                value = compatibility.recommendedMode.localizedLabel(),
+                detail = stringResource(R.string.summary_overlay_state, compatibility.overlayPermission.localizedLabel())
             )
             SummaryCard(
-                title = "Remote",
+                title = stringResource(R.string.summary_remote_title),
                 value = remoteSummaryValue(remoteConfig, remoteSnapshot),
                 detail = remoteSummaryDetail(remoteConfig, remoteSnapshot)
             )
@@ -426,31 +475,34 @@ private fun StatusOverview(
     }
 }
 
+@Composable
 private fun remoteHeaderStatus(
     remoteConfig: RemoteConnectionConfig,
     remoteSnapshot: RemoteConnectionSnapshot
 ): String = when {
-    remoteSnapshot.status == RemoteConnectionStatus.Connected -> "connected"
-    remoteConfig.enabled -> "configured (${remoteSnapshot.status.wireName})"
-    else -> "not configured"
+    remoteSnapshot.status == RemoteConnectionStatus.Connected -> stringResource(R.string.status_connected_lower)
+    remoteConfig.enabled -> stringResource(R.string.status_configured_with_state, remoteSnapshot.status.wireName)
+    else -> stringResource(R.string.status_not_configured_lower)
 }
 
+@Composable
 private fun remoteSummaryValue(
     remoteConfig: RemoteConnectionConfig,
     remoteSnapshot: RemoteConnectionSnapshot
 ): String = when {
-    remoteSnapshot.status == RemoteConnectionStatus.Connected -> "Connected"
-    remoteConfig.enabled -> "Configured"
-    else -> "Not configured"
+    remoteSnapshot.status == RemoteConnectionStatus.Connected -> stringResource(R.string.status_connected)
+    remoteConfig.enabled -> stringResource(R.string.status_configured)
+    else -> stringResource(R.string.status_not_configured)
 }
 
+@Composable
 private fun remoteSummaryDetail(
     remoteConfig: RemoteConnectionConfig,
     remoteSnapshot: RemoteConnectionSnapshot
 ): String = when {
     remoteSnapshot.lastError != null -> remoteSnapshot.lastError
-    remoteConfig.enabled -> "Remote setup saved"
-    else -> "Use HA to sync setup"
+    remoteConfig.enabled -> stringResource(R.string.remote_setup_saved)
+    else -> stringResource(R.string.remote_use_ha_to_sync)
 }
 
 @Composable
@@ -554,36 +606,36 @@ private fun RemoteConnectionPanel(
         mutableStateOf(remoteConfig.accessToken)
     }
 
-    SectionCard(title = "Remote receiver") {
+    SectionCard(title = stringResource(R.string.section_remote_receiver)) {
         RemoteReceiverStatusBanner(
             remoteConfig = remoteConfig,
             remoteSnapshot = remoteSnapshot
         )
         Text(
-            text = "State: ${remoteSnapshot.status.wireName}",
+            text = stringResource(R.string.state_value, remoteSnapshot.status.wireName),
             color = MaterialTheme.colorScheme.onSurface,
             fontSize = 16.sp
         )
         remoteSnapshot.lastError?.let { error ->
             Text(
-                text = "Last error: $error",
+                text = stringResource(R.string.last_error_value, error),
                 color = MaterialTheme.colorScheme.error,
                 fontSize = 15.sp
             )
         }
         Text(
-            text = "Home Assistant can provision this for you. Manual setup remains available here for advanced troubleshooting. Remote mode connects outbound to your own Home Assistant instance; it is not a HA TV PiP cloud service.",
+            text = stringResource(R.string.remote_receiver_help),
             color = MaterialTheme.colorScheme.onSurface,
             fontSize = 15.sp
         )
         if (remoteConfig.enabled) {
             RemoteConfigDetailRow(
-                label = "Home Assistant URL",
+                label = stringResource(R.string.label_home_assistant_url),
                 value = remoteConfig.homeAssistantUrl
             )
             RemoteConfigDetailRow(
-                label = "Access token",
-                value = "Saved"
+                label = stringResource(R.string.label_access_token),
+                value = stringResource(R.string.status_saved)
             )
         }
         OutlinedTextField(
@@ -592,7 +644,7 @@ private fun RemoteConnectionPanel(
             modifier = Modifier
                 .fillMaxWidth()
                 .bringIntoViewOnFocus(),
-            label = { Text("Home Assistant URL") },
+            label = { Text(stringResource(R.string.label_home_assistant_url)) },
             singleLine = true
         )
         OutlinedTextField(
@@ -601,13 +653,13 @@ private fun RemoteConnectionPanel(
             modifier = Modifier
                 .fillMaxWidth()
                 .bringIntoViewOnFocus(),
-            label = { Text("Long-lived access token") },
+            label = { Text(stringResource(R.string.label_long_lived_access_token)) },
             visualTransformation = PasswordVisualTransformation(),
             singleLine = true
         )
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             TvActionButton(
-                text = "Save Remote",
+                text = stringResource(R.string.action_save_remote),
                 onClick = {
                     onSaveRemoteConfig(
                         RemoteConnectionConfig(
@@ -619,7 +671,7 @@ private fun RemoteConnectionPanel(
                 minWidth = 190
             )
             TvActionButton(
-                text = "Clear Remote",
+                text = stringResource(R.string.action_clear_remote),
                 onClick = onClearRemoteConfig,
                 minWidth = 190
             )
@@ -664,9 +716,9 @@ private fun RemoteReceiverStatusBanner(
             ) {
                 Text(
                     text = if (provisioned) {
-                        "Remote receiver details are saved"
+                        stringResource(R.string.remote_details_saved)
                     } else {
-                        "Remote receiver details are not configured"
+                        stringResource(R.string.remote_details_not_configured)
                     },
                     color = contentColor,
                     fontSize = 18.sp,
@@ -674,9 +726,9 @@ private fun RemoteReceiverStatusBanner(
                 )
                 Text(
                     text = if (provisioned) {
-                        "This TV can connect outbound to Home Assistant for external PiP commands."
+                        stringResource(R.string.remote_details_saved_description)
                     } else {
-                        "Use Home Assistant to sync the remote setup, or fill in the fields below."
+                        stringResource(R.string.remote_details_not_configured_description)
                     },
                     color = contentColor,
                     fontSize = 14.sp
@@ -738,19 +790,26 @@ private fun ReceiverManagementPanel(
     launcherVisible: Boolean,
     onSetLauncherVisible: (Boolean) -> Unit
 ) {
-    SectionCard(title = "Launcher controls") {
+    SectionCard(title = stringResource(R.string.section_launcher_controls)) {
         Text(
-            text = "Launcher icon: ${if (launcherVisible) "visible" else "hidden"}",
+            text = stringResource(
+                R.string.launcher_icon_value,
+                if (launcherVisible) stringResource(R.string.status_visible) else stringResource(R.string.status_hidden)
+            ),
             color = MaterialTheme.colorScheme.onSurface,
             fontSize = 16.sp
         )
         Text(
-            text = "If hidden, Home Assistant can reopen this screen with the Open Launcher button. You can also recover from Android Settings > Apps > HA TV PiP.",
+            text = stringResource(R.string.launcher_help),
             color = MaterialTheme.colorScheme.onSurface,
             fontSize = 15.sp
         )
         TvActionButton(
-            text = if (launcherVisible) "Hide Launcher Icon" else "Show Launcher Icon",
+            text = if (launcherVisible) {
+                stringResource(R.string.action_hide_launcher_icon)
+            } else {
+                stringResource(R.string.action_show_launcher_icon)
+            },
             onClick = { onSetLauncherVisible(!launcherVisible) },
             minWidth = 260
         )
@@ -784,15 +843,15 @@ private fun PairingStatusPanel(
     onResetPairing: () -> Unit
 ) {
     val snapshot = pairingSnapshot ?: return
-    SectionCard(title = "Pairing") {
+    SectionCard(title = stringResource(R.string.section_pairing)) {
         Text(
-            text = "State: ${snapshot.state.wireName}",
+            text = stringResource(R.string.state_value, snapshot.state.wireName),
             color = MaterialTheme.colorScheme.onSurface,
             fontSize = 16.sp
         )
         snapshot.pendingCode?.let { code ->
             Text(
-                text = "Pairing code: $code",
+                text = stringResource(R.string.pairing_code_value, code),
                 color = MaterialTheme.colorScheme.tertiary,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold
@@ -800,21 +859,21 @@ private fun PairingStatusPanel(
         }
         snapshot.pendingClientName?.let { clientName ->
             Text(
-                text = "Waiting for: $clientName",
+                text = stringResource(R.string.waiting_for_value, clientName),
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 15.sp
             )
         }
         snapshot.pairedClientName?.let { clientName ->
             Text(
-                text = "Paired with: $clientName",
+                text = stringResource(R.string.paired_with_value, clientName),
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 15.sp
             )
         }
         if (snapshot.state == PairingStatus.Paired) {
             TvActionButton(
-                text = "Reset Pairing",
+                text = stringResource(R.string.action_reset_pairing),
                 onClick = onResetPairing,
                 minWidth = 190
             )
@@ -864,42 +923,62 @@ private fun DiagnosticsPanel(
     compatibility: DeviceCompatibility
 ) {
     SectionCard(
-        title = "Diagnostics",
+        title = stringResource(R.string.section_diagnostics),
         focusableSection = true
     ) {
         val lastRequest = controlSnapshot.lastRequest
-        val runningLabel = if (controlSnapshot.running) "running" else "stopped"
+        val runningLabel = if (controlSnapshot.running) {
+            stringResource(R.string.status_running_lower)
+        } else {
+            stringResource(R.string.status_stopped_lower)
+        }
 
-        DiagnosticRow(label = "Endpoint", value = endpointInfo.displayAddress)
+        DiagnosticRow(label = stringResource(R.string.diagnostics_endpoint), value = endpointInfo.displayAddress)
         DiagnosticRow(
-            label = "Local control",
-            value = "State: $runningLabel | Uptime: ${
-                controlSnapshot.uptimeSeconds(System.currentTimeMillis())
-            }s | Requests: ${controlSnapshot.requestCount}"
+            label = stringResource(R.string.diagnostics_local_control),
+            value = stringResource(
+                R.string.diagnostics_local_control_value,
+                runningLabel,
+                controlSnapshot.uptimeSeconds(System.currentTimeMillis()),
+                controlSnapshot.requestCount
+            )
         )
         if (lastRequest != null) {
             DiagnosticRow(
-                label = "Last request",
-                value = "${lastRequest.method} ${lastRequest.path} -> ${lastRequest.status}"
+                label = stringResource(R.string.diagnostics_last_request),
+                value = stringResource(
+                    R.string.diagnostics_last_request_value,
+                    lastRequest.method,
+                    lastRequest.path,
+                    lastRequest.status
+                )
             )
         }
         DiagnosticRow(
-            label = "Discovery",
-            value = "${if (discoverySnapshot.running) "advertising" else "stopped"} | ${discoverySnapshot.serviceType}"
+            label = stringResource(R.string.diagnostics_discovery),
+            value = stringResource(
+                R.string.diagnostics_discovery_value,
+                if (discoverySnapshot.running) {
+                    stringResource(R.string.status_advertising_lower)
+                } else {
+                    stringResource(R.string.status_stopped_lower)
+                },
+                discoverySnapshot.serviceType
+            )
         )
         discoverySnapshot.serviceName?.let { serviceName ->
-            DiagnosticRow(label = "Service", value = serviceName)
+            DiagnosticRow(label = stringResource(R.string.diagnostics_service), value = serviceName)
         }
         discoverySnapshot.errorMessage?.let { error ->
             Text(
-                text = "Discovery error: $error",
+                text = stringResource(R.string.discovery_error_value, error),
                 color = MaterialTheme.colorScheme.error,
                 fontSize = 15.sp
             )
         }
-        DiagnosticRow(label = "Android", value = compatibility.androidVersionLabel)
-        DiagnosticRow(label = "Native PiP", value = compatibility.nativePictureInPicture.label)
-        DiagnosticRow(label = "Compatibility", value = compatibility.statusText)
+        DiagnosticRow(label = stringResource(R.string.diagnostics_android), value = compatibility.androidVersionLabel)
+        DiagnosticRow(label = stringResource(R.string.diagnostics_native_pip), value = compatibility.nativePictureInPicture.localizedLabel())
+        DiagnosticRow(label = stringResource(R.string.diagnostics_compatibility), value = compatibility.localizedStatusText())
     }
 }
 

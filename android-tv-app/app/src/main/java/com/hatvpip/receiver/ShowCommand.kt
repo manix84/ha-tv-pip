@@ -17,9 +17,9 @@ data class ShowCommand(
     val previewUrl: String?
 ) {
     companion object {
-        fun testVideo(): ShowCommand =
+        fun testVideo(title: String = "Test Video"): ShowCommand =
             ShowCommand(
-                title = "Test Video",
+                title = title,
                 url = PlayerActivity.TEST_STREAM_URL,
                 streamType = StreamType.Hls,
                 durationSeconds = null,

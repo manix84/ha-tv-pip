@@ -25,7 +25,7 @@ class OverlayPlayerService : Service() {
     private var overlayView: FrameLayout? = null
     private var player: ExoPlayer? = null
     private var errorTextView: TextView? = null
-    private var title: String = "HA TV PiP"
+    private var title: String = ""
     private var url: String = PlayerActivity.TEST_STREAM_URL
     private var previewUrl: String? = null
     private var streamType: StreamType = StreamType.Hls
@@ -174,15 +174,15 @@ class OverlayPlayerService : Service() {
                             status = PlaybackStatus.Error,
                             isPlaying = false,
                             errorMessage = if (hasPreviewFallback) {
-                                "Showing snapshot fallback after video error: $message"
+                                getString(R.string.snapshot_fallback_after_video_error, message)
                             } else {
                                 message
                             }
                         )
                         errorTextView?.text = if (hasPreviewFallback) {
-                            "Video stream unavailable; showing snapshot fallback"
+                            getString(R.string.video_unavailable_showing_snapshot)
                         } else {
-                            error.toOverlayMessage()
+                            error.toOverlayMessage(this@OverlayPlayerService)
                         }
                         errorTextView?.visibility = TextView.VISIBLE
                         AppLog.error("Overlay playback failed: $message", error)
@@ -228,7 +228,7 @@ class OverlayPlayerService : Service() {
             runCatching {
                 URL(imageUrl).openStream().use { stream ->
                     BitmapFactory.decodeStream(stream)
-                        ?: error("Snapshot response was not a supported image")
+                        ?: error(getString(R.string.error_snapshot_unsupported_image))
                 }
             }.onSuccess { bitmap ->
                 mainHandler.post {
@@ -243,14 +243,14 @@ class OverlayPlayerService : Service() {
                 }
             }.onFailure { error ->
                 mainHandler.post {
-                    val message = error.message ?: "unknown snapshot error"
+                    val message = error.message ?: getString(R.string.error_unknown_snapshot)
                     if (updateStateOnLoad) {
                         updatePlaybackState(
                             status = PlaybackStatus.Error,
                             isPlaying = false,
                             errorMessage = message
                         )
-                        errorTextView?.text = "Snapshot unavailable"
+                        errorTextView?.text = getString(R.string.snapshot_unavailable)
                         errorTextView?.visibility = TextView.VISIBLE
                     }
                     AppLog.error("Snapshot load failed: $message", error)
@@ -316,9 +316,9 @@ private fun Int.toPlaybackStatus(): PlaybackStatus =
 private fun PlaybackException.toDisplayMessage(): String =
     "$errorCodeName: ${message ?: "unknown playback error"}"
 
-private fun PlaybackException.toOverlayMessage(): String =
+private fun PlaybackException.toOverlayMessage(context: android.content.Context): String =
     when (errorCode) {
         PlaybackException.ERROR_CODE_DECODER_INIT_FAILED ->
-            "Unsupported video stream\nTry a compatible lower-resolution or H.264 stream"
-        else -> "Playback error\n$errorCodeName"
+            context.getString(R.string.error_unsupported_video_stream)
+        else -> context.getString(R.string.error_playback_error_code, errorCodeName)
     }

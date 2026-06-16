@@ -1,0 +1,56 @@
+{
+  "config": {
+    "abort": {
+      "invalid_discovery": "Home Assistant a trouvé un récepteur HA TV PiP, mais les données de découverte étaient incomplètes."
+    },
+    "error": {
+      "already_paired": "Ce récepteur est déjà associé. Utilisez Réinitialiser l’association dans l’application TV, puis réessayez.",
+      "cannot_connect": "Impossible de se connecter au récepteur Android TV.",
+      "invalid_client": "Le récepteur a rejeté cette session d’association Home Assistant.",
+      "invalid_code": "Saisissez le code d’association à six chiffres affiché sur le téléviseur.",
+      "invalid_host": "Saisissez l’adresse IP ou le nom d’hôte du récepteur Android TV.",
+      "invalid_port": "Saisissez un port valide entre 1 et 65535.",
+      "pairing_not_started": "Relancez l’association et saisissez le nouveau code affiché sur le téléviseur."
+    },
+    "step": {
+      "confirm": {
+        "data": {
+          "name": "Nom du récepteur"
+        },
+        "description": "Home Assistant a découvert {name} à l’adresse {host}:{port}. Ajouter ce récepteur Android TV ?",
+        "title": "Ajouter le récepteur HA TV PiP découvert"
+      },
+      "pair": {
+        "data": {
+          "code": "Code d’association"
+        },
+        "description": "Saisissez le code d’association à six chiffres affiché sur {name}. Le récepteur est à l’adresse {host}:{port}.",
+        "title": "Associer le récepteur HA TV PiP"
+      },
+      "user": {
+        "data": {
+          "host": "Hôte du récepteur",
+          "port": "Port du récepteur"
+        },
+        "description": "Utilisez la configuration manuelle si Home Assistant n’a pas découvert automatiquement le récepteur Android TV.",
+        "title": "Ajouter un récepteur HA TV PiP"
+      }
+    }
+  },
+  "options": {
+    "error": {
+      "cannot_connect": "Impossible d’envoyer les paramètres du récepteur distant au récepteur Android TV. Vérifiez que le téléviseur est en ligne et associé.",
+      "remote_fields_required": "Saisissez l’URL externe de Home Assistant et le jeton d’accès, ou laissez les deux champs vides pour désactiver le mode récepteur distant."
+    },
+    "step": {
+      "init": {
+        "data": {
+          "remote_access_token": "Jeton d’accès longue durée Home Assistant",
+          "remote_home_assistant_url": "URL externe Home Assistant"
+        },
+        "description": "Configurez le mode récepteur distant pour ce téléviseur. Home Assistant enverra ces paramètres au récepteur associé via la connexion locale. URL externe suggérée : {suggested_url}",
+        "title": "Configuration du récepteur distant"
+      }
+    }
+  }
+}

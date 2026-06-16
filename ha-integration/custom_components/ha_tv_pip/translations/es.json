@@ -1,0 +1,56 @@
+{
+  "config": {
+    "abort": {
+      "invalid_discovery": "Home Assistant encontró un receptor HA TV PiP, pero los datos de descubrimiento estaban incompletos."
+    },
+    "error": {
+      "already_paired": "Este receptor ya está emparejado. Usa Restablecer emparejamiento en la app de TV y vuelve a intentarlo.",
+      "cannot_connect": "No se pudo conectar con el receptor Android TV.",
+      "invalid_client": "El receptor rechazó esta sesión de emparejamiento de Home Assistant.",
+      "invalid_code": "Introduce el código de emparejamiento de seis dígitos que aparece en la TV.",
+      "invalid_host": "Introduce la dirección IP o el nombre de host del receptor Android TV.",
+      "invalid_port": "Introduce un puerto válido entre 1 y 65535.",
+      "pairing_not_started": "Inicia el emparejamiento de nuevo e introduce el nuevo código que aparece en la TV."
+    },
+    "step": {
+      "confirm": {
+        "data": {
+          "name": "Nombre del receptor"
+        },
+        "description": "Home Assistant descubrió {name} en {host}:{port}. ¿Añadir este receptor Android TV?",
+        "title": "Añadir receptor HA TV PiP descubierto"
+      },
+      "pair": {
+        "data": {
+          "code": "Código de emparejamiento"
+        },
+        "description": "Introduce el código de emparejamiento de seis dígitos que aparece en {name}. El receptor está en {host}:{port}.",
+        "title": "Emparejar receptor HA TV PiP"
+      },
+      "user": {
+        "data": {
+          "host": "Host del receptor",
+          "port": "Puerto del receptor"
+        },
+        "description": "Usa la configuración manual si Home Assistant no ha descubierto automáticamente el receptor Android TV.",
+        "title": "Añadir receptor HA TV PiP"
+      }
+    }
+  },
+  "options": {
+    "error": {
+      "cannot_connect": "No se pudieron enviar los ajustes del receptor remoto al receptor Android TV. Comprueba que la TV esté en línea y emparejada.",
+      "remote_fields_required": "Introduce la URL externa de Home Assistant y el token de acceso, o deja ambos campos vacíos para desactivar el modo de receptor remoto."
+    },
+    "step": {
+      "init": {
+        "data": {
+          "remote_access_token": "Token de acceso de larga duración de Home Assistant",
+          "remote_home_assistant_url": "URL externa de Home Assistant"
+        },
+        "description": "Configura el modo de receptor remoto para esta TV. Home Assistant enviará estos ajustes al receptor emparejado por la conexión local. URL externa sugerida: {suggested_url}",
+        "title": "Configuración del receptor remoto"
+      }
+    }
+  }
+}

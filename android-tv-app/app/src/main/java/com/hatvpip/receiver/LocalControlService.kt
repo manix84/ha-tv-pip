@@ -61,8 +61,13 @@ class LocalControlService : Service() {
     private fun buildNotification() =
         NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_ha_tv_pip)
-            .setContentTitle("HA TV PiP Receiver")
-            .setContentText("Local control endpoint running on port ${LocalControlServer.DEFAULT_PORT}")
+            .setContentTitle(getString(R.string.notification_title))
+            .setContentText(
+                getString(
+                    R.string.notification_local_control_running,
+                    LocalControlServer.DEFAULT_PORT
+                )
+            )
             .setOngoing(true)
             .setContentIntent(
                 PendingIntent.getActivity(
@@ -76,7 +81,7 @@ class LocalControlService : Service() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     val channel = NotificationChannel(
                         NOTIFICATION_CHANNEL_ID,
-                        "Local Control",
+                        getString(R.string.notification_channel_local_control),
                         NotificationManager.IMPORTANCE_LOW
                     )
                     getSystemService(NotificationManager::class.java).createNotificationChannel(channel)

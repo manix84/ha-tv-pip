@@ -69,12 +69,14 @@ Android should use platform string resources.
 Current status:
 
 - `app_name` is already in `res/values/strings.xml`.
-- Many MVP and development strings are still hard-coded in Kotlin Compose UI.
+- Main dashboard strings are now in `res/values/strings.xml`.
+- Player screen, playback status, notification, compatibility, overlay fallback, setup guidance, and troubleshooting strings are now in Android resources.
+- Tier 1 Android resource folders now exist for German, Dutch, French, Spanish, Italian, Brazilian Portuguese, and Polish.
 
 Required during Phase 10 before broad release:
 
-- Move user-facing Compose strings into `res/values/strings.xml`.
-- Add translated resource folders, for example `values-de`, `values-nl`, and `values-pt-rBR`.
+- Move any remaining user-facing Compose or Android framework strings into `res/values/strings.xml`.
+- Keep the Tier 1 resource folders complete as new user-facing strings are added.
 - Keep logs and internal protocol strings in English unless they are shown directly to users.
 - Make sure TV remote navigation labels, error messages, and recovery instructions are translated.
 - Validate that translated strings fit on Android TV at common 1080p and 4K font scales.
@@ -88,13 +90,14 @@ Home Assistant should use integration translation files.
 Current status:
 
 - English config-flow strings exist in `strings.json` and `translations/en.json`.
+- Tier 1 translation files exist for config-flow and options-flow strings.
 - Service descriptions, entity names, and diagnostics wording should be expanded as the integration matures.
 
 Required during Phase 10 before HACS readiness:
 
 - Keep `translations/en.json` as the source translation file.
-- Add Tier 1 translation files under `custom_components/ha_tv_pip/translations/`.
-- Translate config flow titles, descriptions, error messages, entity labels, service fields, and repair messages.
+- Keep Tier 1 translation files under `custom_components/ha_tv_pip/translations/` complete as new strings are added.
+- Translate service fields, entity labels, diagnostics, and repair messages where Home Assistant exposes supported translation surfaces.
 - Keep `iot_class: local_push`; remote receiver mode must not be described as a HA TV PiP cloud service.
 - Avoid translating internal service names such as `ha_tv_pip.show_camera`.
 

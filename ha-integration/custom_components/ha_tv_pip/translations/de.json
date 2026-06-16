@@ -1,0 +1,56 @@
+{
+  "config": {
+    "abort": {
+      "invalid_discovery": "Home Assistant hat einen HA TV PiP-Receiver gefunden, aber die Erkennungsdaten waren unvollständig."
+    },
+    "error": {
+      "already_paired": "Dieser Receiver ist bereits gekoppelt. Verwende Kopplung zurücksetzen in der TV-App und versuche es erneut.",
+      "cannot_connect": "Verbindung zum Android TV-Receiver konnte nicht hergestellt werden.",
+      "invalid_client": "Der Receiver hat diese Home Assistant-Kopplungssitzung abgelehnt.",
+      "invalid_code": "Gib den sechsstelligen Kopplungscode ein, der auf dem TV angezeigt wird.",
+      "invalid_host": "Gib die IP-Adresse oder den Hostnamen des Android TV-Receivers ein.",
+      "invalid_port": "Gib einen gültigen Port zwischen 1 und 65535 ein.",
+      "pairing_not_started": "Starte die Kopplung erneut und gib den neuen Code ein, der auf dem TV angezeigt wird."
+    },
+    "step": {
+      "confirm": {
+        "data": {
+          "name": "Receiver-Name"
+        },
+        "description": "Home Assistant hat {name} unter {host}:{port} gefunden. Diesen Android TV-Receiver hinzufügen?",
+        "title": "Gefundenen HA TV PiP-Receiver hinzufügen"
+      },
+      "pair": {
+        "data": {
+          "code": "Kopplungscode"
+        },
+        "description": "Gib den sechsstelligen Kopplungscode ein, der auf {name} angezeigt wird. Der Receiver ist unter {host}:{port}.",
+        "title": "HA TV PiP-Receiver koppeln"
+      },
+      "user": {
+        "data": {
+          "host": "Receiver-Host",
+          "port": "Receiver-Port"
+        },
+        "description": "Verwende die manuelle Einrichtung, wenn Home Assistant den Android TV-Receiver nicht automatisch gefunden hat.",
+        "title": "HA TV PiP-Receiver hinzufügen"
+      }
+    }
+  },
+  "options": {
+    "error": {
+      "cannot_connect": "Die Remote-Receiver-Einstellungen konnten nicht an den Android TV-Receiver gesendet werden. Prüfe, ob der TV online und gekoppelt ist.",
+      "remote_fields_required": "Gib sowohl die externe Home Assistant-URL als auch das Zugriffstoken ein, oder lasse beide Felder leer, um den Remote-Receiver-Modus zu deaktivieren."
+    },
+    "step": {
+      "init": {
+        "data": {
+          "remote_access_token": "Langfristiges Home Assistant-Zugriffstoken",
+          "remote_home_assistant_url": "Externe Home Assistant-URL"
+        },
+        "description": "Konfiguriere den Remote-Receiver-Modus für diesen TV. Home Assistant sendet diese Einstellungen über die lokale Verbindung an den gekoppelten Receiver. Vorgeschlagene externe URL: {suggested_url}",
+        "title": "Remote-Receiver einrichten"
+      }
+    }
+  }
+}

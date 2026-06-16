@@ -639,6 +639,10 @@ This is also the main translation implementation pass. Tier 1 languages should b
 - Receiver health is summarized in TV-readable status cards.
 - Pairing, launcher controls, remote receiver settings, and diagnostics are split into separate sections.
 - Remote receiver token entry is masked on screen.
+- Main dashboard user-facing strings have been moved into Android string resources.
+- Tier 1 Android resource folders now exist for German, Dutch, French, Spanish, Italian, Brazilian Portuguese, and Polish.
+- Player screen, playback status, notification, compatibility, overlay, setup, and troubleshooting strings now use Android resources.
+- The dashboard now includes lightweight setup guidance and troubleshooting sections for common discovery, remote receiver, and hidden launcher recovery paths.
 
 ## Remote Setup Direction
 
@@ -651,6 +655,8 @@ Preferred direction:
 - Home Assistant provisions remote receiver settings over the authenticated local receiver connection.
 - Users should not need to type long URLs or access tokens on the TV for the normal path.
 - If Home Assistant authentication cannot safely be provisioned, keep manual setup available under advanced troubleshooting only.
+- Home Assistant can push the remote receiver URL and token to the Android TV receiver after local pairing.
+- The Android TV receiver clearly shows whether remote receiver details are saved without revealing the access token.
 
 ## Home Assistant Integration
 
@@ -663,6 +669,14 @@ Preferred direction:
 - Add Tier 1 Home Assistant translations.
 - Add issue templates.
 - Add release notes.
+
+## Translation Progress
+
+- Android app dashboard strings are now in Android resources.
+- Android Tier 1 translation files exist for German, Dutch, French, Spanish, Italian, Brazilian Portuguese, and Polish.
+- Android player, notification, overlay, setup, and troubleshooting text is now resource-backed.
+- Home Assistant config/options flow Tier 1 translation files exist for German, Dutch, French, Spanish, Italian, Brazilian Portuguese, and Polish.
+- Remaining translation work includes service descriptions, entity names where supported by Home Assistant, website locale content, and final native-speaker review.
 
 ## Success Criteria
 
