@@ -21,6 +21,11 @@
     <string name="action_hide_launcher_icon">Ocultar icono del lanzador</string>
     <string name="action_show_launcher_icon">Mostrar icono del lanzador</string>
     <string name="action_reset_pairing">Restablecer emparejamiento</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="confirm_clear_remote_title">¿Borrar la configuración del receptor remoto?</string>
+    <string name="confirm_clear_remote_message">Esto eliminará la URL de Home Assistant y el token de acceso guardados en este televisor. Los comandos del receptor remoto dejarán de funcionar hasta que Home Assistant sincronice la configuración otra vez.</string>
+    <string name="confirm_reset_pairing_title">¿Restablecer el emparejamiento con Home Assistant?</string>
+    <string name="confirm_reset_pairing_message">Esto desconectará el cliente de Home Assistant emparejado. Tendrás que volver a emparejar este receptor antes de que Home Assistant pueda controlarlo.</string>
     <string name="summary_local_title">Local</string>
     <string name="summary_discovery_title">Descubrimiento</string>
     <string name="summary_pairing_title">Emparejamiento</string>

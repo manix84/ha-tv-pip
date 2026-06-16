@@ -21,6 +21,11 @@
     <string name="action_hide_launcher_icon">Launchericoon verbergen</string>
     <string name="action_show_launcher_icon">Launchericoon tonen</string>
     <string name="action_reset_pairing">Koppeling resetten</string>
+    <string name="action_cancel">Annuleren</string>
+    <string name="confirm_clear_remote_title">Remote receiver-instellingen wissen?</string>
+    <string name="confirm_clear_remote_message">Dit verwijdert de opgeslagen Home Assistant-URL en het toegangstoken van deze tv. Remote receiver-opdrachten werken niet meer totdat Home Assistant de setup opnieuw synchroniseert.</string>
+    <string name="confirm_reset_pairing_title">Home Assistant-koppeling resetten?</string>
+    <string name="confirm_reset_pairing_message">Dit verbreekt de gekoppelde Home Assistant-client. Je moet deze receiver opnieuw koppelen voordat Home Assistant hem kan bedienen.</string>
     <string name="summary_local_title">Lokaal</string>
     <string name="summary_discovery_title">Ontdekking</string>
     <string name="summary_pairing_title">Koppelen</string>

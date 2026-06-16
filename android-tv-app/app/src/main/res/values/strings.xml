@@ -23,9 +23,14 @@
     <string name="action_hide_launcher_icon">Hide Launcher Icon</string>
     <string name="action_show_launcher_icon">Show Launcher Icon</string>
     <string name="action_reset_pairing">Reset Pairing</string>
+    <string name="action_cancel">Cancel</string>
     <string name="action_enter_pip">Enter PiP</string>
     <string name="action_show_overlay">Show Overlay</string>
     <string name="action_try_pip">Try PiP</string>
+    <string name="confirm_clear_remote_title">Clear remote receiver settings?</string>
+    <string name="confirm_clear_remote_message">This will remove the saved Home Assistant URL and access token from this TV. Remote receiver commands will stop working until Home Assistant syncs the setup again.</string>
+    <string name="confirm_reset_pairing_title">Reset Home Assistant pairing?</string>
+    <string name="confirm_reset_pairing_message">This will disconnect the paired Home Assistant client. You will need to pair this receiver again before Home Assistant can control it.</string>
 
     <string name="summary_local_title">Local</string>
     <string name="summary_discovery_title">Discovery</string>

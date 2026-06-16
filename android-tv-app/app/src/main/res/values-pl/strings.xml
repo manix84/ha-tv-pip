@@ -21,6 +21,11 @@
     <string name="action_hide_launcher_icon">Ukryj ikonę launchera</string>
     <string name="action_show_launcher_icon">Pokaż ikonę launchera</string>
     <string name="action_reset_pairing">Resetuj parowanie</string>
+    <string name="action_cancel">Anuluj</string>
+    <string name="confirm_clear_remote_title">Wyczyścić ustawienia odbiornika zdalnego?</string>
+    <string name="confirm_clear_remote_message">To usunie z tego telewizora zapisaną URL Home Assistant i token dostępu. Polecenia odbiornika zdalnego przestaną działać, dopóki Home Assistant ponownie nie zsynchronizuje konfiguracji.</string>
+    <string name="confirm_reset_pairing_title">Zresetować parowanie z Home Assistant?</string>
+    <string name="confirm_reset_pairing_message">To rozłączy sparowanego klienta Home Assistant. Trzeba będzie ponownie sparować ten odbiornik, zanim Home Assistant będzie mógł nim sterować.</string>
     <string name="summary_local_title">Lokalnie</string>
     <string name="summary_discovery_title">Wykrywanie</string>
     <string name="summary_pairing_title">Parowanie</string>

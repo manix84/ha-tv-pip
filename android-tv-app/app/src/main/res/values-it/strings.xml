@@ -21,6 +21,11 @@
     <string name="action_hide_launcher_icon">Nascondi icona launcher</string>
     <string name="action_show_launcher_icon">Mostra icona launcher</string>
     <string name="action_reset_pairing">Reimposta associazione</string>
+    <string name="action_cancel">Annulla</string>
+    <string name="confirm_clear_remote_title">Cancellare le impostazioni del ricevitore remoto?</string>
+    <string name="confirm_clear_remote_message">Questo rimuoverà da questa TV l’URL di Home Assistant e il token di accesso salvati. I comandi del ricevitore remoto smetteranno di funzionare finché Home Assistant non sincronizzerà di nuovo la configurazione.</string>
+    <string name="confirm_reset_pairing_title">Reimpostare l’associazione Home Assistant?</string>
+    <string name="confirm_reset_pairing_message">Questo disconnetterà il client Home Assistant associato. Dovrai associare di nuovo questo ricevitore prima che Home Assistant possa controllarlo.</string>
     <string name="summary_local_title">Locale</string>
     <string name="summary_discovery_title">Rilevamento</string>
     <string name="summary_pairing_title">Associazione</string>

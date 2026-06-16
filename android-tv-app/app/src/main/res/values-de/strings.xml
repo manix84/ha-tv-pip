@@ -21,6 +21,11 @@
     <string name="action_hide_launcher_icon">Launcher-Symbol ausblenden</string>
     <string name="action_show_launcher_icon">Launcher-Symbol anzeigen</string>
     <string name="action_reset_pairing">Kopplung zurücksetzen</string>
+    <string name="action_cancel">Abbrechen</string>
+    <string name="confirm_clear_remote_title">Remote-Receiver-Einstellungen löschen?</string>
+    <string name="confirm_clear_remote_message">Dadurch werden die gespeicherte Home Assistant-URL und das Zugriffstoken von diesem TV entfernt. Remote-Receiver-Befehle funktionieren erst wieder, wenn Home Assistant die Einrichtung erneut synchronisiert.</string>
+    <string name="confirm_reset_pairing_title">Home Assistant-Kopplung zurücksetzen?</string>
+    <string name="confirm_reset_pairing_message">Dadurch wird der gekoppelte Home Assistant-Client getrennt. Du musst diesen Receiver erneut koppeln, bevor Home Assistant ihn steuern kann.</string>
     <string name="summary_local_title">Lokal</string>
     <string name="summary_discovery_title">Erkennung</string>
     <string name="summary_pairing_title">Kopplung</string>

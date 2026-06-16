@@ -21,6 +21,11 @@
     <string name="action_hide_launcher_icon">Masquer l’icône du lanceur</string>
     <string name="action_show_launcher_icon">Afficher l’icône du lanceur</string>
     <string name="action_reset_pairing">Réinitialiser l’association</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="confirm_clear_remote_title">Effacer les paramètres du récepteur distant ?</string>
+    <string name="confirm_clear_remote_message">Cela supprimera l’URL Home Assistant et le jeton d’accès enregistrés sur ce téléviseur. Les commandes du récepteur distant ne fonctionneront plus tant que Home Assistant n’aura pas resynchronisé la configuration.</string>
+    <string name="confirm_reset_pairing_title">Réinitialiser l’association Home Assistant ?</string>
+    <string name="confirm_reset_pairing_message">Cela déconnectera le client Home Assistant associé. Vous devrez réassocier ce récepteur avant que Home Assistant puisse le contrôler.</string>
     <string name="summary_local_title">Local</string>
     <string name="summary_discovery_title">Découverte</string>
     <string name="summary_pairing_title">Association</string>

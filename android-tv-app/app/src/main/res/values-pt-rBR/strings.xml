@@ -21,6 +21,11 @@
     <string name="action_hide_launcher_icon">Ocultar ícone do inicializador</string>
     <string name="action_show_launcher_icon">Mostrar ícone do inicializador</string>
     <string name="action_reset_pairing">Redefinir pareamento</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="confirm_clear_remote_title">Limpar as configurações do receptor remoto?</string>
+    <string name="confirm_clear_remote_message">Isso removerá a URL do Home Assistant e o token de acesso salvos nesta TV. Os comandos do receptor remoto deixarão de funcionar até que o Home Assistant sincronize a configuração novamente.</string>
+    <string name="confirm_reset_pairing_title">Redefinir o pareamento com o Home Assistant?</string>
+    <string name="confirm_reset_pairing_message">Isso desconectará o cliente Home Assistant pareado. Você precisará parear este receptor novamente antes que o Home Assistant possa controlá-lo.</string>
     <string name="summary_local_title">Local</string>
     <string name="summary_discovery_title">Descoberta</string>
     <string name="summary_pairing_title">Pareamento</string>
