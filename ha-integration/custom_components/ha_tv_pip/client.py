@@ -56,6 +56,7 @@ class ReceiverStatus:
     playback_state: str
     display_mode: str
     pairing_state: str | None
+    launcher_visible: bool | None
     last_request: dict[str, Any] | None
     error: str | None
     raw: dict[str, Any]
@@ -156,6 +157,7 @@ async def async_get_receiver_status(host: str, port: int) -> ReceiverStatus:
 
     response = await asyncio.to_thread(_get_json, host, port, "/status")
     pairing = response.get("pairing")
+    management = response.get("management")
     last_request = response.get("lastRequest")
     return ReceiverStatus(
         app=str(response.get("app", "HA TV PiP Receiver")),
@@ -167,6 +169,11 @@ async def async_get_receiver_status(host: str, port: int) -> ReceiverStatus:
         playback_state=str(response.get("playbackState", "unknown")),
         display_mode=str(response.get("displayMode", "unknown")),
         pairing_state=str(pairing.get("state")) if isinstance(pairing, dict) else None,
+        launcher_visible=(
+            bool(management["launcherVisible"])
+            if isinstance(management, dict) and "launcherVisible" in management
+            else None
+        ),
         last_request=last_request if isinstance(last_request, dict) else None,
         error=str(response["error"]) if response.get("error") else None,
         raw=response,
@@ -178,6 +185,40 @@ async def async_close_receiver(host: str, port: int, *, token: str) -> bool:
 
     response = await asyncio.to_thread(_post_json, host, port, "/close", {}, token)
     return bool(response.get("accepted", False))
+
+
+async def async_open_receiver(host: str, port: int, *, token: str) -> bool:
+    """Ask the paired receiver to open its management screen."""
+
+    response = await asyncio.to_thread(
+        _post_json,
+        host,
+        port,
+        "/management/open",
+        {},
+        token,
+    )
+    return bool(response.get("accepted", False))
+
+
+async def async_set_launcher_visible(
+    host: str,
+    port: int,
+    *,
+    token: str,
+    visible: bool,
+) -> bool:
+    """Show or hide the receiver launcher icon."""
+
+    response = await asyncio.to_thread(
+        _post_json,
+        host,
+        port,
+        "/management/launcher",
+        {"visible": visible},
+        token,
+    )
+    return bool(response.get("launcherVisible", visible))
 
 
 def _post_json(

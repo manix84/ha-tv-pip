@@ -49,12 +49,14 @@ class MainActivity : ComponentActivity() {
     private var controlSnapshot by mutableStateOf(ControlRuntimeState.snapshot())
     private var discoverySnapshot by mutableStateOf(DiscoveryRuntimeState.snapshot())
     private var pairingSnapshot by mutableStateOf<PairingSnapshot?>(null)
+    private var launcherVisible by mutableStateOf(true)
     private val controlSnapshotHandler = Handler(Looper.getMainLooper())
     private val controlSnapshotUpdater = object : Runnable {
         override fun run() {
             controlSnapshot = ControlRuntimeState.snapshot()
             discoverySnapshot = DiscoveryRuntimeState.snapshot()
             pairingSnapshot = PairingState.snapshot(this@MainActivity)
+            launcherVisible = LauncherVisibility.isVisible(this@MainActivity)
             controlSnapshotHandler.postDelayed(this, CONTROL_STATUS_REFRESH_MS)
         }
     }
@@ -79,9 +81,11 @@ class MainActivity : ComponentActivity() {
                         controlSnapshot = controlSnapshot,
                         discoverySnapshot = discoverySnapshot,
                         pairingSnapshot = pairingSnapshot,
+                        launcherVisible = launcherVisible,
                         onRequestOverlayPermission = ::openOverlayPermissionSettings,
                         onStopOverlay = ::stopOverlayFallback,
                         onResetPairing = ::resetPairing,
+                        onSetLauncherVisible = ::updateLauncherVisibility,
                         onPlayTestVideo = {
                             startActivity(
                                 PlayerActivity.createShowIntent(
@@ -114,6 +118,7 @@ class MainActivity : ComponentActivity() {
         controlSnapshot = ControlRuntimeState.snapshot()
         discoverySnapshot = DiscoveryRuntimeState.snapshot()
         pairingSnapshot = PairingState.snapshot(this)
+        launcherVisible = LauncherVisibility.isVisible(this)
     }
 
     private fun openOverlayPermissionSettings() {
@@ -147,6 +152,15 @@ class MainActivity : ComponentActivity() {
                 .setAction(LocalControlService.ACTION_PAIRING_CHANGED)
         )
     }
+
+    private fun updateLauncherVisibility(visible: Boolean) {
+        LauncherVisibility.setVisible(this, visible)
+        launcherVisible = LauncherVisibility.isVisible(this)
+        AppLog.lifecycleEvent(
+            event = "launcher_visibility_changed",
+            reason = if (launcherVisible) "visible" else "hidden"
+        )
+    }
 }
 
 @Composable
@@ -156,9 +170,11 @@ private fun MainScreen(
     controlSnapshot: ControlServerSnapshot,
     discoverySnapshot: DiscoverySnapshot,
     pairingSnapshot: PairingSnapshot?,
+    launcherVisible: Boolean,
     onRequestOverlayPermission: () -> Unit,
     onStopOverlay: () -> Unit,
     onResetPairing: () -> Unit,
+    onSetLauncherVisible: (Boolean) -> Unit,
     onPlayTestVideo: () -> Unit
 ) {
     val playButtonFocusRequester = remember { FocusRequester() }
@@ -204,6 +220,11 @@ private fun MainScreen(
             )
             Spacer(modifier = Modifier.height(18.dp))
             PairingStatusPanel(pairingSnapshot = pairingSnapshot)
+            Spacer(modifier = Modifier.height(18.dp))
+            ReceiverManagementPanel(
+                launcherVisible = launcherVisible,
+                onSetLauncherVisible = onSetLauncherVisible
+            )
             Spacer(modifier = Modifier.height(24.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 TvActionButton(
@@ -238,6 +259,39 @@ private fun MainScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ReceiverManagementPanel(
+    launcherVisible: Boolean,
+    onSetLauncherVisible: (Boolean) -> Unit
+) {
+    Column(
+        modifier = Modifier.widthIn(max = 760.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "Receiver management",
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "Launcher icon: ${if (launcherVisible) "visible" else "hidden"}",
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 16.sp
+        )
+        Text(
+            text = "If hidden, Home Assistant can reopen this screen with the Open Launcher button. You can also recover from Android Settings > Apps > HA TV PiP.",
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 15.sp
+        )
+        TvActionButton(
+            text = if (launcherVisible) "Hide Launcher Icon" else "Show Launcher Icon",
+            onClick = { onSetLauncherVisible(!launcherVisible) },
+            minWidth = 260
+        )
     }
 }
 

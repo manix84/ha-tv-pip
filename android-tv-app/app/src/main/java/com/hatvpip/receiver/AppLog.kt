@@ -53,6 +53,10 @@ object AppLog {
         Log.i(TAG, "event=$event pairingState=$state")
     }
 
+    fun lifecycleEvent(event: String, reason: String) {
+        Log.i(TAG, "event=$event reason=$reason")
+    }
+
     fun error(message: String, throwable: Throwable? = null) {
         Log.e(TAG, "event=error message=$message", throwable)
     }

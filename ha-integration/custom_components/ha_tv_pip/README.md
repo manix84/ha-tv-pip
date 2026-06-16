@@ -43,10 +43,21 @@ Each paired receiver creates:
 
 - Status sensor with playback state and receiver diagnostics.
 - Connected binary sensor based on the local `/status` endpoint.
-- Test button that sends a known public HLS stream to the receiver.
-- Close button that closes the active receiver display.
+
+PiP controls:
+
+- Test PiP button that sends a known public HLS stream to the receiver.
+- Close PiP button that closes the active receiver display.
+
+Launcher controls:
+
+- Hide Launcher switch for hiding or restoring the Android TV launcher icon.
+- Open Launcher button that reopens the receiver UI from Home Assistant.
+
+Launcher controls are marked as Home Assistant configuration entities so they are separated from day-to-day PiP controls where Home Assistant supports that grouping.
 
 The integration also exposes config entry diagnostics with pairing tokens and active stream URLs redacted.
+If the launcher icon is hidden, use the Open Launcher button or Android Settings > Apps > HA TV PiP to recover access to the receiver UI.
 
 ## Camera Service 📹
 

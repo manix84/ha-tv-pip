@@ -20,6 +20,7 @@ class LocalControlServer(
     private val port: Int = DEFAULT_PORT,
     private val onShow: (ShowCommand) -> Unit,
     private val onClose: () -> Unit,
+    private val onOpenManagement: () -> Unit,
     private val onPairingChanged: () -> Unit = {},
     private val onStarted: (Int) -> Unit = {}
 ) {
@@ -83,6 +84,8 @@ class LocalControlServer(
             request.method == "POST" && request.path == "/pair/confirm" -> pairConfirmResponse(request.body)
             request.method == "POST" && request.path == "/show" -> showResponse(request)
             request.method == "POST" && request.path == "/close" -> closeResponse(request)
+            request.method == "POST" && request.path == "/management/open" -> managementOpenResponse(request)
+            request.method == "POST" && request.path == "/management/launcher" -> managementLauncherResponse(request)
             request.path in KNOWN_ENDPOINTS -> HttpResponse.json(
                 status = 405,
                 body = JSONObject()
@@ -116,6 +119,8 @@ class LocalControlServer(
                         .put(endpoint("POST", "/pair/confirm", "Confirm local pairing code"))
                         .put(endpoint("POST", "/show", "Show an HLS stream"))
                         .put(endpoint("POST", "/close", "Close the active display"))
+                        .put(endpoint("POST", "/management/open", "Open receiver management UI"))
+                        .put(endpoint("POST", "/management/launcher", "Show or hide launcher icon"))
                 )
         )
 
@@ -143,6 +148,12 @@ class LocalControlServer(
             .put("controlRunning", control.running)
             .put("controlUptimeSeconds", control.uptimeSeconds(System.currentTimeMillis()))
             .put("requestCount", control.requestCount)
+            .put(
+                "management",
+                JSONObject()
+                    .put("launcherVisible", LauncherVisibility.isVisible(context))
+                    .put("openPath", "/management/open")
+            )
             .put(
                 "discovery",
                 JSONObject()
@@ -275,6 +286,40 @@ class LocalControlServer(
         )
     }
 
+    private fun managementOpenResponse(request: HttpRequest): HttpResponse {
+        val authFailure = authorizeRequest(body = request.body, request = request)
+        if (authFailure != null) return authFailure
+
+        onOpenManagement()
+        return HttpResponse.json(
+            status = 202,
+            body = JSONObject()
+                .put("accepted", true)
+                .put("opened", true)
+        )
+    }
+
+    private fun managementLauncherResponse(request: HttpRequest): HttpResponse {
+        val authFailure = authorizeRequest(body = request.body, request = request)
+        if (authFailure != null) return authFailure
+
+        val visible = runCatching {
+            JSONObject(request.body).getBoolean("visible")
+        }.getOrElse {
+            return HttpResponse.json(
+                status = 400,
+                body = JSONObject().put("error", "`visible` boolean is required")
+            )
+        }
+        LauncherVisibility.setVisible(context, visible)
+        return HttpResponse.json(
+            status = 202,
+            body = JSONObject()
+                .put("accepted", true)
+                .put("launcherVisible", LauncherVisibility.isVisible(context))
+        )
+    }
+
     private fun authorizeRequest(body: String, request: HttpRequest?): HttpResponse? {
         val pairing = PairingState.snapshot(context)
         if (pairing.pairingRequired) {
@@ -350,7 +395,16 @@ class LocalControlServer(
         const val DEFAULT_PORT = 8765
         private const val ACCEPT_TIMEOUT_MS = 500
         private const val PAIRING_CODE_TTL_SECONDS = 300
-        private val KNOWN_ENDPOINTS = setOf("/", "/status", "/pair/start", "/pair/confirm", "/show", "/close")
+        private val KNOWN_ENDPOINTS = setOf(
+            "/",
+            "/status",
+            "/pair/start",
+            "/pair/confirm",
+            "/show",
+            "/close",
+            "/management/open",
+            "/management/launcher"
+        )
     }
 }
 

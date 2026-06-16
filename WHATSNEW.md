@@ -1,5 +1,12 @@
 # What's New ✨
 
+## Unreleased - Stage 8 Receiver Management Extension 🧰
+
+- Added a Hide Launcher switch for Home Assistant 🏠
+- Added an Open Launcher button so Home Assistant can reopen the app after the launcher icon is hidden 📺
+- Added authenticated receiver management endpoints for opening the app and showing or hiding the launcher icon 🔐
+- Added Android boot and package-replaced startup handling so the local receiver service starts without manually opening the app after restart 🔄
+
 ## 0.25.0 - Stage 8 Receiver Entities 🩺
 
 - Added receiver status and connected entities for Home Assistant dashboards 🏠

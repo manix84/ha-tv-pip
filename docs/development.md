@@ -258,6 +258,36 @@ Authorization: Bearer <token>
 
 Use `Reset Pairing` in the Android TV app before testing a new Home Assistant pairing flow. Existing pairings cannot be replaced remotely.
 
+## Receiver Management Development 🧰
+
+Stage 8 also includes receiver management controls exposed through Home Assistant.
+
+The Android receiver exposes authenticated endpoints for paired clients:
+
+```txt
+POST /management/open
+POST /management/launcher
+```
+
+`/management/open` reopens the receiver UI on the TV.
+
+`/management/launcher` accepts:
+
+```json
+{
+  "visible": true
+}
+```
+
+Home Assistant represents this as:
+
+- PiP controls: `Test PiP`, `Close PiP`
+- Launcher controls: `Hide Launcher`, `Open Launcher`
+
+Launcher controls are marked as Home Assistant config entities so they are visually separated from day-to-day PiP controls where Home Assistant supports that grouping.
+
+If the launcher icon is hidden, users can recover through Home Assistant's Open Launcher control or Android Settings > Apps > HA TV PiP. The Android app registers boot and package-replaced receivers so the local control service can start after restart without manually opening the app first.
+
 ### Website Development
 
 ```txt

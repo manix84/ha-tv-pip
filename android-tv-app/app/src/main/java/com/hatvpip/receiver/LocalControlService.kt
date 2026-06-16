@@ -21,6 +21,7 @@ class LocalControlService : Service() {
             context = applicationContext,
             onShow = ::showPlayer,
             onClose = ::closePlayer,
+            onOpenManagement = ::openManagement,
             onPairingChanged = ::refreshDiscovery,
             onStarted = { port ->
                 discoveryAdvertiser?.start(port)
@@ -128,6 +129,17 @@ class LocalControlService : Service() {
 
     private fun refreshDiscovery() {
         discoveryAdvertiser?.refresh()
+    }
+
+    private fun openManagement() {
+        startActivity(
+            Intent(this, MainActivity::class.java)
+                .addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP
+                )
+        )
     }
 
     companion object {

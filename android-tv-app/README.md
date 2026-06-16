@@ -10,6 +10,8 @@ Stage 3 adds Android-side mDNS discovery advertising so the Home Assistant integ
 
 Stage 4 adds local pairing and bearer-token authentication for remote `/show` and `/close` commands.
 
+Stage 8 adds receiver management support so Home Assistant can reopen the receiver UI, hide or restore the TV launcher icon, and keep the local control service available after boot or package replacement.
+
 ## Build 🛠️
 
 Open this directory in Android Studio and let Gradle sync.
@@ -122,6 +124,22 @@ curl -X POST http://ANDROID_TV_IP:8765/pair/confirm \
 ```
 
 Use the returned token as `Authorization: Bearer TOKEN` for `/show` and `/close`.
+
+## Receiver Management Testing 🧰
+
+Paired Home Assistant instances can open the receiver UI and hide or restore the launcher icon through authenticated management endpoints.
+
+```sh
+curl -X POST http://ANDROID_TV_IP:8765/management/open \
+  -H 'Authorization: Bearer TOKEN'
+
+curl -X POST http://ANDROID_TV_IP:8765/management/launcher \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer TOKEN' \
+  -d '{"visible":false}'
+```
+
+If the launcher icon is hidden, recover access with Home Assistant's Open Launcher control or Android Settings > Apps > HA TV PiP.
 
 ## Stream Configuration 🎬
 

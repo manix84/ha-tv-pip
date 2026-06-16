@@ -9,6 +9,8 @@ from custom_components.ha_tv_pip.client import (
     _post_json,
     async_close_receiver,
     async_get_receiver_status,
+    async_open_receiver,
+    async_set_launcher_visible,
 )
 
 
@@ -136,6 +138,7 @@ def test_async_get_receiver_status_parses_response(monkeypatch) -> None:  # type
             "controlRunning": True,
             "playbackState": "playing",
             "displayMode": "overlay",
+            "management": {"launcherVisible": False},
             "pairing": {"state": "paired"},
             "lastRequest": {"method": "GET", "path": "/status", "status": 200},
             "error": "decoder_failed",
@@ -155,6 +158,7 @@ def test_async_get_receiver_status_parses_response(monkeypatch) -> None:  # type
     assert status.playback_state == "playing"
     assert status.display_mode == "overlay"
     assert status.pairing_state == "paired"
+    assert status.launcher_visible is False
     assert status.error == "decoder_failed"
 
 
@@ -168,6 +172,40 @@ def test_async_close_receiver_returns_accepted(monkeypatch) -> None:  # type: ig
     )
 
     assert asyncio.run(async_close_receiver("10.0.0.236", 8765, token="token")) is True
+
+
+def test_async_open_receiver_returns_accepted(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    async def fake_to_thread(func, *args):  # type: ignore[no-untyped-def]
+        return {"accepted": True}
+
+    monkeypatch.setattr(
+        "custom_components.ha_tv_pip.client.asyncio.to_thread",
+        fake_to_thread,
+    )
+
+    assert asyncio.run(async_open_receiver("10.0.0.236", 8765, token="token")) is True
+
+
+def test_async_set_launcher_visible_returns_receiver_state(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    async def fake_to_thread(func, *args):  # type: ignore[no-untyped-def]
+        return {"launcherVisible": False}
+
+    monkeypatch.setattr(
+        "custom_components.ha_tv_pip.client.asyncio.to_thread",
+        fake_to_thread,
+    )
+
+    assert (
+        asyncio.run(
+            async_set_launcher_visible(
+                "10.0.0.236",
+                8765,
+                token="token",
+                visible=False,
+            )
+        )
+        is False
+    )
 
 
 def test_show_camera_command_shape() -> None:

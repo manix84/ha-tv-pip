@@ -4,7 +4,13 @@ import asyncio
 from dataclasses import dataclass
 from typing import Any
 
-from custom_components.ha_tv_pip import binary_sensor, button, diagnostics, sensor
+from custom_components.ha_tv_pip import (
+    binary_sensor,
+    button,
+    diagnostics,
+    sensor,
+    switch,
+)
 from custom_components.ha_tv_pip.client import ReceiverClientError, ReceiverStatus
 from custom_components.ha_tv_pip.const import (
     CONF_DEVICE_ID,
@@ -45,6 +51,7 @@ def _status() -> ReceiverStatus:
         playback_state="playing",
         display_mode="overlay",
         pairing_state="paired",
+        launcher_visible=True,
         last_request={"method": "GET", "path": "/status", "status": 200},
         error=None,
         raw={"url": "http://example.test/private.m3u8", "playbackState": "playing"},
@@ -69,15 +76,35 @@ def test_binary_sensor_setup_adds_connected_sensor() -> None:
     assert added[0]._attr_unique_id == "device-1_connected"
 
 
-def test_button_setup_adds_test_and_close_buttons() -> None:
+def test_button_setup_adds_open_test_and_close_buttons() -> None:
     added: list[Any] = []
 
     asyncio.run(button.async_setup_entry(None, _entry(), added.extend))
 
     assert [entity._attr_unique_id for entity in added] == [
-        "device-1_test",
-        "device-1_close",
+        "device-1_open_launcher",
+        "device-1_test_pip",
+        "device-1_close_pip",
     ]
+    assert [entity._attr_name for entity in added] == [
+        "Open Launcher",
+        "Test PiP",
+        "Close PiP",
+    ]
+    assert added[0]._attr_entity_category == "config"
+    assert not hasattr(added[1], "_attr_entity_category")
+    assert not hasattr(added[2], "_attr_entity_category")
+
+
+def test_switch_setup_adds_launcher_visibility_switch() -> None:
+    added: list[Any] = []
+
+    asyncio.run(switch.async_setup_entry(None, _entry(), added.extend))
+
+    assert len(added) == 1
+    assert added[0]._attr_unique_id == "device-1_hide_launcher"
+    assert added[0]._attr_name == "Hide Launcher"
+    assert added[0]._attr_entity_category == "config"
 
 
 def test_status_sensor_updates_from_receiver(monkeypatch) -> None:  # type: ignore[no-untyped-def]
@@ -134,6 +161,24 @@ def test_test_button_sends_public_test_stream(monkeypatch) -> None:  # type: ign
     }
 
 
+def test_open_button_opens_receiver_management(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    captured: dict[str, Any] = {}
+
+    async def fake_open(host: str, port: int, *, token: str) -> bool:
+        captured.update({"host": host, "port": port, "token": token})
+        return True
+
+    monkeypatch.setattr(button, "async_open_receiver", fake_open)
+
+    asyncio.run(button.ReceiverOpenButton(_entry()).async_press())
+
+    assert captured == {
+        "host": "10.0.0.236",
+        "port": 8765,
+        "token": "secret-token",
+    }
+
+
 def test_close_button_sends_close_command(monkeypatch) -> None:  # type: ignore[no-untyped-def]
     captured: dict[str, Any] = {}
 
@@ -149,6 +194,47 @@ def test_close_button_sends_close_command(monkeypatch) -> None:  # type: ignore[
         "host": "10.0.0.236",
         "port": 8765,
         "token": "secret-token",
+    }
+
+
+def test_launcher_switch_updates_from_receiver(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    async def fake_status(host: str, port: int) -> ReceiverStatus:
+        return _status()
+
+    monkeypatch.setattr(switch, "async_get_receiver_status", fake_status)
+    entity = switch.ReceiverLauncherSwitch(_entry())
+
+    asyncio.run(entity.async_update())
+
+    assert entity._attr_is_on is False
+
+
+def test_launcher_switch_hides_launcher(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    captured: dict[str, Any] = {}
+
+    async def fake_set_visible(
+        host: str,
+        port: int,
+        *,
+        token: str,
+        visible: bool,
+    ) -> bool:
+        captured.update(
+            {"host": host, "port": port, "token": token, "visible": visible}
+        )
+        return visible
+
+    monkeypatch.setattr(switch, "async_set_launcher_visible", fake_set_visible)
+    entity = switch.ReceiverLauncherSwitch(_entry())
+
+    asyncio.run(entity.async_turn_on())
+
+    assert entity._attr_is_on is True
+    assert captured == {
+        "host": "10.0.0.236",
+        "port": 8765,
+        "token": "secret-token",
+        "visible": False,
     }
 
 
