@@ -1,36 +1,28 @@
 .localeNav {
   align-items: center;
-  backdrop-filter: blur(18px);
-  background: var(--surface-muted);
-  border: 1px solid var(--border);
-  border-radius: 8px;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
+  gap: 0.5rem;
   justify-content: flex-end;
-  max-width: min(900px, calc(100% - 7rem));
-  padding: 0.45rem;
-  position: fixed;
-  right: 5.4rem;
-  top: 1rem;
-  z-index: 20;
+  max-width: 760px;
 }
 
 .localeNav a {
-  border-radius: 6px;
-  color: var(--text-soft);
-  font-size: 0.82rem;
-  font-weight: 800;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
   line-height: 1;
-  padding: 0.45rem 0.55rem;
+  opacity: 0.78;
+  padding: 0.15rem 0;
   text-decoration: none;
 }
 
 .localeNav a:hover,
 .localeNav a:focus-visible,
 .localeNav a[aria-current="page"] {
-  background: var(--accent);
-  color: var(--on-accent);
+  color: var(--link);
+  opacity: 1;
+  text-decoration: underline;
 }
 
 .hero {
@@ -421,6 +413,13 @@
   justify-content: flex-end;
 }
 
+.footerNavigation {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
 .footer a {
   color: var(--link);
   text-decoration: none;
@@ -431,14 +430,17 @@
   text-decoration: underline;
 }
 
-@media (max-width: 980px) {
-  .localeNav {
-    max-width: calc(100% - 2rem);
-    position: static;
-    justify-content: flex-start;
-    margin: 1rem;
-  }
+.footer .localeNav a {
+  color: var(--text-muted);
+}
 
+.footer .localeNav a:hover,
+.footer .localeNav a:focus-visible,
+.footer .localeNav a[aria-current="page"] {
+  color: var(--link);
+}
+
+@media (max-width: 980px) {
   .heroContent,
   .statusPanel {
     grid-template-columns: 1fr;
@@ -482,5 +484,9 @@
 
   .footer nav {
     justify-content: flex-start;
+  }
+
+  .footerNavigation {
+    align-items: flex-start;
   }
 }

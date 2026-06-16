@@ -81,6 +81,7 @@ describe("App content", () => {
     expect(getLocaleHref("/ha-tv-pip/", "de")).toBe("./de/");
     expect(getLocaleHref("/ha-tv-pip/de/", "fr")).toBe("/ha-tv-pip/fr/");
     expect(getLocaleHref("/ha-tv-pip/de/", "en")).toBe("/ha-tv-pip/");
+    expect(getLocaleHref("/de/", "en")).toBe("/");
   });
 
   it("uses saved language before browser detection", () => {
@@ -94,6 +95,11 @@ describe("App content", () => {
   });
 
   it("uses URL locale before saved or browser preferences", () => {
-    expect(getInitialLocale("/ha-tv-pip/fr/", ["de-DE"], "pl")).toBe("fr");
+    expect(getInitialLocale("/ha-tv-pip/fr/", ["de-DE"], null)).toBe("fr");
+  });
+
+  it("uses saved language override before URL locale", () => {
+    expect(getInitialLocale("/ha-tv-pip/fr/", ["de-DE"], "pl")).toBe("pl");
+    expect(getInitialLocale("/ha-tv-pip/de/", ["de-DE"], "en")).toBe("en");
   });
 });

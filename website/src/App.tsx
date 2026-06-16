@@ -63,9 +63,9 @@ export function getPreferredLocale(
   browserLanguages: readonly string[],
   savedPreference?: string | null
 ): WebsiteLocale {
-  const savedLocale = savedPreference?.toLowerCase();
-  if (supportedLocaleCodes.has(savedLocale as WebsiteLocale)) {
-    return savedLocale as WebsiteLocale;
+  const savedLocale = getSavedLocale(savedPreference);
+  if (savedLocale) {
+    return savedLocale;
   }
 
   for (const language of browserLanguages) {
@@ -86,14 +86,22 @@ export function getPreferredLocale(
   return "en";
 }
 
+export function getSavedLocale(savedPreference?: string | null): WebsiteLocale | null {
+  const savedLocale = savedPreference?.toLowerCase();
+  return supportedLocaleCodes.has(savedLocale as WebsiteLocale)
+    ? (savedLocale as WebsiteLocale)
+    : null;
+}
+
 export function getInitialLocale(
   pathname: string,
   browserLanguages: readonly string[],
   savedPreference?: string | null
 ): WebsiteLocale {
   return (
+    getSavedLocale(savedPreference) ??
     getRouteLocaleFromPath(pathname) ??
-    getPreferredLocale(browserLanguages, savedPreference)
+    getPreferredLocale(browserLanguages)
   );
 }
 
@@ -161,14 +169,16 @@ function App() {
 
   useEffect(() => {
     const routeLocale = getRouteLocaleFromPath(window.location.pathname);
-    if (routeLocale) {
+    const savedLocale = getSavedLocale(window.localStorage.getItem(localePreferenceKey));
+
+    if (!savedLocale && routeLocale) {
       window.localStorage.setItem(localePreferenceKey, routeLocale);
       setLocale(routeLocale);
       return;
     }
 
     window.localStorage.setItem(localePreferenceKey, locale);
-    if (locale !== "en") {
+    if (routeLocale !== locale && (locale !== "en" || routeLocale)) {
       window.location.replace(getLocaleHref(window.location.pathname, locale));
     }
   }, [locale]);
@@ -179,24 +189,15 @@ function App() {
     image: index === 0 ? controlMockup : networkMockup,
   }));
 
+  function handleLocaleSelection(localeCode: WebsiteLocale, href: string) {
+    window.localStorage.setItem(localePreferenceKey, localeCode);
+    setLocale(localeCode);
+    window.location.assign(href);
+  }
+
   return (
     <main>
       <ThemeToggle labels={content.theme} mode={themeMode} onChange={setThemeMode} />
-      <nav className={styles.localeNav} aria-label={content.languageAriaLabel}>
-        {supportedLocales.map((item) => (
-          <a
-            aria-current={item.code === locale ? "page" : undefined}
-            href={getLocaleHref(window.location.pathname, item.code)}
-            key={item.code}
-            onClick={() => {
-              window.localStorage.setItem(localePreferenceKey, item.code);
-              setLocale(item.code);
-            }}
-          >
-            {item.label}
-          </a>
-        ))}
-      </nav>
       <section className={styles.hero}>
         <div className={styles.heroContent}>
           <div className={styles.heroText}>
@@ -377,15 +378,35 @@ function App() {
           <strong>HA TV PiP</strong>
           <span>v{__PROJECT_VERSION__}</span>
         </div>
-        <nav aria-label={content.footerAriaLabel}>
-          <a href={githubUrl}>{content.footerLinks.github}</a>
-          <a href={roadmapUrl}>{content.footerLinks.roadmap}</a>
-          <a href={architectureUrl}>{content.footerLinks.architecture}</a>
-          <a href={developmentUrl}>{content.footerLinks.development}</a>
-          <a href={translationsUrl}>{content.footerLinks.translations}</a>
-          <a href={releasesUrl}>{content.footerLinks.releases}</a>
-          <a href={licenseUrl}>{content.footerLinks.license}</a>
-        </nav>
+        <div className={styles.footerNavigation}>
+          <nav aria-label={content.footerAriaLabel}>
+            <a href={githubUrl}>{content.footerLinks.github}</a>
+            <a href={roadmapUrl}>{content.footerLinks.roadmap}</a>
+            <a href={architectureUrl}>{content.footerLinks.architecture}</a>
+            <a href={developmentUrl}>{content.footerLinks.development}</a>
+            <a href={translationsUrl}>{content.footerLinks.translations}</a>
+            <a href={releasesUrl}>{content.footerLinks.releases}</a>
+            <a href={licenseUrl}>{content.footerLinks.license}</a>
+          </nav>
+          <nav className={styles.localeNav} aria-label={content.languageAriaLabel}>
+            {supportedLocales.map((item) => {
+              const href = getLocaleHref(window.location.pathname, item.code);
+              return (
+                <a
+                  aria-current={item.code === locale ? "page" : undefined}
+                  href={href}
+                  key={item.code}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    handleLocaleSelection(item.code, href);
+                  }}
+                >
+                  {item.label}
+                </a>
+              );
+            })}
+          </nav>
+        </div>
       </footer>
     </main>
   );
