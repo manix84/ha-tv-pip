@@ -1,9 +1,10 @@
 name: Release 📦
 
 on:
-  release:
-    types:
-      - published
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -42,6 +43,7 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Check version consistency
         run: npm run version:check
@@ -57,11 +59,29 @@ jobs:
       - name: Package Home Assistant integration
         run: npm run package:integration
 
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" \
+              --title "HA TV PiP v$RELEASE_VERSION" \
+              --notes "Automated release for v$RELEASE_VERSION."
+          else
+            gh release create "$RELEASE_TAG" \
+              --target "${{ github.sha }}" \
+              --title "HA TV PiP v$RELEASE_VERSION" \
+              --notes "Automated release for v$RELEASE_VERSION."
+          fi
+
       - name: Upload release assets
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" \
+          gh release upload "$RELEASE_TAG" \
             "dist/ha-tv-pip-android-v${{ steps.version.outputs.version }}.apk" \
             "dist/ha-tv-pip-integration-v${{ steps.version.outputs.version }}.zip" \
             "dist/ha-tv-pip-integration.zip" \

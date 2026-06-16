@@ -17,6 +17,7 @@
 - Added root `hacs.json` for HACS zip-release installation 🧩
 - Added a stable `ha-tv-pip-integration.zip` release asset for HACS while keeping the versioned integration zip 📦
 - Added HACS custom-repository install docs 📝
+- Changed release automation to run on pushes to `main`, creating or updating the versioned GitHub Release with Android and HACS assets 🚀
 
 ## 0.28.0 - Phase 9 Documentation And FAQ Polish 📚
 

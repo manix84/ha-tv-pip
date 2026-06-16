@@ -175,14 +175,14 @@ See `docs/translations.md` for the full language plan.
 
 ## Releases 📦
 
-GitHub Releases are the distribution target for now. When a GitHub Release is published, the release workflow reads the version from the root `package.json`, builds the Android TV APK, packages the Home Assistant integration, and uploads both assets:
+GitHub Releases are the distribution target for now. When code is pushed or merged into `main`, the release workflow reads the version from the root `package.json`, creates or updates release `vX.Y.Z`, builds the Android TV APK, packages the Home Assistant integration, and uploads these assets:
 
 ```txt
 ha-tv-pip-android-vX.Y.Z.apk
 ha-tv-pip-integration-vX.Y.Z.zip
 ```
 
-The release also uploads a stable `ha-tv-pip-integration.zip` asset for HACS. That zip contains `custom_components/ha_tv_pip/` at its root so HACS-style installs do not include the monorepo wrapper path.
+The stable `ha-tv-pip-integration.zip` asset is for HACS. That zip contains `custom_components/ha_tv_pip/` at its root so HACS-style installs do not include the monorepo wrapper path.
 
 Play Store deployment is not implemented yet.
 

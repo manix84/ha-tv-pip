@@ -619,7 +619,7 @@ The versioned zip is the human-readable release asset. The stable `ha-tv-pip-int
 
 ## GitHub Release Assets
 
-When a GitHub Release is published, `.github/workflows/release.yml`:
+When code is pushed or merged into `main`, `.github/workflows/release.yml`:
 
 1. Checks out the repo.
 2. Sets up Java, Android SDK, Gradle, and Node.
@@ -627,7 +627,8 @@ When a GitHub Release is published, `.github/workflows/release.yml`:
 4. Runs the version consistency check.
 5. Builds the Android release APK.
 6. Packages the Home Assistant integration zip.
-7. Uploads the Android APK, versioned integration zip, and stable HACS integration zip to the GitHub Release.
+7. Creates or updates GitHub Release `vX.Y.Z`.
+8. Uploads the Android APK, versioned integration zip, and stable HACS integration zip to the GitHub Release.
 
 For version `1.2.3`, expected release assets are:
 
@@ -652,7 +653,7 @@ The repo therefore uses root `hacs.json` with:
 }
 ```
 
-The release workflow uploads that stable zip on every GitHub Release. Its internal path is:
+The release workflow uploads that stable zip whenever it creates or updates a GitHub Release from `main`. Its internal path is:
 
 ```txt
 custom_components/ha_tv_pip/
