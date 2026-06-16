@@ -43,6 +43,22 @@ class ShowCameraCommand:
     preview_url: str | None = None
 
 
+def show_camera_payload(command: ShowCameraCommand) -> dict[str, Any]:
+    """Convert a show-camera command into the receiver wire payload."""
+
+    payload: dict[str, Any] = {
+        "title": command.title,
+        "url": command.url,
+        "streamType": command.stream_type,
+        "enterPip": command.enter_pip,
+    }
+    if command.duration_seconds is not None:
+        payload["durationSeconds"] = command.duration_seconds
+    if command.preview_url is not None:
+        payload["previewUrl"] = command.preview_url
+    return payload
+
+
 @dataclass(frozen=True)
 class ReceiverStatus:
     """Receiver status returned by the local HTTP API."""
@@ -57,6 +73,7 @@ class ReceiverStatus:
     display_mode: str
     pairing_state: str | None
     launcher_visible: bool | None
+    remote_status: str | None
     last_request: dict[str, Any] | None
     error: str | None
     raw: dict[str, Any]
@@ -131,23 +148,12 @@ async def async_show_camera(
 ) -> None:
     """Ask the paired receiver to display a camera stream."""
 
-    payload: dict[str, Any] = {
-        "title": command.title,
-        "url": command.url,
-        "streamType": command.stream_type,
-        "enterPip": command.enter_pip,
-    }
-    if command.duration_seconds is not None:
-        payload["durationSeconds"] = command.duration_seconds
-    if command.preview_url is not None:
-        payload["previewUrl"] = command.preview_url
-
     await asyncio.to_thread(
         _post_json,
         host,
         port,
         "/show",
-        payload,
+        show_camera_payload(command),
         token,
     )
 
@@ -158,6 +164,7 @@ async def async_get_receiver_status(host: str, port: int) -> ReceiverStatus:
     response = await asyncio.to_thread(_get_json, host, port, "/status")
     pairing = response.get("pairing")
     management = response.get("management")
+    remote = response.get("remote")
     last_request = response.get("lastRequest")
     return ReceiverStatus(
         app=str(response.get("app", "HA TV PiP Receiver")),
@@ -172,6 +179,11 @@ async def async_get_receiver_status(host: str, port: int) -> ReceiverStatus:
         launcher_visible=(
             bool(management["launcherVisible"])
             if isinstance(management, dict) and "launcherVisible" in management
+            else None
+        ),
+        remote_status=(
+            str(remote["status"])
+            if isinstance(remote, dict) and remote.get("status")
             else None
         ),
         last_request=last_request if isinstance(last_request, dict) else None,

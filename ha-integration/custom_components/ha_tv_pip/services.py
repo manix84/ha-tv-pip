@@ -9,6 +9,7 @@ from urllib.parse import quote, urlencode, urljoin, urlparse
 
 from .client import ReceiverClientError, ShowCameraCommand, async_show_camera
 from .const import (
+    CONF_DEVICE_ID,
     CONF_HOST,
     CONF_NAME,
     CONF_PORT,
@@ -17,6 +18,7 @@ from .const import (
     SERVICE_SHOW_CAMERA,
     SERVICE_SHOW_SNAPSHOT,
 )
+from .remote import remote_registry
 
 if TYPE_CHECKING:
 
@@ -77,6 +79,7 @@ class ReceiverEntry:
     """Minimal receiver config entry data required by services."""
 
     entry_id: str
+    device_id: str
     name: str
     host: str
     port: int
@@ -180,17 +183,25 @@ async def async_handle_show_camera(hass: Any, call: Any) -> None:
     _validate_camera_entity(hass, request.camera_entity)
     receiver = _resolve_receiver(hass, request)
     title = request.title or _camera_title(hass, request.camera_entity)
-    command = await _async_show_camera_command(hass, request, title=title)
+    remote = remote_registry(hass)
+    prefer_external = remote.is_connected(receiver.device_id)
+    command = await _async_show_camera_command(
+        hass,
+        request,
+        title=title,
+        prefer_external=prefer_external,
+    )
     _LOGGER.info(
-        "Sending camera %s to receiver %s at %s:%s using %s",
+        "Sending camera %s to receiver %s using %s transport and %s stream",
         request.camera_entity,
         receiver.name,
-        receiver.host,
-        receiver.port,
+        "remote" if prefer_external else "local",
         command.stream_type,
     )
 
     try:
+        if await remote.async_send_show(device_id=receiver.device_id, command=command):
+            return
         await async_show_camera(
             receiver.host,
             receiver.port,
@@ -208,28 +219,36 @@ async def async_handle_show_snapshot(hass: Any, call: Any) -> None:
     request = _request_from_call(call)
     _validate_camera_entity(hass, request.camera_entity)
     receiver = _resolve_receiver(hass, request)
-    snapshot_url = _camera_snapshot_url(hass, request.camera_entity)
+    remote = remote_registry(hass)
+    prefer_external = remote.is_connected(receiver.device_id)
+    snapshot_url = _camera_snapshot_url(
+        hass,
+        request.camera_entity,
+        prefer_external=prefer_external,
+    )
     title = request.title or _camera_title(hass, request.camera_entity)
     _LOGGER.info(
-        "Sending snapshot %s to receiver %s at %s:%s",
+        "Sending snapshot %s to receiver %s using %s transport",
         request.camera_entity,
         receiver.name,
-        receiver.host,
-        receiver.port,
+        "remote" if prefer_external else "local",
     )
 
     try:
+        command = ShowCameraCommand(
+            title=title,
+            url=snapshot_url,
+            duration_seconds=request.duration_seconds,
+            enter_pip=request.enter_pip,
+            stream_type=STREAM_TYPE_SNAPSHOT,
+        )
+        if await remote.async_send_show(device_id=receiver.device_id, command=command):
+            return
         await async_show_camera(
             receiver.host,
             receiver.port,
             token=receiver.token,
-            command=ShowCameraCommand(
-                title=title,
-                url=snapshot_url,
-                duration_seconds=request.duration_seconds,
-                enter_pip=request.enter_pip,
-                stream_type=STREAM_TYPE_SNAPSHOT,
-            ),
+            command=command,
         )
     except ReceiverClientError as error:
         _LOGGER.error("Unable to send camera snapshot to %s: %s", receiver.name, error)
@@ -297,6 +316,7 @@ def _resolve_receiver(hass: Any, request: ShowCameraRequest) -> ReceiverEntry:
 
     return ReceiverEntry(
         entry_id=entry.entry_id,
+        device_id=str(data[CONF_DEVICE_ID]),
         name=str(data.get(CONF_NAME, "HA TV PiP Receiver")),
         host=str(data[CONF_HOST]),
         port=int(data[CONF_PORT]),
@@ -347,21 +367,34 @@ async def _async_show_camera_command(
     request: ShowCameraRequest,
     *,
     title: str,
+    prefer_external: bool = False,
 ) -> ShowCameraCommand:
     if request.stream_type == STREAM_TYPE_SNAPSHOT:
         return ShowCameraCommand(
             title=title,
-            url=_camera_snapshot_url(hass, request.camera_entity),
+            url=_camera_snapshot_url(
+                hass,
+                request.camera_entity,
+                prefer_external=prefer_external,
+            ),
             duration_seconds=request.duration_seconds,
             enter_pip=request.enter_pip,
             stream_type=STREAM_TYPE_SNAPSHOT,
         )
 
-    preview_url = _snapshot_preview_url(hass, request)
+    preview_url = _snapshot_preview_url(
+        hass,
+        request,
+        prefer_external=prefer_external,
+    )
     try:
         return ShowCameraCommand(
             title=title,
-            url=await _async_camera_stream_url(hass, request.camera_entity),
+            url=await _async_camera_stream_url(
+                hass,
+                request.camera_entity,
+                prefer_external=prefer_external,
+            ),
             duration_seconds=request.duration_seconds,
             enter_pip=request.enter_pip,
             stream_type=STREAM_TYPE_HLS,
@@ -381,23 +414,41 @@ async def _async_show_camera_command(
         )
         return ShowCameraCommand(
             title=title,
-            url=_camera_snapshot_url(hass, request.camera_entity),
+            url=_camera_snapshot_url(
+                hass,
+                request.camera_entity,
+                prefer_external=prefer_external,
+            ),
             duration_seconds=request.duration_seconds,
             enter_pip=request.enter_pip,
             stream_type=STREAM_TYPE_SNAPSHOT,
         )
 
 
-def _snapshot_preview_url(hass: Any, request: ShowCameraRequest) -> str | None:
+def _snapshot_preview_url(
+    hass: Any,
+    request: ShowCameraRequest,
+    *,
+    prefer_external: bool = False,
+) -> str | None:
     if request.stream_type == STREAM_TYPE_SNAPSHOT or not request.snapshot_fallback:
         return None
 
     preview_entity = request.snapshot_camera_entity or request.camera_entity
     _validate_camera_entity(hass, preview_entity)
-    return _optional_camera_snapshot_url(hass, preview_entity)
+    return _optional_camera_snapshot_url(
+        hass,
+        preview_entity,
+        prefer_external=prefer_external,
+    )
 
 
-async def _async_camera_stream_url(hass: Any, entity_id: str) -> str:
+async def _async_camera_stream_url(
+    hass: Any,
+    entity_id: str,
+    *,
+    prefer_external: bool = False,
+) -> str:
     camera_module = __import__(
         "homeassistant.components.camera",
         fromlist=["async_request_stream"],
@@ -417,12 +468,21 @@ async def _async_camera_stream_url(hass: Any, entity_id: str) -> str:
         _LOGGER.error("Camera stream API returned no stream URL for %s", entity_id)
         raise ServiceValidationError("camera_stream_unavailable")
 
-    absolute_url = _absolute_stream_url(hass, str(stream_url))
+    absolute_url = _absolute_stream_url(
+        hass,
+        str(stream_url),
+        prefer_external=prefer_external,
+    )
     _LOGGER.debug("Resolved stream URL for %s to %s", entity_id, absolute_url)
     return absolute_url
 
 
-def _absolute_stream_url(hass: Any, stream_url: str) -> str:
+def _absolute_stream_url(
+    hass: Any,
+    stream_url: str,
+    *,
+    prefer_external: bool = False,
+) -> str:
     parsed = urlparse(stream_url)
     if parsed.scheme and parsed.netloc:
         return stream_url
@@ -432,7 +492,7 @@ def _absolute_stream_url(hass: Any, stream_url: str) -> str:
         fromlist=["get_url"],
     )
     try:
-        base_url = network_module.get_url(hass, prefer_external=False)
+        base_url = network_module.get_url(hass, prefer_external=prefer_external)
     except TypeError:
         base_url = network_module.get_url(hass)
 
@@ -445,7 +505,12 @@ def _camera_title(hass: Any, entity_id: str) -> str:
     return str(friendly_name or entity_id)
 
 
-def _camera_snapshot_url(hass: Any, entity_id: str) -> str:
+def _camera_snapshot_url(
+    hass: Any,
+    entity_id: str,
+    *,
+    prefer_external: bool = False,
+) -> str:
     state = hass.states.get(entity_id)
     access_token = None if state is None else state.attributes.get("access_token")
     if not access_token:
@@ -457,12 +522,25 @@ def _camera_snapshot_url(hass: Any, entity_id: str) -> str:
 
     path = f"/api/camera_proxy/{quote(entity_id, safe='')}"
     query = urlencode({"token": str(access_token)})
-    return _absolute_stream_url(hass, f"{path}?{query}")
+    return _absolute_stream_url(
+        hass,
+        f"{path}?{query}",
+        prefer_external=prefer_external,
+    )
 
 
-def _optional_camera_snapshot_url(hass: Any, entity_id: str) -> str | None:
+def _optional_camera_snapshot_url(
+    hass: Any,
+    entity_id: str,
+    *,
+    prefer_external: bool = False,
+) -> str | None:
     try:
-        return _camera_snapshot_url(hass, entity_id)
+        return _camera_snapshot_url(
+            hass,
+            entity_id,
+            prefer_external=prefer_external,
+        )
     except ServiceValidationError as error:
         _LOGGER.warning(
             "Snapshot fallback unavailable for %s: %s",

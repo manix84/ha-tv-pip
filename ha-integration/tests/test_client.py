@@ -11,6 +11,7 @@ from custom_components.ha_tv_pip.client import (
     async_get_receiver_status,
     async_open_receiver,
     async_set_launcher_visible,
+    show_camera_payload,
 )
 
 
@@ -138,6 +139,7 @@ def test_async_get_receiver_status_parses_response(monkeypatch) -> None:  # type
             "controlRunning": True,
             "playbackState": "playing",
             "displayMode": "overlay",
+            "remote": {"status": "connected"},
             "management": {"launcherVisible": False},
             "pairing": {"state": "paired"},
             "lastRequest": {"method": "GET", "path": "/status", "status": 200},
@@ -159,6 +161,7 @@ def test_async_get_receiver_status_parses_response(monkeypatch) -> None:  # type
     assert status.display_mode == "overlay"
     assert status.pairing_state == "paired"
     assert status.launcher_visible is False
+    assert status.remote_status == "connected"
     assert status.error == "decoder_failed"
 
 
@@ -220,3 +223,22 @@ def test_show_camera_command_shape() -> None:
     assert command.title == "Front Door"
     assert command.stream_type == "hls"
     assert command.preview_url == "https://example.test/snapshot.jpg"
+
+
+def test_show_camera_payload_matches_receiver_wire_shape() -> None:
+    command = ShowCameraCommand(
+        title="Front Door",
+        url="https://example.test/stream.m3u8",
+        duration_seconds=30,
+        enter_pip=True,
+        preview_url="https://example.test/snapshot.jpg",
+    )
+
+    assert show_camera_payload(command) == {
+        "title": "Front Door",
+        "url": "https://example.test/stream.m3u8",
+        "streamType": "hls",
+        "enterPip": True,
+        "durationSeconds": 30,
+        "previewUrl": "https://example.test/snapshot.jpg",
+    }

@@ -57,6 +57,10 @@ object AppLog {
         Log.i(TAG, "event=$event reason=$reason")
     }
 
+    fun remoteConnectionEvent(event: String, state: String) {
+        Log.i(TAG, "event=$event remoteState=$state")
+    }
+
     fun error(message: String, throwable: Throwable? = null) {
         Log.e(TAG, "event=error message=$message", throwable)
     }

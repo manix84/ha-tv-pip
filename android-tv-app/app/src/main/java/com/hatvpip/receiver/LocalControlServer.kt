@@ -129,6 +129,7 @@ class LocalControlServer(
         val control = ControlRuntimeState.snapshot()
         val discovery = DiscoveryRuntimeState.snapshot()
         val pairing = PairingState.snapshot(context)
+        val remote = RemoteConnectionRuntimeState.snapshot()
         val lastRequest = control.lastRequest
         val body = JSONObject()
             .put("app", "HA TV PiP Receiver")
@@ -162,6 +163,15 @@ class LocalControlServer(
                     .put("serviceType", discovery.serviceType)
                     .put("port", discovery.port)
                     .put("error", discovery.errorMessage)
+            )
+            .put(
+                "remote",
+                JSONObject()
+                    .put("status", remote.status.wireName)
+                    .put("homeAssistantUrl", remote.homeAssistantUrl)
+                    .put("lastError", remote.lastError)
+                    .put("connectedAtMillis", remote.connectedAtMillis)
+                    .put("lastMessageAtMillis", remote.lastMessageAtMillis)
             )
             .put(
                 "lastRequest",

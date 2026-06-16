@@ -52,6 +52,7 @@ def _status() -> ReceiverStatus:
         display_mode="overlay",
         pairing_state="paired",
         launcher_visible=True,
+        remote_status="connected",
         last_request={"method": "GET", "path": "/status", "status": 200},
         error=None,
         raw={"url": "http://example.test/private.m3u8", "playbackState": "playing"},
@@ -119,6 +120,7 @@ def test_status_sensor_updates_from_receiver(monkeypatch) -> None:  # type: igno
     assert entity._attr_native_value == "playing"
     assert entity._attr_extra_state_attributes["connected"] is True
     assert entity._attr_extra_state_attributes["display_mode"] == "overlay"
+    assert entity._attr_extra_state_attributes["remote_status"] == "connected"
 
 
 def test_connected_sensor_handles_unavailable_receiver(monkeypatch) -> None:  # type: ignore[no-untyped-def]

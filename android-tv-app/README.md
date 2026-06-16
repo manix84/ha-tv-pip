@@ -12,6 +12,8 @@ Stage 4 adds local pairing and bearer-token authentication for remote `/show` an
 
 Stage 8 adds receiver management support so Home Assistant can reopen the receiver UI, hide or restore the TV launcher icon, and keep the local control service available after boot or package replacement.
 
+Phase 9 adds optional remote receiver mode. The app can connect outbound to the user's own Home Assistant WebSocket API so external TVs can receive PiP commands without router port forwarding.
+
 ## Build 🛠️
 
 Open this directory in Android Studio and let Gradle sync.
@@ -141,10 +143,24 @@ curl -X POST http://ANDROID_TV_IP:8765/management/launcher \
 
 If the launcher icon is hidden, recover access with Home Assistant's Open Launcher control or Android Settings > Apps > HA TV PiP.
 
+## Remote Receiver Testing 🌍
+
+Remote receiver mode is optional and local-first remains the default.
+
+1. Pair the receiver with Home Assistant locally first.
+2. Create a Home Assistant long-lived access token for testing.
+3. Open the Android TV app and enter the Home Assistant external URL.
+4. Enter the long-lived access token.
+5. Select `Save Remote`.
+6. Confirm the remote state changes to `connected`.
+7. Trigger `ha_tv_pip.show_camera` or `ha_tv_pip.show_snapshot` from Home Assistant.
+
+The receiver connects outbound to the user's own Home Assistant instance. HA TV PiP does not provide or depend on a hosted cloud relay.
+
 ## Stream Configuration 🎬
 
 The test stream URL is defined in `PlayerActivity.TEST_STREAM_URL`.
 
 ## Future Notes 🚧
 
-This app does not yet implement camera entity resolution, snapshots, HLS URL resolution from Home Assistant, or WebRTC.
+This app does not yet implement WebRTC or polished remote onboarding.

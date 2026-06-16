@@ -140,6 +140,10 @@ object PairingState {
         return storedToken != null && token != null && constantTimeEquals(storedToken, token)
     }
 
+    fun pairedToken(context: Context): String? =
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_TOKEN, null)
+
     private fun clearStoredPairing(context: Context) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()

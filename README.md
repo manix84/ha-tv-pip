@@ -32,6 +32,8 @@ Stage 7 is complete in `0.24.0`. `ha_tv_pip.show_camera` supports `stream_type: 
 
 Stage 8 is complete in `0.25.0`. Each paired receiver now exposes Home Assistant status, connected, test, close, and launcher management entities, plus redacted config entry diagnostics for troubleshooting. Home Assistant can hide or restore the Android TV launcher icon and reopen the receiver UI without ADB.
 
+Phase 9 is in progress. Remote receiver mode lets a TV connect outbound to the user's own Home Assistant WebSocket API, so Home Assistant can send PiP commands to an external TV without router port forwarding. This is not a HA TV PiP cloud service; the Home Assistant integration remains local-first and declares `iot_class: local_push`.
+
 ## Monorepo Layout 🧱
 
 ```txt
@@ -147,6 +149,17 @@ Pairing is intentionally a one-time two-device flow:
 5. Home Assistant stores the returned local bearer token.
 
 Existing pairings cannot be replaced remotely. Use `Reset Pairing` in the Android TV app before pairing a different Home Assistant instance.
+
+## Remote Receiver Mode 🌍
+
+Phase 9 adds optional outbound remote connectivity for travel TVs and external receivers.
+
+- The Android TV app connects to the user's Home Assistant external URL.
+- Home Assistant sends receiver commands over its existing authenticated WebSocket API.
+- The receiver still proves it is paired by registering with its existing receiver pairing token.
+- Local LAN control remains available and preferred when the TV is at home.
+
+Remote mode is for sending notifications to an external TV. It does not make HA TV PiP a cloud service and does not require port forwarding to the TV.
 
 ## Releases 📦
 

@@ -439,7 +439,7 @@ Benefits:
 
 ## Remote Mode
 
-Future enhancement.
+Optional Phase 9 transport.
 
 ```txt
 Android TV
@@ -454,6 +454,24 @@ Commands
 Remote receivers should connect outbound to Home Assistant.
 
 Home Assistant should never require inbound access to remote TVs.
+
+Remote mode does not introduce a HA TV PiP cloud service. The receiver connects to the user's own Home Assistant external URL, including a Nabu Casa URL if the user already uses Home Assistant Cloud. The Home Assistant integration remains local-first and keeps `iot_class: local_push`.
+
+Remote command flow:
+
+```txt
+Android TV receiver
+    │ 1. Authenticates to Home Assistant WebSocket API
+    │ 2. Registers with existing receiver pairing token
+    ▼
+Home Assistant integration
+    │ 3. Stores the active outbound connection in memory
+    │ 4. Sends show commands over WebSocket when remote is connected
+    ▼
+Android TV receiver playback
+```
+
+When a remote receiver is connected, Home Assistant should resolve camera streams and snapshots against the external Home Assistant URL. When no remote receiver is connected, local HTTP control remains the fallback.
 
 ---
 

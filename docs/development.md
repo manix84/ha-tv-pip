@@ -288,6 +288,59 @@ Launcher controls are marked as Home Assistant config entities so they are visua
 
 If the launcher icon is hidden, users can recover through Home Assistant's Open Launcher control or Android Settings > Apps > HA TV PiP. The Android app registers boot and package-replaced receivers so the local control service can start after restart without manually opening the app first.
 
+## Remote Receiver Development 🌍
+
+Phase 9 adds optional outbound remote receiver transport.
+
+The design remains local-first:
+
+- HA TV PiP does not provide a hosted cloud relay.
+- The Home Assistant integration remains `iot_class: local_push`.
+- Remote receivers connect to the user's own Home Assistant external URL.
+- Nabu Casa URLs are supported as Home Assistant external URLs, not as a HA TV PiP cloud dependency.
+- Local HTTP control remains the fallback when no remote receiver connection is active.
+
+Home Assistant registers this WebSocket command for receiver registration:
+
+```txt
+ha_tv_pip/receiver/register
+```
+
+Receiver registration payload:
+
+```json
+{
+  "type": "ha_tv_pip/receiver/register",
+  "device_id": "49e3b07d8f4b7d65",
+  "name": "Travel TV",
+  "token": "receiver-pairing-token"
+}
+```
+
+The WebSocket itself is authenticated with a normal Home Assistant long-lived access token. The `token` field above is the existing HA TV PiP receiver pairing token, used to prove the remote connection belongs to a configured receiver.
+
+Remote receiver commands are pushed as Home Assistant WebSocket event messages:
+
+```json
+{
+  "type": "event",
+  "event": {
+    "event_type": "ha_tv_pip/receiver_command",
+    "data": {
+      "command": "show",
+      "payload": {
+        "title": "Front Door",
+        "url": "https://example.test/api/hls/front-door",
+        "streamType": "hls",
+        "enterPip": true
+      }
+    }
+  }
+}
+```
+
+When a receiver is connected remotely, service handlers prefer Home Assistant's external URL for HLS streams and snapshot URLs. When the receiver is local-only, they continue to prefer the local URL.
+
 ### Website Development
 
 ```txt

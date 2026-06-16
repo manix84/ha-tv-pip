@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -27,6 +28,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,6 +52,8 @@ class MainActivity : ComponentActivity() {
     private var discoverySnapshot by mutableStateOf(DiscoveryRuntimeState.snapshot())
     private var pairingSnapshot by mutableStateOf<PairingSnapshot?>(null)
     private var launcherVisible by mutableStateOf(true)
+    private var remoteConfig by mutableStateOf(RemoteConnectionConfig("", ""))
+    private var remoteSnapshot by mutableStateOf(RemoteConnectionRuntimeState.snapshot())
     private val controlSnapshotHandler = Handler(Looper.getMainLooper())
     private val controlSnapshotUpdater = object : Runnable {
         override fun run() {
@@ -57,6 +61,7 @@ class MainActivity : ComponentActivity() {
             discoverySnapshot = DiscoveryRuntimeState.snapshot()
             pairingSnapshot = PairingState.snapshot(this@MainActivity)
             launcherVisible = LauncherVisibility.isVisible(this@MainActivity)
+            remoteSnapshot = RemoteConnectionRuntimeState.snapshot()
             controlSnapshotHandler.postDelayed(this, CONTROL_STATUS_REFRESH_MS)
         }
     }
@@ -82,10 +87,14 @@ class MainActivity : ComponentActivity() {
                         discoverySnapshot = discoverySnapshot,
                         pairingSnapshot = pairingSnapshot,
                         launcherVisible = launcherVisible,
+                        remoteConfig = remoteConfig,
+                        remoteSnapshot = remoteSnapshot,
                         onRequestOverlayPermission = ::openOverlayPermissionSettings,
                         onStopOverlay = ::stopOverlayFallback,
                         onResetPairing = ::resetPairing,
                         onSetLauncherVisible = ::updateLauncherVisibility,
+                        onSaveRemoteConfig = ::saveRemoteConnectionConfig,
+                        onClearRemoteConfig = ::clearRemoteConnectionConfig,
                         onPlayTestVideo = {
                             startActivity(
                                 PlayerActivity.createShowIntent(
@@ -119,6 +128,8 @@ class MainActivity : ComponentActivity() {
         discoverySnapshot = DiscoveryRuntimeState.snapshot()
         pairingSnapshot = PairingState.snapshot(this)
         launcherVisible = LauncherVisibility.isVisible(this)
+        remoteConfig = RemoteConnectionSettings.load(this)
+        remoteSnapshot = RemoteConnectionRuntimeState.snapshot()
     }
 
     private fun openOverlayPermissionSettings() {
@@ -161,6 +172,32 @@ class MainActivity : ComponentActivity() {
             reason = if (launcherVisible) "visible" else "hidden"
         )
     }
+
+    private fun saveRemoteConnectionConfig(config: RemoteConnectionConfig) {
+        RemoteConnectionSettings.save(this, config)
+        remoteConfig = RemoteConnectionSettings.load(this)
+        AppLog.remoteConnectionEvent(
+            event = "remote_settings_saved",
+            state = if (remoteConfig.enabled) "enabled" else "disabled"
+        )
+        startService(
+            Intent(this, LocalControlService::class.java)
+                .setAction(LocalControlService.ACTION_REMOTE_SETTINGS_CHANGED)
+        )
+    }
+
+    private fun clearRemoteConnectionConfig() {
+        RemoteConnectionSettings.clear(this)
+        remoteConfig = RemoteConnectionSettings.load(this)
+        AppLog.remoteConnectionEvent(
+            event = "remote_settings_cleared",
+            state = RemoteConnectionStatus.Disabled.wireName
+        )
+        startService(
+            Intent(this, LocalControlService::class.java)
+                .setAction(LocalControlService.ACTION_REMOTE_SETTINGS_CHANGED)
+        )
+    }
 }
 
 @Composable
@@ -171,10 +208,14 @@ private fun MainScreen(
     discoverySnapshot: DiscoverySnapshot,
     pairingSnapshot: PairingSnapshot?,
     launcherVisible: Boolean,
+    remoteConfig: RemoteConnectionConfig,
+    remoteSnapshot: RemoteConnectionSnapshot,
     onRequestOverlayPermission: () -> Unit,
     onStopOverlay: () -> Unit,
     onResetPairing: () -> Unit,
     onSetLauncherVisible: (Boolean) -> Unit,
+    onSaveRemoteConfig: (RemoteConnectionConfig) -> Unit,
+    onClearRemoteConfig: () -> Unit,
     onPlayTestVideo: () -> Unit
 ) {
     val playButtonFocusRequester = remember { FocusRequester() }
@@ -225,6 +266,13 @@ private fun MainScreen(
                 launcherVisible = launcherVisible,
                 onSetLauncherVisible = onSetLauncherVisible
             )
+            Spacer(modifier = Modifier.height(18.dp))
+            RemoteConnectionPanel(
+                remoteConfig = remoteConfig,
+                remoteSnapshot = remoteSnapshot,
+                onSaveRemoteConfig = onSaveRemoteConfig,
+                onClearRemoteConfig = onClearRemoteConfig
+            )
             Spacer(modifier = Modifier.height(24.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 TvActionButton(
@@ -258,6 +306,83 @@ private fun MainScreen(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun RemoteConnectionPanel(
+    remoteConfig: RemoteConnectionConfig,
+    remoteSnapshot: RemoteConnectionSnapshot,
+    onSaveRemoteConfig: (RemoteConnectionConfig) -> Unit,
+    onClearRemoteConfig: () -> Unit
+) {
+    var homeAssistantUrl by remember(remoteConfig.homeAssistantUrl) {
+        mutableStateOf(remoteConfig.homeAssistantUrl)
+    }
+    var accessToken by remember(remoteConfig.accessToken) {
+        mutableStateOf(remoteConfig.accessToken)
+    }
+
+    Column(
+        modifier = Modifier.widthIn(max = 760.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "Remote receiver",
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "State: ${remoteSnapshot.status.wireName}",
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 16.sp
+        )
+        remoteSnapshot.lastError?.let { error ->
+            Text(
+                text = "Last error: $error",
+                color = MaterialTheme.colorScheme.error,
+                fontSize = 15.sp
+            )
+        }
+        Text(
+            text = "Use your Home Assistant external URL and a long-lived access token. This connects outbound to your own Home Assistant instance; it is not a HA TV PiP cloud service.",
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 15.sp
+        )
+        OutlinedTextField(
+            value = homeAssistantUrl,
+            onValueChange = { homeAssistantUrl = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Home Assistant URL") },
+            singleLine = true
+        )
+        OutlinedTextField(
+            value = accessToken,
+            onValueChange = { accessToken = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Long-lived access token") },
+            singleLine = true
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            TvActionButton(
+                text = "Save Remote",
+                onClick = {
+                    onSaveRemoteConfig(
+                        RemoteConnectionConfig(
+                            homeAssistantUrl = homeAssistantUrl,
+                            accessToken = accessToken
+                        )
+                    )
+                },
+                minWidth = 190
+            )
+            TvActionButton(
+                text = "Clear Remote",
+                onClick = onClearRemoteConfig,
+                minWidth = 190
+            )
         }
     }
 }

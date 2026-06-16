@@ -8,7 +8,9 @@ from typing import Any
 
 import pytest
 
+from custom_components.ha_tv_pip.client import ShowCameraCommand
 from custom_components.ha_tv_pip.const import (
+    CONF_DEVICE_ID,
     CONF_HOST,
     CONF_NAME,
     CONF_PORT,
@@ -77,10 +79,13 @@ class FakeHass:
     ) -> None:
         self.config_entries = FakeConfigEntries(entries)
         self.states = FakeStates(states or {})
+        self.data: dict[str, Any] = {}
 
 
 class FakeNetworkModule(types.ModuleType):
     def get_url(self, hass: Any, prefer_external: bool = False) -> str:
+        if prefer_external:
+            return "https://home.example.test"
         return "http://10.0.0.2:8123"
 
 
@@ -180,6 +185,7 @@ def test_resolve_receiver_uses_single_paired_entry_without_target() -> None:
         entry_id="entry-1",
         data={
             CONF_NAME: "Nursery TV",
+            CONF_DEVICE_ID: "device-1",
             CONF_HOST: "10.0.0.236",
             CONF_PORT: 8765,
             CONF_TOKEN: "token",
@@ -218,7 +224,10 @@ def test_resolve_receiver_requires_token() -> None:
 def test_resolve_receiver_requires_target_when_multiple_entries() -> None:
     entries = [
         FakeEntry("entry-1", {CONF_HOST: "10.0.0.1", CONF_PORT: 8765, CONF_TOKEN: "a"}),
-        FakeEntry("entry-2", {CONF_HOST: "10.0.0.2", CONF_PORT: 8765, CONF_TOKEN: "b"}),
+        FakeEntry(
+            "entry-2",
+            {CONF_HOST: "10.0.0.2", CONF_PORT: 8765, CONF_TOKEN: "b"},
+        ),
     ]
 
     with pytest.raises(ServiceValidationError) as error:
@@ -264,6 +273,22 @@ def test_absolute_stream_url_expands_relative_url(
     assert (
         _absolute_stream_url(FakeHass(entries=[]), "/api/hls/front-door")
         == "http://10.0.0.2:8123/api/hls/front-door"
+    )
+
+
+def test_absolute_stream_url_can_prefer_external_url(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    network_module = FakeNetworkModule("homeassistant.helpers.network")
+    monkeypatch.setitem(sys.modules, "homeassistant.helpers.network", network_module)
+
+    assert (
+        _absolute_stream_url(
+            FakeHass(entries=[]),
+            "/api/hls/front-door",
+            prefer_external=True,
+        )
+        == "https://home.example.test/api/hls/front-door"
     )
 
 
@@ -319,6 +344,126 @@ def test_show_camera_command_auto_prefers_hls(
         "http://10.0.0.2:8123/api/camera_proxy/camera.front_door"
         "?token=snapshot-token"
     )
+
+
+def test_show_camera_command_uses_external_urls_for_remote_receiver(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.components.camera",
+        FakeCameraModule("/api/hls/front-door"),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.exceptions",
+        FakeExceptionsModule("homeassistant.exceptions"),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.helpers.network",
+        FakeNetworkModule("homeassistant.helpers.network"),
+    )
+    hass = FakeHass(
+        entries=[],
+        states={
+            "camera.front_door": FakeState(
+                {"friendly_name": "Front Door", "access_token": "snapshot-token"}
+            )
+        },
+    )
+
+    command = asyncio.run(
+        _async_show_camera_command(
+            hass,
+            _request_from_call(
+                FakeCall(data={ATTR_CAMERA_ENTITY: "camera.front_door"})
+            ),
+            title="Front Door",
+            prefer_external=True,
+        )
+    )
+
+    assert command.url == "https://home.example.test/api/hls/front-door"
+    assert command.preview_url == (
+        "https://home.example.test/api/camera_proxy/camera.front_door"
+        "?token=snapshot-token"
+    )
+
+
+def test_show_camera_service_prefers_connected_remote_receiver(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from custom_components.ha_tv_pip import services
+
+    sent: dict[str, Any] = {}
+
+    class FakeRemoteRegistry:
+        def is_connected(self, device_id: str) -> bool:
+            return device_id == "device-1"
+
+        async def async_send_show(
+            self,
+            *,
+            device_id: str,
+            command: ShowCameraCommand,
+        ) -> bool:
+            sent["device_id"] = device_id
+            sent["url"] = command.url
+            sent["preview_url"] = command.preview_url
+            return True
+
+    async def fake_command(
+        hass: Any,
+        request: Any,
+        *,
+        title: str,
+        prefer_external: bool = False,
+    ) -> ShowCameraCommand:
+        sent["prefer_external"] = prefer_external
+        return ShowCameraCommand(
+            title=title,
+            url="https://home.example.test/api/hls/front-door",
+            duration_seconds=30,
+            enter_pip=True,
+            preview_url="https://home.example.test/api/camera_proxy/camera.front_door",
+        )
+
+    async def fail_local_show(*args: Any, **kwargs: Any) -> None:
+        raise AssertionError("local HTTP fallback should not be used")
+
+    monkeypatch.setattr(services, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(services, "_async_show_camera_command", fake_command)
+    monkeypatch.setattr(services, "async_show_camera", fail_local_show)
+
+    entry = FakeEntry(
+        entry_id="entry-1",
+        data={
+            CONF_DEVICE_ID: "device-1",
+            CONF_NAME: "Travel TV",
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "token",
+        },
+    )
+    hass = FakeHass(
+        entries=[entry],
+        states={"camera.front_door": FakeState({"friendly_name": "Front Door"})},
+    )
+
+    asyncio.run(
+        services.async_handle_show_camera(
+            hass,
+            FakeCall(data={ATTR_CAMERA_ENTITY: "camera.front_door"}),
+        )
+    )
+
+    assert sent == {
+        "prefer_external": True,
+        "device_id": "device-1",
+        "url": "https://home.example.test/api/hls/front-door",
+        "preview_url": "https://home.example.test/api/camera_proxy/camera.front_door",
+    }
 
 
 def test_show_camera_command_can_force_snapshot(

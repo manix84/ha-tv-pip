@@ -545,6 +545,8 @@ Include:
 
 # Phase 9: Remote Access
 
+Status: In progress.
+
 ## Goal
 
 Allow a travel Android TV / Google TV device to receive PiP commands from Home Assistant without requiring port forwarding.
@@ -569,12 +571,29 @@ Possible approaches:
 - Support manually configured external Home Assistant URL.
 - Support local-only mode for users who do not want remote access.
 - Clearly indicate whether the current connection is local or remote.
+- Keep the Home Assistant integration local-first and avoid presenting HA TV PiP as a cloud service.
+
+## Initial Implementation
+
+- Home Assistant registers an optional WebSocket command for outbound receiver registration.
+- Remote receivers authenticate to Home Assistant with a normal Home Assistant long-lived access token.
+- Remote receivers also register with the existing receiver pairing token, so remote mode stays tied to the paired receiver model.
+- `ha_tv_pip.show_camera` and `ha_tv_pip.show_snapshot` prefer an active remote receiver connection and fall back to local HTTP when no remote connection is present.
+- Remote receiver commands use the same `show` payload as the local `/show` endpoint.
+- Camera stream and snapshot URLs prefer Home Assistant's external URL when a remote receiver connection is active.
+- Android TV includes a minimal remote receiver settings panel for Home Assistant external URL and long-lived access token.
+- Android TV `/status` reports remote connection state for diagnostics.
+
+## Non-Goal
+
+HA TV PiP should not become a hosted cloud relay. Remote mode uses the user's own Home Assistant external URL or Nabu Casa URL as the endpoint.
 
 ## Success Criteria
 
 - A remote Android TV device can connect back to Home Assistant.
 - No router port forwarding is required.
 - Local mode remains available and preferred when on the same LAN.
+- Home Assistant continues to classify the integration as local-first rather than cloud-owned infrastructure.
 
 ---
 

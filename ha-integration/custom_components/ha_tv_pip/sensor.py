@@ -64,6 +64,7 @@ def _status_attributes(status: ReceiverStatus) -> dict[str, Any]:
         "device_name": status.device_name,
         "display_mode": status.display_mode,
         "pairing_state": status.pairing_state,
+        "remote_status": status.remote_status,
         "control_running": status.control_running,
         "last_request": status.last_request,
         "last_error": status.error,

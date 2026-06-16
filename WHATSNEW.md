@@ -1,5 +1,13 @@
 # What's New ✨
 
+## Unreleased - Phase 9 Remote Receiver Transport 🌍
+
+- Added Home Assistant WebSocket registration for outbound remote receivers 🏠
+- Added Android TV remote receiver client settings for Home Assistant external URL and long-lived access token 📺
+- Sent remote `show_camera` and `show_snapshot` commands over the receiver's outbound WebSocket connection when connected 🔔
+- Kept local HTTP control as the fallback when no remote receiver connection is active 🏠
+- Kept HA TV PiP local-first: this is not a hosted HA TV PiP cloud service ✅
+
 ## Unreleased - Stage 8 Receiver Management Extension 🧰
 
 - Added a Hide Launcher switch for Home Assistant 🏠

@@ -12,11 +12,16 @@ import androidx.core.app.NotificationCompat
 class LocalControlService : Service() {
     private var server: LocalControlServer? = null
     private var discoveryAdvertiser: DiscoveryAdvertiser? = null
+    private var remoteReceiverClient: RemoteReceiverClient? = null
 
     override fun onCreate() {
         super.onCreate()
         startForeground(NOTIFICATION_ID, buildNotification())
         discoveryAdvertiser = DiscoveryAdvertiser(applicationContext)
+        remoteReceiverClient = RemoteReceiverClient(
+            context = applicationContext,
+            onShow = ::showPlayer
+        ).also { it.reconnect() }
         server = LocalControlServer(
             context = applicationContext,
             onShow = ::showPlayer,
@@ -30,6 +35,8 @@ class LocalControlService : Service() {
     }
 
     override fun onDestroy() {
+        remoteReceiverClient?.disconnect()
+        remoteReceiverClient = null
         discoveryAdvertiser?.stop()
         discoveryAdvertiser = null
         server?.stop()
@@ -40,6 +47,10 @@ class LocalControlService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == ACTION_PAIRING_CHANGED) {
             refreshDiscovery()
+            remoteReceiverClient?.reconnect()
+        }
+        if (intent?.action == ACTION_REMOTE_SETTINGS_CHANGED) {
+            remoteReceiverClient?.reconnect()
         }
         return START_STICKY
     }
@@ -144,6 +155,7 @@ class LocalControlService : Service() {
 
     companion object {
         const val ACTION_PAIRING_CHANGED = "com.hatvpip.receiver.PAIRING_CHANGED"
+        const val ACTION_REMOTE_SETTINGS_CHANGED = "com.hatvpip.receiver.REMOTE_SETTINGS_CHANGED"
         private const val NOTIFICATION_ID = 1001
         private const val NOTIFICATION_CHANNEL_ID = "local_control"
     }
