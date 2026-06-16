@@ -770,6 +770,7 @@ These should not block the MVP.
 - Quiet hours.
 - Do-not-disturb integration.
 - Overlay position and size options.
+- Enhanced notification overlay styling with title, message, colors, and corner position options.
 - Frigate integration helpers.
 - go2rtc integration helpers.
 - WebRTC low-latency mode.
@@ -787,3 +788,34 @@ Fire TV and Vega OS are the most natural next platform family because they are c
 Apple TV support is desirable but exploratory. tvOS has different constraints around background execution, Picture-in-Picture behavior, app distribution, and local-network control, so it may require a separate receiver design rather than a direct port.
 
 Future platform work should keep the local receiver protocol platform-neutral so Home Assistant can target receiver capabilities rather than Android-specific behavior.
+
+## Enhanced Notifications / Styled Overlays
+
+Future notification work should support a richer overlay command model inspired by PiPup-style notifications while staying aligned with HA TV PiP's receiver protocol.
+
+Candidate optional fields:
+
+```json
+{
+  "position": 0,
+  "title": "Home Assistant",
+  "titleColor": "#50BFF2",
+  "titleSize": 10,
+  "message": "",
+  "messageColor": "#fbf5f5",
+  "messageSize": 14,
+  "backgroundColor": "#0f0e0e"
+}
+```
+
+Planned behavior:
+
+- `position` controls the popup corner, for example `0 = top right`, `1 = top left`, `2 = bottom right`, `3 = bottom left`.
+- `title` is the larger heading text.
+- `message` is the smaller body text.
+- `titleColor`, `messageColor`, and `backgroundColor` should accept validated hex colors only.
+- `titleSize` and `messageSize` should be clamped to TV-readable ranges.
+- These options should be available to future `show_notification` work and may also be reused by camera/snapshot overlays where useful.
+- Defaults should remain readable and Home Assistant-friendly without requiring users to configure every field.
+
+This is intentionally future work because it changes the receiver command schema, Home Assistant services, Android overlay renderer, documentation, and tests.

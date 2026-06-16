@@ -207,6 +207,7 @@ Future phases will expand the Home Assistant custom integration and Android TV r
 
 - Home Assistant service: `ha_tv_pip.show_camera` 📹
 - Home Assistant service: `ha_tv_pip.show_snapshot` 🖼️
+- Future enhanced notifications with title, message, colors, and popup position controls 🔔
 - HLS streams from Home Assistant 🎬
 - Future WebRTC support 🧵
 - HACS distribution 🧩

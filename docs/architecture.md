@@ -276,6 +276,23 @@ ha_tv_pip.show_notification
 ha_tv_pip.show_dashboard
 ```
 
+Future enhanced-notification services should support optional presentation fields inspired by existing Android TV notification popup tools:
+
+```json
+{
+  "position": 0,
+  "title": "Home Assistant",
+  "titleColor": "#50BFF2",
+  "titleSize": 10,
+  "message": "",
+  "messageColor": "#fbf5f5",
+  "messageSize": 14,
+  "backgroundColor": "#0f0e0e"
+}
+```
+
+The receiver protocol should validate colors, clamp text sizes to TV-readable ranges, and map position values to explicit screen corners. These fields should remain optional so camera, snapshot, and future notification commands continue to work with sensible defaults.
+
 ---
 
 ## Device Model

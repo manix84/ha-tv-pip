@@ -864,6 +864,29 @@ Example:
 
 This contract should remain stable as the project grows.
 
+Future enhanced notifications should extend this model with optional presentation fields rather than replacing the existing camera and snapshot command shape:
+
+```json
+{
+  "position": 0,
+  "title": "Home Assistant",
+  "titleColor": "#50BFF2",
+  "titleSize": 10,
+  "message": "",
+  "messageColor": "#fbf5f5",
+  "messageSize": 14,
+  "backgroundColor": "#0f0e0e"
+}
+```
+
+Implementation notes:
+
+- Keep all fields optional and provide readable defaults.
+- Validate hex colors before sending them to Android UI code.
+- Clamp title and message sizes to safe TV-readable ranges.
+- Prefer named Home Assistant service options where possible, while still mapping cleanly to the receiver JSON payload.
+- Keep `position` documented as a stable corner mapping.
+
 ---
 
 # Branch Strategy

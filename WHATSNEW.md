@@ -21,6 +21,7 @@
 - Added Play Store release-prep materials covering listing copy, privacy wording, screenshots, signing, and release notes 📺
 - Added Android release App Bundle build scripts for Play Store prep 📦
 - Added official Home Assistant integration readiness checklist 🏠
+- Documented future enhanced-notification overlay options for position, title, message, colors, and text sizes 🔔
 
 ## 0.28.0 - Phase 9 Documentation And FAQ Polish 📚
 
