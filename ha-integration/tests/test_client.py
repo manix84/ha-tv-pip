@@ -107,6 +107,7 @@ def test_show_camera_payload_includes_notification_style() -> None:
             stream_type="notification",
             duration_seconds=15,
             enter_pip=True,
+            show_notification=True,
             message="Notifications can show text on the TV",
             position="bottom_right",
             title_color="#50BFF2",
@@ -125,6 +126,7 @@ def test_show_camera_payload_includes_notification_style() -> None:
         "streamType": "notification",
         "enterPip": True,
         "durationSeconds": 15,
+        "showNotification": True,
         "message": "Notifications can show text on the TV",
         "position": "bottom_right",
         "titleColor": "#50BFF2",
@@ -330,4 +332,35 @@ def test_show_camera_payload_matches_receiver_wire_shape() -> None:
         "enterPip": True,
         "durationSeconds": 30,
         "previewUrl": "https://example.test/snapshot.jpg",
+    }
+
+
+def test_show_camera_payload_can_enable_title_only_notification() -> None:
+    command = ShowCameraCommand(
+        title="Front Door",
+        url="https://example.test/stream.m3u8",
+        duration_seconds=30,
+        enter_pip=True,
+        show_notification=True,
+        position="top_right",
+        title_color="#50BFF2",
+        title_size=24,
+        message_color="#fbf5f5",
+        message_size=18,
+        background_color="#B30F0E0E",
+    )
+
+    assert show_camera_payload(command) == {
+        "title": "Front Door",
+        "url": "https://example.test/stream.m3u8",
+        "streamType": "hls",
+        "enterPip": True,
+        "durationSeconds": 30,
+        "showNotification": True,
+        "position": "top_right",
+        "titleColor": "#50BFF2",
+        "titleSize": 24,
+        "messageColor": "#fbf5f5",
+        "messageSize": 18,
+        "backgroundColor": "#B30F0E0E",
     }

@@ -41,6 +41,7 @@ class ShowCameraCommand:
     enter_pip: bool
     stream_type: str = "hls"
     preview_url: str | None = None
+    show_notification: bool = False
     message: str | None = None
     position: str | None = None
     title_color: str | None = None
@@ -65,6 +66,8 @@ def show_camera_payload(command: ShowCameraCommand) -> dict[str, Any]:
         payload["durationSeconds"] = command.duration_seconds
     if command.preview_url is not None:
         payload["previewUrl"] = command.preview_url
+    if command.show_notification:
+        payload["showNotification"] = True
     if command.message is not None:
         payload["message"] = command.message
     if command.position is not None:

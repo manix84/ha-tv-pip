@@ -103,6 +103,7 @@ class LocalControlService : Service() {
                     .putExtra(PlayerActivity.EXTRA_URL, command.url)
                     .putExtra(PlayerActivity.EXTRA_STREAM_TYPE, command.streamType.wireName)
                     .putExtra(PlayerActivity.EXTRA_PREVIEW_URL, command.previewUrl)
+                    .putExtra(PlayerActivity.EXTRA_SHOW_NOTIFICATION, command.showNotification)
                     .putExtra(PlayerActivity.EXTRA_MESSAGE, command.message)
                     .putExtra(PlayerActivity.EXTRA_POSITION, command.style.position.wireName)
                     .putExtra(PlayerActivity.EXTRA_TITLE_COLOR, command.style.titleColor)

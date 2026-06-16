@@ -420,6 +420,7 @@ async def async_handle_show_notification(hass: Any, call: Any) -> None:
             duration_seconds=request.duration_seconds,
             enter_pip=request.enter_pip,
             stream_type=STREAM_TYPE_NOTIFICATION,
+            show_notification=True,
             message=request.message,
             position=request.position,
             title_color=request.title_color,
@@ -839,14 +840,16 @@ def _notification_size(value: Any, minimum: int, maximum: int) -> int:
 
 def _presentation_payload(request: ShowCameraRequest) -> dict[str, Any]:
     payload: dict[str, Any] = {}
+    show_notification = request.title is not None or request.message is not None
+    if show_notification:
+        payload["show_notification"] = True
     if request.width is not None:
         payload["width"] = request.width
     if request.height is not None:
         payload["height"] = request.height
-    if request.message is not None:
+    if show_notification:
         payload.update(
             {
-                "message": request.message,
                 "position": request.position,
                 "title_color": request.title_color,
                 "title_size": request.title_size,
@@ -855,6 +858,8 @@ def _presentation_payload(request: ShowCameraRequest) -> dict[str, Any]:
                 "background_color": request.background_color,
             }
         )
+        if request.message is not None:
+            payload["message"] = request.message
     return payload
 
 

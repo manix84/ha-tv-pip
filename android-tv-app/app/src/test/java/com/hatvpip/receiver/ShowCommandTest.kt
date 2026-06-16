@@ -26,6 +26,7 @@ class ShowCommandTest {
         assertEquals(StreamType.Hls, command.streamType)
         assertEquals(30, command.durationSeconds)
         assertTrue(command.enterPip)
+        assertEquals(false, command.showNotification)
     }
 
     @Test
@@ -80,6 +81,7 @@ class ShowCommandTest {
         assertEquals(StreamType.Notification, command.streamType)
         assertEquals("", command.url)
         assertEquals("Enhanced notifications", command.title)
+        assertTrue(command.showNotification)
         assertEquals("Notifications can show text on the TV", command.message)
         assertEquals(NotificationPosition.BottomRight, command.style.position)
         assertEquals("#50BFF2", command.style.titleColor)
@@ -111,6 +113,7 @@ class ShowCommandTest {
         ).getOrThrow()
 
         assertEquals(StreamType.Hls, command.streamType)
+        assertTrue(command.showNotification)
         assertEquals("Someone is at the door", command.message)
         assertEquals(NotificationPosition.BottomLeft, command.style.position)
         assertEquals("#50BFF2", command.style.titleColor)
@@ -118,6 +121,29 @@ class ShowCommandTest {
         assertEquals("#B30F0E0E", command.style.backgroundColor)
         assertEquals(720, command.style.width)
         assertEquals(360, command.style.height)
+    }
+
+    @Test
+    fun parsesCameraShowRequestWithTitleOnlyNotification() {
+        val command = ShowCommand.fromJson(
+            """
+            {
+              "title": "Front Door",
+              "showNotification": true,
+              "url": "https://example.com/front-door.m3u8",
+              "streamType": "hls",
+              "position": "top_right",
+              "backgroundColor": "#B30F0E0E"
+            }
+            """.trimIndent()
+        ).getOrThrow()
+
+        assertEquals(StreamType.Hls, command.streamType)
+        assertEquals("Front Door", command.title)
+        assertTrue(command.showNotification)
+        assertEquals(null, command.message)
+        assertEquals(NotificationPosition.TopRight, command.style.position)
+        assertEquals("#B30F0E0E", command.style.backgroundColor)
     }
 
     @Test

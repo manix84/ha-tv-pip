@@ -16,6 +16,7 @@ data class ShowCommand(
     val durationSeconds: Int?,
     val enterPip: Boolean,
     val previewUrl: String?,
+    val showNotification: Boolean,
     val message: String?,
     val style: NotificationStyle
 ) {
@@ -28,6 +29,7 @@ data class ShowCommand(
                 durationSeconds = null,
                 enterPip = false,
                 previewUrl = null,
+                showNotification = false,
                 message = null,
                 style = NotificationStyle()
             )
@@ -74,6 +76,10 @@ data class ShowCommand(
                     durationSeconds = durationSeconds,
                     enterPip = json.optBoolean("enterPip", true),
                     previewUrl = previewUrl,
+                    showNotification = json.optBoolean(
+                        "showNotification",
+                        streamType == StreamType.Notification || json.has("message")
+                    ),
                     message = json.optString("message").trim().ifBlank { null },
                     style = NotificationStyle.fromJson(json)
                 )

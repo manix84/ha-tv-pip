@@ -32,6 +32,7 @@ class OverlayPlayerService : Service() {
     private var title: String = ""
     private var url: String = PlayerActivity.TEST_STREAM_URL
     private var previewUrl: String? = null
+    private var showNotification: Boolean = false
     private var message: String? = null
     private var style: NotificationStyle = NotificationStyle()
     private var streamType: StreamType = StreamType.Hls
@@ -51,6 +52,10 @@ class OverlayPlayerService : Service() {
                 title = intent?.getStringExtra(PlayerActivity.EXTRA_TITLE) ?: title
                 url = intent?.getStringExtra(PlayerActivity.EXTRA_URL) ?: url
                 previewUrl = intent?.getStringExtra(PlayerActivity.EXTRA_PREVIEW_URL)
+                showNotification = intent?.getBooleanExtra(
+                    PlayerActivity.EXTRA_SHOW_NOTIFICATION,
+                    false
+                ) ?: false
                 message = intent?.getStringExtra(PlayerActivity.EXTRA_MESSAGE)
                 style = NotificationStyle(
                     position = NotificationPosition.fromWire(
@@ -120,7 +125,7 @@ class OverlayPlayerService : Service() {
             mediaContainer.addView(errorTextView)
             root.addView(mediaContainer)
 
-            if (!message.isNullOrBlank()) {
+            if (showNotification) {
                 addNotificationContent(root, fillHeight = false)
             }
         }
@@ -400,14 +405,14 @@ class OverlayPlayerService : Service() {
     private fun overlayHeight(): Int =
         style.height ?: if (streamType == StreamType.Notification) {
             WindowManager.LayoutParams.WRAP_CONTENT
-        } else if (!message.isNullOrBlank()) {
+        } else if (showNotification) {
             WindowManager.LayoutParams.WRAP_CONTENT
         } else {
             OVERLAY_HEIGHT_PX
         }
 
     private fun mediaLayoutParams(): LinearLayout.LayoutParams =
-        if (!message.isNullOrBlank() && style.height == null) {
+        if (showNotification && style.height == null) {
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 OVERLAY_HEIGHT_PX

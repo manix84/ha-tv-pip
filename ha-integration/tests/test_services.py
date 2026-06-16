@@ -446,6 +446,60 @@ def test_show_camera_command_auto_prefers_hls(
     assert command.width == 800
     assert command.height == 450
     assert command.message is None
+    assert command.show_notification is False
+
+
+def test_show_camera_command_enables_notification_footer_for_custom_title(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.components.camera",
+        FakeCameraModule("/api/hls/front-door"),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.exceptions",
+        FakeExceptionsModule("homeassistant.exceptions"),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.helpers.network",
+        FakeNetworkModule("homeassistant.helpers.network"),
+    )
+    hass = FakeHass(
+        entries=[],
+        states={
+            "camera.front_door": FakeState(
+                {
+                    "friendly_name": "Front Door",
+                    "access_token": "snapshot-token",
+                }
+            )
+        },
+    )
+
+    command = asyncio.run(
+        _async_show_camera_command(
+            hass,
+            _request_from_call(
+                FakeCall(
+                    data={
+                        ATTR_CAMERA_ENTITY: "camera.front_door",
+                        ATTR_TITLE: "Doorbell",
+                        ATTR_BACKGROUND_COLOR: "#B30F0E0E",
+                        ATTR_SNAPSHOT_FALLBACK: False,
+                    }
+                )
+            ),
+            title="Doorbell",
+        )
+    )
+
+    assert command.show_notification is True
+    assert command.message is None
+    assert command.position == "top_right"
+    assert command.background_color == "#B30F0E0E"
 
 
 def test_show_camera_command_uses_external_urls_for_remote_receiver(
