@@ -341,7 +341,7 @@ Initial behaviour:
 - Sends authenticated `/show` commands to the paired receiver.
 - Requires paired receiver config entries with stored tokens.
 - Preserves receiver playback errors in `/status` for codec and stream debugging.
-- Verified with a Reolink substream; Reolink main streams can fail on Chromecast with decoder initialisation errors when the camera codec/profile is unsupported.
+- Verified with a compatible lower-resolution camera stream; high-resolution or non-H.264 streams can fail on receiver devices when the camera codec/profile is unsupported.
 - Enables Media3 decoder fallback on the receiver before reporting unsupported codec/profile failures.
 
 ## Example Automation
@@ -371,8 +371,8 @@ action:
 ## Completion Notes
 
 - Completed and tested with Home Assistant triggering a paired Chromecast receiver.
-- Reolink substream playback is confirmed working through `ha_tv_pip.show_camera`.
-- Reolink main-stream playback can fail when the stream codec/profile is unsupported by Android TV hardware decoders.
+- Compatible lower-resolution stream playback is confirmed working through `ha_tv_pip.show_camera`.
+- High-resolution or non-H.264 stream playback can fail when the stream codec/profile is unsupported by Android TV hardware decoders.
 - The receiver now enables Media3 decoder fallback and shows an actionable unsupported-stream message instead of a silent black box.
 - Broad main-stream support remains a future capability requiring stream profile selection, restreaming, or transcoding.
 

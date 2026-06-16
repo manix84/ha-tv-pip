@@ -1,9 +1,14 @@
 # What's New ✨
 
+## 0.21.2 - Generic Stream Error Wording 🩺
+
+- Generalised unsupported-stream messages so they are not tied to one camera brand or setup 📺
+- Updated docs to describe codec/profile compatibility in vendor-neutral terms 🧭
+
 ## 0.21.1 - Stage 5 Stream Compatibility Polish 🎞️
 
 - Added receiver-side decoder fallback before reporting unsupported stream failures 📺
-- Added clearer TV overlay feedback for unsupported Reolink main streams 🩺
+- Added clearer TV overlay feedback for unsupported camera streams 🩺
 - Documented that broad main-stream support needs future stream selection, restreaming, or transcoding 🧭
 
 ## 0.21.0 - Stage 5 Service MVP 📹
@@ -12,7 +17,7 @@
 - Resolves Home Assistant camera HLS stream URLs and sends them to paired receivers 🎬
 - Added service schema metadata for the Home Assistant UI 🧭
 - Added focused service and receiver-client tests 🧪
-- Verified the service path with a Reolink substream on Chromecast 📺
+- Verified the service path with a compatible lower-resolution camera stream on Chromecast 📺
 - Added receiver playback diagnostics for unsupported stream codec errors 🩺
 - Enabled Media3 decoder fallback for receiver playback before reporting unsupported codec failures 🎞️
 

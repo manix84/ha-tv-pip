@@ -24,7 +24,7 @@ Stage 3 is complete in `0.14.1`. The Android TV app advertises the receiver on t
 
 Stage 4 is complete in `0.18.0`. Discovered receivers use a TV-visible pairing code and bearer-token authentication, so unpaired LAN clients cannot trigger `/show` or `/close`.
 
-Stage 5 is complete in `0.21.0`. Home Assistant automations can call `ha_tv_pip.show_camera` for paired receivers, with Android TV overlay playback verified using a Reolink substream. Some camera main streams may still need future stream selection or transcoding support when their codec/profile is not Android TV-compatible.
+Stage 5 is complete in `0.21.0`. Home Assistant automations can call `ha_tv_pip.show_camera` for paired receivers, with Android TV overlay playback verified using a compatible camera stream. Some high-resolution or non-H.264 camera streams may still need future stream selection or transcoding support when their codec/profile is not Android TV-compatible.
 
 ## Monorepo Layout 🧱
 

@@ -19,4 +19,4 @@ action:
       enter_pip: true
 ```
 
-Replace `receiver_device_id` and `camera_entity` with values from your Home Assistant instance. For Reolink cameras, use a substream or H.264 main-stream profile where possible; high-resolution main streams can exceed what Android TV devices can decode directly.
+Replace `receiver_device_id` and `camera_entity` with values from your Home Assistant instance. For cameras with multiple stream profiles, use a TV-compatible H.264 or lower-resolution stream where possible; high-resolution main streams can exceed what Android TV devices can decode directly.

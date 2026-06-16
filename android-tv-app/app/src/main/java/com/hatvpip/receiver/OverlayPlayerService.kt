@@ -220,6 +220,6 @@ private fun PlaybackException.toDisplayMessage(): String =
 private fun PlaybackException.toOverlayMessage(): String =
     when (errorCode) {
         PlaybackException.ERROR_CODE_DECODER_INIT_FAILED ->
-            "Unsupported video stream\nTry a Reolink substream or H.264 main stream"
+            "Unsupported video stream\nTry a compatible lower-resolution or H.264 stream"
         else -> "Playback error\n$errorCodeName"
     }
