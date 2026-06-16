@@ -668,39 +668,51 @@ Avoid silent failures.
 
 ## Current Status
 
-Not implemented during Phase 1.
+Implemented through Stage 6.
 
-Placeholder files exist under:
+The integration currently lives under:
 
 ```txt
 ha-integration/custom_components/ha_tv_pip/
 ```
 
+It supports Zeroconf discovery, TV-visible pairing, bearer-token receiver control, `ha_tv_pip.show_camera`, `ha_tv_pip.show_snapshot`, and optional entity-based snapshot previews while video streams load.
+
 ---
 
-## Planned Technology
+## Technology
 
 ```txt
 Python
 Home Assistant Config Flow
 Zeroconf Discovery
 Device Registry
-Entity Registry
 Service Registry
+Ruff
+Mypy
+Pytest
 ```
 
 ---
 
 ## Integration Responsibilities
 
-The integration will eventually:
+The integration currently:
 
 - Discover receivers.
 - Pair receivers.
 - Register devices.
 - Expose services.
 - Resolve camera streams.
-- Provide diagnostics.
+- Resolve camera snapshots.
+- Send authenticated receiver commands.
+
+Future stages will add:
+
+- Stream profile selection and fallback policy.
+- Diagnostics.
+- HACS readiness.
+- Official Home Assistant integration readiness.
 
 The integration should not be responsible for playback.
 
@@ -751,9 +763,17 @@ Rules:
 
 # Testing Strategy
 
-## Phase 1
+## Current Coverage
 
-Manual testing is acceptable.
+Automated checks now cover all three project areas:
+
+- Android TV app: Gradle lint, Kotlin compilation, and unit tests.
+- Home Assistant integration: Ruff linting, Mypy type checking, and pytest.
+- Website: ESLint, TypeScript type checking, and Vitest.
+
+Manual TV testing is still required for receiver behaviour that depends on real Android TV / Google TV system features.
+
+## Device Testing
 
 Test on:
 
@@ -773,33 +793,17 @@ Focus on:
 
 ---
 
-## Future Testing
-
-Add:
-
-```txt
-Unit Tests
-Integration Tests
-Discovery Tests
-Pairing Tests
-Home Assistant Service Tests
-```
-
----
-
 # Continuous Integration
 
-Future GitHub Actions should provide:
+GitHub Actions currently provides split quality workflows:
 
 ```txt
-Android Build Validation
-Linting
-Static Analysis
-Home Assistant Validation
-Documentation Checks
+quality-android-tv-app.yml
+quality-ha-integration.yml
+quality-website.yml
 ```
 
-Pull requests should pass automated validation before merging.
+Each workflow exposes separate lint, typecheck, test, and dry-run build jobs so PR checks and README badges remain specific.
 
 ---
 
@@ -844,8 +848,8 @@ Choose the simplest implementation that supports future expansion.
 Current development target:
 
 ```txt
-Phase 5
-Home Assistant Service MVP complete in 0.21.0
+Phase 7
+Stream type options
 ```
 
 Phase 1 is complete in `0.4.0`. It validated:
@@ -933,3 +937,5 @@ data:
 ```
 
 Snapshot mode uses the Home Assistant camera proxy URL and the Android TV overlay renderer. It is intended for fast alerts and for cameras where live playback is unnecessary or unreliable.
+
+Stage 6 is complete in `0.23.0`. It includes `ha_tv_pip.show_snapshot` plus optional entity-based snapshot previews for `ha_tv_pip.show_camera`.

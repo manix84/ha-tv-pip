@@ -1,9 +1,9 @@
 import styles from "./StatusBadge.module.scss";
 
-export type StatusKind = "phase1" | "planned" | "future";
+export type StatusKind = "complete" | "planned" | "future";
 
 const labels: Record<StatusKind, string> = {
-  phase1: "Phase 1",
+  complete: "Complete",
   planned: "Planned",
   future: "Future"
 };

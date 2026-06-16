@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 import { StatusBadge } from "./StatusBadge";
 
 describe("StatusBadge", () => {
-  it("renders the Phase 1 label", () => {
-    const markup = renderToStaticMarkup(<StatusBadge status="phase1" />);
+  it("renders the complete label", () => {
+    const markup = renderToStaticMarkup(<StatusBadge status="complete" />);
 
-    expect(markup).toContain("Phase 1");
+    expect(markup).toContain("Complete");
   });
 
   it("renders future status copy", () => {

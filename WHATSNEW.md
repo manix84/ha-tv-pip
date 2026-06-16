@@ -1,10 +1,15 @@
 # What's New ✨
 
+## 0.23.0 - Snapshot Fallback Previews 🖼️
+
+- Added optional entity-based snapshot fallback previews while video streams load 🏠
+- Let `ha_tv_pip.show_camera` use `snapshot_camera_entity` for a separate preview camera entity 📷
+- Updated the receiver protocol to accept `previewUrl` and replace the preview with live video when playback is ready 📺
+
 ## 0.22.0 - Stage 6 Snapshot Support 🖼️
 
 - Added `ha_tv_pip.show_snapshot` to display camera snapshots from Home Assistant 🏠
 - Added Android TV snapshot overlay rendering for `streamType: snapshot` 📺
-- Added optional entity-based snapshot fallback previews while video streams load 🖼️
 - Reused pairing, bearer-token auth, receiver targeting, and duration timeouts for snapshots 🔐
 - Confirmed camera feeds and snapshot feeds both work on the Chromecast test receiver ✅
 

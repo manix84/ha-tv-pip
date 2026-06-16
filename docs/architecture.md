@@ -523,12 +523,27 @@ Phase 4 currently adds:
 - Pairing reset from the Android TV app
 - Discovery metadata refresh when pairing state changes
 
+Phase 5 currently adds:
+
+- `ha_tv_pip.show_camera` Home Assistant service
+- Paired receiver targeting with `receiver_device_id`
+- Home Assistant HLS camera stream resolution
+- Authenticated receiver `/show` calls
+- Receiver-side stream error reporting for unsupported codecs or profiles
+
+Phase 6 currently adds:
+
+- `ha_tv_pip.show_snapshot` Home Assistant service
+- Camera proxy snapshot URL resolution
+- Android TV snapshot overlay rendering
+- Shared pairing, bearer-token auth, receiver targeting, and duration timeouts for snapshots
+- Optional entity-based snapshot previews while video streams load
+
 ## Planned
 
 Future phases will add:
 
-- Home Assistant camera service control
-- Snapshot support
+- Stream type selection and fallback policy
 - Remote operation
 - HACS distribution
 - Official Home Assistant integration readiness

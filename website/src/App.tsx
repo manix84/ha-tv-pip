@@ -36,6 +36,8 @@ action:
       camera_entity: camera.front_door
       duration_seconds: 30
       enter_pip: true
+      snapshot_fallback: true
+      snapshot_camera_entity: camera.front_door_sub
 `;
 
 const features = [
@@ -43,43 +45,43 @@ const features = [
     title: "Android TV receiver app",
     description:
       "A Kotlin receiver app that owns playback, PiP behavior, and TV-friendly interaction.",
-    status: "phase1" as const,
+    status: "complete" as const,
   },
   {
     title: "Home Assistant custom integration",
     description:
-      "A future controller integration for discovery, pairing, services, and camera resolution.",
-    status: "planned" as const,
+      "A controller integration for discovery, pairing, services, and camera resolution.",
+    status: "complete" as const,
   },
   {
     title: "Local-first control",
     description:
-      "Designed for LAN operation before remote connectivity, with no cloud relay by default.",
-    status: "planned" as const,
+      "LAN receiver control with no cloud relay by default.",
+    status: "complete" as const,
   },
   {
     title: "Automatic discovery",
     description:
-      "Planned mDNS discovery so Home Assistant can find receiver apps automatically.",
-    status: "planned" as const,
+      "mDNS discovery so Home Assistant can find receiver apps automatically.",
+    status: "complete" as const,
   },
   {
     title: "Secure pairing",
     description:
-      "Planned pairing flow so random LAN devices cannot trigger camera popups.",
-    status: "planned" as const,
+      "TV-visible pairing flow so random LAN devices cannot trigger camera popups.",
+    status: "complete" as const,
   },
   {
     title: "Camera stream support",
     description:
-      "HLS first, then broader stream handling as the integration matures.",
-    status: "planned" as const,
+      "Home Assistant HLS camera streams with receiver-side compatibility feedback.",
+    status: "complete" as const,
   },
   {
     title: "Snapshot support",
     description:
-      "Still-image popups for fast alerts and fallback behavior when video is unnecessary.",
-    status: "future" as const,
+      "Still-image popups for fast alerts and fallback previews while video loads.",
+    status: "complete" as const,
   },
   {
     title: "Future remote receiver mode",
@@ -139,7 +141,7 @@ function App() {
       <section className={styles.hero}>
         <div className={styles.heroContent}>
           <div className={styles.heroText}>
-            <StatusBadge status="phase1" />
+            <StatusBadge status="complete" />
             <p className={styles.version}>Version {__PROJECT_VERSION__}</p>
             <h1>Show Home Assistant camera feeds on your Android TV.</h1>
             <p className={styles.subheading}>
@@ -256,16 +258,17 @@ function App() {
         </div>
       </Section>
 
-      <Section eyebrow="Current status" title="Phase 1: Android TV PiP MVP">
+      <Section eyebrow="Current status" title="Stage 6: Snapshot support complete">
         <div className={styles.statusPanel}>
           <div>
             <p>
-              Currently proving reliable Android TV video playback and PiP
-              behaviour.
+              HA TV PiP now supports local discovery, TV-visible pairing,
+              authenticated receiver control, camera stream popups, snapshot
+              popups, and snapshot previews while video streams load.
             </p>
             <p>
-              Home Assistant integration, discovery, pairing, camera streams,
-              and remote mode are intentionally future phases.
+              Current development is moving into stream type options and better
+              fallback handling before distribution polish.
             </p>
           </div>
           <img

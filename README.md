@@ -26,7 +26,7 @@ Stage 4 is complete in `0.18.0`. Discovered receivers use a TV-visible pairing c
 
 Stage 5 is complete in `0.21.0`. Home Assistant automations can call `ha_tv_pip.show_camera` for paired receivers, with Android TV overlay playback verified using a compatible camera stream. Some high-resolution or non-H.264 camera streams may still need future stream selection or transcoding support when their codec/profile is not Android TV-compatible.
 
-Stage 6 is complete in `0.22.0`. Home Assistant automations can call `ha_tv_pip.show_snapshot` to display fast camera snapshots on paired receivers using the same local auth and targeting path.
+Stage 6 is complete in `0.23.0`. Home Assistant automations can call `ha_tv_pip.show_snapshot` to display fast camera snapshots on paired receivers using the same local auth and targeting path. Video stream commands can also send an optional entity-based snapshot preview while live playback loads.
 
 ## Monorepo Layout 🧱
 

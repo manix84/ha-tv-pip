@@ -378,9 +378,9 @@ action:
 
 ---
 
-# Phase 6: Snapshot Support
+# Phase 6: Snapshot Support ✅
 
-Status: Complete in `0.22.0`.
+Status: Complete in `0.23.0`.
 
 ## Goal
 
