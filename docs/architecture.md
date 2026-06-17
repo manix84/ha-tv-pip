@@ -581,6 +581,7 @@ Phase 6 currently adds:
 Phase 7 currently adds:
 
 - `stream_type: auto`, `stream_type: hls`, and `stream_type: snapshot` for `ha_tv_pip.show_camera`
+- Optional `stream_camera_entity` support for selecting a separate Android TV-compatible live stream entity
 - Home Assistant-side fallback to snapshot when HLS stream resolution fails
 - Receiver-side snapshot preview fallback when accepted video streams fail during playback
 - Stream type selection logging before receiver commands are sent

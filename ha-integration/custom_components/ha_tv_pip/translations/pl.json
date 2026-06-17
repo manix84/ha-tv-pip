@@ -107,6 +107,9 @@
         "snapshot_fallback": {
           "name": "Snapshot awaryjny"
         },
+        "stream_camera_entity": {
+          "name": "Encja kamery strumienia"
+        },
         "stream_type": {
           "name": "Typ strumienia"
         },

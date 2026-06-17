@@ -30,6 +30,7 @@ from custom_components.ha_tv_pip.services import (
     ATTR_RECEIVER_DEVICE_ID,
     ATTR_SNAPSHOT_CAMERA_ENTITY,
     ATTR_SNAPSHOT_FALLBACK,
+    ATTR_STREAM_CAMERA_ENTITY,
     ATTR_STREAM_TYPE,
     ATTR_TITLE,
     ATTR_TITLE_COLOR,
@@ -111,6 +112,7 @@ class FakeCameraModule(types.ModuleType):
     def __init__(self, stream_url: str | None = "/api/hls/front-door") -> None:
         super().__init__("homeassistant.components.camera")
         self.stream_url = stream_url
+        self.requested_entity_id: str | None = None
 
     async def async_request_stream(
         self,
@@ -118,6 +120,7 @@ class FakeCameraModule(types.ModuleType):
         entity_id: str,
         stream_type: str,
     ) -> str | None:
+        self.requested_entity_id = entity_id
         if self.stream_url == "raise":
             raise FakeHomeAssistantError("stream failed")
         return self.stream_url
@@ -149,6 +152,7 @@ def test_request_from_call_accepts_title_and_duration() -> None:
                 ATTR_ENTER_PIP: False,
                 ATTR_SNAPSHOT_CAMERA_ENTITY: "camera.front_door_sub",
                 ATTR_SNAPSHOT_FALLBACK: False,
+                ATTR_STREAM_CAMERA_ENTITY: "camera.front_door_sub",
                 ATTR_STREAM_TYPE: "snapshot",
                 ATTR_TITLE: "Doorbell",
             }
@@ -159,6 +163,7 @@ def test_request_from_call_accepts_title_and_duration() -> None:
     assert request.enter_pip is False
     assert request.snapshot_camera_entity == "camera.front_door_sub"
     assert request.snapshot_fallback is False
+    assert request.stream_camera_entity == "camera.front_door_sub"
     assert request.stream_type == "snapshot"
     assert request.title == "Doorbell"
 
@@ -447,6 +452,61 @@ def test_show_camera_command_auto_prefers_hls(
     assert command.height == 450
     assert command.message is None
     assert command.show_notification is False
+
+
+def test_show_camera_command_can_use_separate_stream_camera_entity(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    camera_module = FakeCameraModule("/api/hls/front-door-sub")
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.components.camera",
+        camera_module,
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.exceptions",
+        FakeExceptionsModule("homeassistant.exceptions"),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.helpers.network",
+        FakeNetworkModule("homeassistant.helpers.network"),
+    )
+    hass = FakeHass(
+        entries=[],
+        states={
+            "camera.front_door": FakeState(
+                {"friendly_name": "Front Door", "access_token": "main-token"}
+            ),
+            "camera.front_door_sub": FakeState(
+                {"friendly_name": "Front Door Sub", "access_token": "sub-token"}
+            ),
+        },
+    )
+
+    command = asyncio.run(
+        _async_show_camera_command(
+            hass,
+            _request_from_call(
+                FakeCall(
+                    data={
+                        ATTR_CAMERA_ENTITY: "camera.front_door",
+                        ATTR_STREAM_CAMERA_ENTITY: "camera.front_door_sub",
+                    }
+                )
+            ),
+            title="Front Door",
+        )
+    )
+
+    assert camera_module.requested_entity_id == "camera.front_door_sub"
+    assert command.stream_type == "hls"
+    assert command.url == "http://10.0.0.2:8123/api/hls/front-door-sub"
+    assert command.preview_url == (
+        "http://10.0.0.2:8123/api/camera_proxy/camera.front_door"
+        "?token=main-token"
+    )
 
 
 def test_show_camera_command_enables_notification_footer_for_custom_title(

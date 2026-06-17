@@ -107,6 +107,9 @@
         "snapshot_fallback": {
           "name": "Image de secours"
         },
+        "stream_camera_entity": {
+          "name": "Entité caméra de flux"
+        },
         "stream_type": {
           "name": "Type de flux"
         },

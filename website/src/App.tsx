@@ -138,6 +138,7 @@ action:
       camera_entity: camera.front_door
       duration_seconds: 30
       enter_pip: true
+      stream_camera_entity: camera.front_door_sub
       snapshot_fallback: true
       snapshot_camera_entity: camera.front_door_sub
       title: Front door

@@ -263,6 +263,21 @@ class PlayerActivity : ComponentActivity() {
                     .setAction(OverlayPlayerService.ACTION_SHOW)
                     .putExtra(EXTRA_TITLE, command.title)
                     .putExtra(EXTRA_URL, command.url)
+                    .putExtra(EXTRA_STREAM_TYPE, command.streamType.wireName)
+                    .putExtra(EXTRA_PREVIEW_URL, command.previewUrl)
+                    .putExtra(EXTRA_SHOW_NOTIFICATION, command.showNotification)
+                    .putExtra(EXTRA_MESSAGE, command.message)
+                    .putExtra(EXTRA_POSITION, command.style.position.wireName)
+                    .putExtra(EXTRA_TITLE_COLOR, command.style.titleColor)
+                    .putExtra(EXTRA_TITLE_SIZE, command.style.titleSize)
+                    .putExtra(EXTRA_MESSAGE_COLOR, command.style.messageColor)
+                    .putExtra(EXTRA_MESSAGE_SIZE, command.style.messageSize)
+                    .putExtra(EXTRA_BACKGROUND_COLOR, command.style.backgroundColor)
+                    .apply {
+                        command.style.width?.let { putExtra(EXTRA_WIDTH, it) }
+                        command.style.height?.let { putExtra(EXTRA_HEIGHT, it) }
+                        command.durationSeconds?.let { putExtra(EXTRA_DURATION_SECONDS, it) }
+                    }
             )
             player?.pause()
             updateRuntimeState(mode = ReceiverPlaybackMode.Overlay)

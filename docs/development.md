@@ -1111,11 +1111,12 @@ data:
   duration_seconds: 30
   enter_pip: true
   stream_type: auto
+  stream_camera_entity: camera.front_door_sub
   snapshot_fallback: true
   snapshot_camera_entity: camera.front_door_sub
 ```
 
-Use the Home Assistant device ID for `receiver_device_id` and a camera entity that exposes a TV-compatible HLS stream. `stream_type` defaults to `auto`, which prefers HLS and falls back to a snapshot command if Home Assistant cannot resolve a stream. Advanced calls can force `stream_type: hls` or `stream_type: snapshot`. `snapshot_fallback` is optional and enabled by default; it lets the receiver show a camera snapshot while the video stream loads. `snapshot_camera_entity` is optional and defaults to `camera_entity`, which is useful when a secondary camera entity provides a faster or lower-resolution still preview. Lower-resolution or H.264 camera streams are generally more reliable for TV popups than high-resolution main streams. The Android receiver enables Media3 decoder fallback and shows a clear unsupported-stream message, but it cannot replace transcoding for unsupported camera formats.
+Use the Home Assistant device ID for `receiver_device_id` and a camera entity that exposes a TV-compatible HLS stream. `stream_type` defaults to `auto`, which prefers HLS and falls back to a snapshot command if Home Assistant cannot resolve a stream. Advanced calls can force `stream_type: hls` or `stream_type: snapshot`. `stream_camera_entity` is optional and defaults to `camera_entity`; use it when a separate lower-resolution or H.264 entity is more reliable for live playback on Android TV. `snapshot_fallback` is optional and enabled by default; it lets the receiver show a camera snapshot while the video stream loads. `snapshot_camera_entity` is optional and defaults to `camera_entity`, which is useful when a secondary camera entity provides a faster or lower-resolution still preview. Lower-resolution or H.264 camera streams are generally more reliable for TV popups than high-resolution main streams. The Android receiver enables Media3 decoder fallback and shows a clear unsupported-stream message, but it cannot replace transcoding for unsupported camera formats.
 
 Stage 8 is complete in `0.26.0`. It includes receiver status, connected, test, close, diagnostics, Hide Launcher, and Open Launcher controls.
 

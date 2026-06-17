@@ -59,6 +59,7 @@ NO_EXAMPLE_FIELDS: dict[str, set[str]] = {
         "receiver_device_id",
         "camera_entity",
         "snapshot_camera_entity",
+        "stream_camera_entity",
     },
     "show_snapshot": {
         "receiver_device_id",

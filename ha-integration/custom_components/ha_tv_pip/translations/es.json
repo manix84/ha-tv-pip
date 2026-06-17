@@ -107,6 +107,9 @@
         "snapshot_fallback": {
           "name": "Imagen de reserva"
         },
+        "stream_camera_entity": {
+          "name": "Entidad de cámara de transmisión"
+        },
         "stream_type": {
           "name": "Tipo de flujo"
         },

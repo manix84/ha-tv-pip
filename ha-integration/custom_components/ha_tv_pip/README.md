@@ -139,6 +139,7 @@ data:
   duration_seconds: 30
   enter_pip: true
   stream_type: auto
+  stream_camera_entity: camera.front_door_sub
   snapshot_fallback: true
   snapshot_camera_entity: camera.front_door_sub
   message: Someone is at the door
@@ -146,7 +147,7 @@ data:
 ```
 
 The service defaults to `stream_type: auto`, which resolves an HLS stream URL through Home Assistant's camera stream API and sends it to the paired receiver with the stored bearer token. If Home Assistant cannot produce an HLS stream in automatic mode, the integration falls back to a snapshot command. Advanced users can force `stream_type: hls` or `stream_type: snapshot`.
-When `snapshot_fallback` is enabled, the integration also sends a snapshot preview so the receiver can show a still image while the video stream loads. `snapshot_camera_entity` is optional and defaults to `camera_entity`; set it when a separate camera entity provides a better still image or substream preview.
+`stream_camera_entity` is optional and defaults to `camera_entity`; set it when a lower-resolution or H.264 camera entity is more reliable for live playback on Android TV. When `snapshot_fallback` is enabled, the integration also sends a snapshot preview so the receiver can show a still image while the video stream loads. `snapshot_camera_entity` is optional and defaults to `camera_entity`; set it when a separate camera entity provides a better still image or substream preview.
 `title`, `message`, and the styling fields are optional; when either `title` or `message` is present, the receiver renders the text below the camera or snapshot inside the same rounded glass popup. Width and height can be used by themselves to resize the media popup without showing a text footer.
 For cameras with multiple streams, use a TV-compatible H.264/HLS stream where possible. Lower-resolution secondary streams are often more reliable for TV popups than high-resolution main streams. The receiver enables Media3 decoder fallback, but unsupported camera codecs still need a compatible camera profile or future transcoding support.
 

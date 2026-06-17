@@ -1,5 +1,10 @@
 # What's New ✨
 
+## 1.0.0 - Stream Compatibility 📹
+
+- Added optional `stream_camera_entity` support so camera alerts can use a more compatible live-stream entity while keeping the primary camera for titles and snapshot fallback 📹
+- Updated Home Assistant service metadata, Tier 1 translation labels, tests, and docs for separate stream camera selection 🏠
+
 ## 0.48.0 - Stage 12 Release Hardening 📦
 
 - Added explicit debug and release Android APK assets to GitHub release packaging 📺

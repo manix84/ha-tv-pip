@@ -107,6 +107,9 @@
         "snapshot_fallback": {
           "name": "Snapshot di fallback"
         },
+        "stream_camera_entity": {
+          "name": "Entità videocamera per stream"
+        },
         "stream_type": {
           "name": "Tipo stream"
         },

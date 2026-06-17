@@ -52,6 +52,7 @@ ATTR_POSITION = "position"
 ATTR_RECEIVER_DEVICE_ID = "receiver_device_id"
 ATTR_SNAPSHOT_CAMERA_ENTITY = "snapshot_camera_entity"
 ATTR_SNAPSHOT_FALLBACK = "snapshot_fallback"
+ATTR_STREAM_CAMERA_ENTITY = "stream_camera_entity"
 ATTR_STREAM_TYPE = "stream_type"
 ATTR_TITLE = "title"
 ATTR_TITLE_COLOR = "title_color"
@@ -133,6 +134,7 @@ class ShowCameraRequest:
     height: int | None
     snapshot_camera_entity: str | None
     snapshot_fallback: bool
+    stream_camera_entity: str | None
     stream_type: str
     title: str | None
     device_ids: tuple[str, ...]
@@ -223,6 +225,7 @@ async def async_register_services(hass: Any) -> None:
             **base_schema,
             vol.Optional(ATTR_SNAPSHOT_CAMERA_ENTITY): cv.entity_id,
             vol.Optional(ATTR_SNAPSHOT_FALLBACK, default=True): bool,
+            vol.Optional(ATTR_STREAM_CAMERA_ENTITY): cv.entity_id,
             vol.Optional(ATTR_STREAM_TYPE, default=STREAM_TYPE_AUTO): vol.Any(
                 *STREAM_TYPES
             ),
@@ -325,6 +328,8 @@ async def async_handle_show_camera(hass: Any, call: Any) -> None:
 
     request = _request_from_call(call)
     _validate_camera_entity(hass, request.camera_entity)
+    if request.stream_camera_entity is not None:
+        _validate_camera_entity(hass, request.stream_camera_entity)
     receiver = _resolve_receiver(hass, request)
     title = request.title or _camera_title(hass, request.camera_entity)
     remote = remote_registry(hass)
@@ -491,6 +496,7 @@ def _request_from_call(call: Any) -> ShowCameraRequest:
         title=_optional_text(data.get(ATTR_TITLE)),
         snapshot_camera_entity=_optional_text(data.get(ATTR_SNAPSHOT_CAMERA_ENTITY)),
         snapshot_fallback=bool(data.get(ATTR_SNAPSHOT_FALLBACK, True)),
+        stream_camera_entity=_optional_text(data.get(ATTR_STREAM_CAMERA_ENTITY)),
         stream_type=stream_type,
         device_ids=device_ids,
     )
@@ -642,7 +648,7 @@ async def _async_show_camera_command(
             title=title,
             url=await _async_camera_stream_url(
                 hass,
-                request.camera_entity,
+                request.stream_camera_entity or request.camera_entity,
                 prefer_external=prefer_external,
             ),
             duration_seconds=request.duration_seconds,
@@ -660,7 +666,7 @@ async def _async_show_camera_command(
 
         _LOGGER.warning(
             "Falling back to snapshot for %s because HLS stream resolution failed: %s",
-            request.camera_entity,
+            request.stream_camera_entity or request.camera_entity,
             error,
         )
         return ShowCameraCommand(
