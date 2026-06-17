@@ -118,6 +118,7 @@
     <string name="error_overlay_fallback_failed">Falha no fallback de sobreposição: %1$s</string>
     <string name="snapshot_fallback_after_video_error">Mostrando snapshot de fallback após erro de vídeo: %1$s</string>
     <string name="error_snapshot_unsupported_image">A resposta do snapshot não era uma imagem suportada</string>
+    <string name="error_mjpeg_frame_too_large">O quadro MJPEG excedeu %1$d bytes</string>
     <string name="error_unknown_snapshot">erro de snapshot desconhecido</string>
     <string name="snapshot_unavailable">Snapshot indisponível</string>
     <string name="error_unsupported_video_stream">Stream de vídeo não suportado\nTente um substream compatível, H.264 ou stream_type: mjpeg</string>

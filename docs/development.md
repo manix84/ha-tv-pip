@@ -1081,6 +1081,7 @@ Stage 4 adds pairing and request authentication. Use `Reset Pairing` on the TV a
 
 The Android TV main screen displays the local endpoint address when available. Duplicate `/show` requests replace current playback, and `durationSeconds` should close either full-screen playback or the overlay fallback.
 The `/status` response keeps legacy top-level playback fields and also includes a nested `playback` object with `state`, `status`, `isPlaying`, `displayMode`, `title`, `url`, `previewUrl`, `streamType`, `error`, and `updatedAtMillis` for debugging stream compatibility without showing fallback implementation details in the TV popup.
+The receiver's MJPEG parser uses connection/read timeouts and an 8 MiB per-frame limit so broken camera proxy streams fail cleanly instead of growing memory use indefinitely.
 
 Stage 3 local discovery testing:
 

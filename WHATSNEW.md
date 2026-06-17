@@ -1,10 +1,14 @@
 # What's New ✨
 
+## 1.7.0 - Receiver Playback Diagnostics 🔎
+
+- Added nested Android receiver playback diagnostics to `/status`, including preview URL and update time 🔎
+- Hardened MJPEG playback with bounded frame reads and explicit snapshot/MJPEG network timeouts 📺
+
 ## 1.6.0 - Stream Preference And Diagnostics 📹
 
 - Added `stream_type: mjpeg_first` so camera alerts can prefer MJPEG, then fall back to HLS and snapshot if needed 📺
 - Kept `stream_type: mjpeg` as a strict force-MJPEG option for advanced troubleshooting 🧪
-- Added nested Android receiver playback diagnostics to `/status`, including preview URL and update time 🔎
 - Updated Home Assistant service metadata, tests, and docs for the new stream preference option 📝
 
 ## 1.4.1 - Target Selection And Stream Fallback 🎯

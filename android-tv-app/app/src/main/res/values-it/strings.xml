@@ -118,6 +118,7 @@
     <string name="error_overlay_fallback_failed">Fallback overlay non riuscito: %1$s</string>
     <string name="snapshot_fallback_after_video_error">Mostro lo snapshot di fallback dopo un errore video: %1$s</string>
     <string name="error_snapshot_unsupported_image">La risposta snapshot non era un’immagine supportata</string>
+    <string name="error_mjpeg_frame_too_large">Il frame MJPEG ha superato %1$d byte</string>
     <string name="error_unknown_snapshot">errore snapshot sconosciuto</string>
     <string name="snapshot_unavailable">Snapshot non disponibile</string>
     <string name="error_unsupported_video_stream">Stream video non supportato\nProva un substream compatibile, H.264 o stream_type: mjpeg</string>

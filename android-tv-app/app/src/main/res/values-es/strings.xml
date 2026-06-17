@@ -118,6 +118,7 @@
     <string name="error_overlay_fallback_failed">Falló la superposición de reserva: %1$s</string>
     <string name="snapshot_fallback_after_video_error">Mostrando imagen de reserva tras error de vídeo: %1$s</string>
     <string name="error_snapshot_unsupported_image">La respuesta de la imagen no era compatible</string>
+    <string name="error_mjpeg_frame_too_large">El fotograma MJPEG superó %1$d bytes</string>
     <string name="error_unknown_snapshot">error de imagen desconocido</string>
     <string name="snapshot_unavailable">Imagen no disponible</string>
     <string name="error_unsupported_video_stream">Flujo de vídeo no compatible\nPrueba un subflujo compatible, H.264 o stream_type: mjpeg</string>

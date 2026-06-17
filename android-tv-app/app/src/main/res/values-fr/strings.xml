@@ -118,6 +118,7 @@
     <string name="error_overlay_fallback_failed">Échec de la superposition de secours : %1$s</string>
     <string name="snapshot_fallback_after_video_error">Affichage de l’image de secours après une erreur vidéo : %1$s</string>
     <string name="error_snapshot_unsupported_image">La réponse de l’image n’était pas dans un format pris en charge</string>
+    <string name="error_mjpeg_frame_too_large">L’image MJPEG a dépassé %1$d octets</string>
     <string name="error_unknown_snapshot">erreur d’image inconnue</string>
     <string name="snapshot_unavailable">Image indisponible</string>
     <string name="error_unsupported_video_stream">Flux vidéo non pris en charge\nEssayez un sous-flux compatible, H.264 ou stream_type: mjpeg</string>

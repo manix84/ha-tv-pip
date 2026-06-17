@@ -118,6 +118,7 @@
     <string name="error_overlay_fallback_failed">Fallback nakładki nie powiódł się: %1$s</string>
     <string name="snapshot_fallback_after_video_error">Wyświetlanie snapshotu awaryjnego po błędzie wideo: %1$s</string>
     <string name="error_snapshot_unsupported_image">Odpowiedź snapshotu nie była obsługiwanym obrazem</string>
+    <string name="error_mjpeg_frame_too_large">Klatka MJPEG przekroczyła %1$d bajtów</string>
     <string name="error_unknown_snapshot">nieznany błąd snapshotu</string>
     <string name="snapshot_unavailable">Snapshot niedostępny</string>
     <string name="error_unsupported_video_stream">Nieobsługiwany strumień wideo\nSpróbuj zgodnego podstrumienia, H.264 lub stream_type: mjpeg</string>

@@ -24,6 +24,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.net.URL
 
 class OverlayPlayerService : Service() {
@@ -400,6 +401,14 @@ class OverlayPlayerService : Service() {
                 }
             } else {
                 frame.write(current)
+                if (frame.size() > MAX_MJPEG_FRAME_BYTES) {
+                    throw IOException(
+                        getString(
+                            R.string.error_mjpeg_frame_too_large,
+                            MAX_MJPEG_FRAME_BYTES
+                        )
+                    )
+                }
                 if (previous == JPEG_MARKER && current == JPEG_END_MARKER) {
                     return frame.toByteArray()
                 }
@@ -427,7 +436,11 @@ class OverlayPlayerService : Service() {
 
         Thread {
             runCatching {
-                URL(imageUrl).openStream().use { stream ->
+                val connection = URL(imageUrl).openConnection().apply {
+                    connectTimeout = SNAPSHOT_CONNECT_TIMEOUT_MS
+                    readTimeout = SNAPSHOT_READ_TIMEOUT_MS
+                }
+                connection.getInputStream().use { stream ->
                     BitmapFactory.decodeStream(stream)
                         ?: error(getString(R.string.error_snapshot_unsupported_image))
                 }
@@ -550,6 +563,9 @@ class OverlayPlayerService : Service() {
         private const val DEFAULT_BACKGROUND_COLOR = "#B30F0E0E"
         private const val MJPEG_CONNECT_TIMEOUT_MS = 5_000
         private const val MJPEG_READ_TIMEOUT_MS = 5_000
+        private const val SNAPSHOT_CONNECT_TIMEOUT_MS = 5_000
+        private const val SNAPSHOT_READ_TIMEOUT_MS = 5_000
+        private const val MAX_MJPEG_FRAME_BYTES = 8 * 1024 * 1024
         private const val JPEG_MARKER = 0xFF
         private const val JPEG_START_MARKER = 0xD8
         private const val JPEG_END_MARKER = 0xD9
