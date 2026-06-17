@@ -5,7 +5,8 @@ from __future__ import annotations
 from typing import Any
 
 from .client import ReceiverClientError, async_get_receiver_status
-from .const import CONF_HOST, CONF_PORT, CONF_TOKEN
+from .const import CONF_HOST, CONF_PORT, CONF_TOKEN, DOMAIN
+from .services import CAMERA_COMPATIBILITY_KEY
 
 REDACTED = "**REDACTED**"
 REDACTED_KEYS = {
@@ -27,6 +28,12 @@ async def async_get_config_entry_diagnostics(hass: Any, entry: Any) -> dict[str,
 
     diagnostics: dict[str, Any] = {
         "entry": data,
+        "camera_compatibility": _redact(
+            getattr(hass, "data", {})
+            .get(DOMAIN, {})
+            .get(CAMERA_COMPATIBILITY_KEY, {})
+            .get(entry.entry_id, {})
+        ),
         "receiver_status": None,
         "receiver_error": None,
     }

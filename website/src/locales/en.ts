@@ -10,8 +10,8 @@ export const en = {
     },
     currentStatus: {
       body: [
-        "HA TV PiP now supports discovery, TV-visible pairing, authenticated receiver control, camera stream popups, snapshots, styled notifications, receiver management, and remote receiver transport.",
-        "Stage 12 is complete. The first release candidate is published with Android debug and release APKs, HACS-ready integration zips, verified checks, website updates, install docs, and enhanced notification examples.",
+        "HA TV PiP now supports discovery, TV-visible pairing, authenticated receiver control, camera stream popups, snapshots, styled notifications, receiver management, remote receiver transport, and per-camera receiver defaults.",
+        "Post-1.0 compatibility work is underway. The Home Assistant integration can test HLS, MJPEG, and snapshot availability for a camera, store the last compatibility result, and reuse per-camera stream defaults in later automations.",
       ],
       eyebrow: "Current status",
       title: "Stage 12: Beta release hardening",
@@ -42,7 +42,7 @@ export const en = {
       {
         question: "Why do some camera streams show snapshots or errors?",
         answer:
-          "Android TV devices can reject unsupported codecs or very high-resolution streams. HA TV PiP supports snapshot fallbacks, separate stream camera entities, automatic MJPEG fallback, MJPEG-first mode, and receiver capability checks so Home Assistant can avoid unsupported command paths where possible.",
+          "Android TV devices can reject unsupported codecs or very high-resolution streams. HA TV PiP supports snapshot fallbacks, separate stream camera entities, automatic MJPEG fallback, MJPEG-first mode, receiver capability checks, and camera compatibility testing so Home Assistant can avoid unsupported command paths where possible.",
       },
       {
         question: "Can I hide the receiver app from my TV home screen?",
@@ -92,7 +92,7 @@ export const en = {
       {
         title: "Camera stream support",
         description:
-          "Home Assistant HLS camera streams with receiver-side compatibility feedback.",
+          "HLS, MJPEG, and snapshot paths with compatibility tests and per-camera defaults.",
         status: "complete",
       },
       {

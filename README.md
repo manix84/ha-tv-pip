@@ -42,6 +42,8 @@ Stage 12 is complete in `0.48.0`. The beta release hardening pass validated full
 
 Post-1.0 compatibility polish now includes receiver-level Home Assistant defaults for preferred stream strategy, duration, popup position, snapshot fallback, width, and height. Individual automations can still override any of those values per action.
 
+The current compatibility pass adds Home Assistant-side camera stream testing and per-camera defaults. Users can test HLS, MJPEG, and snapshot availability for a camera/receiver pair, then store camera-specific stream, fallback, position, duration, width, and height defaults so automations stay simpler.
+
 ## Monorepo Layout 🧱
 
 ```txt
@@ -221,6 +223,7 @@ Available now:
 - Home Assistant service: `ha_tv_pip.show_snapshot` 🖼️
 - Home Assistant service: `ha_tv_pip.show_notification` 🔔
 - Home Assistant HLS stream resolution with snapshot fallback 🎬
+- Camera compatibility testing and per-camera stream defaults 🧭
 - Zeroconf discovery and TV-visible pairing 🔎
 - Receiver status, PiP controls, launcher controls, and diagnostics 🧰
 - Optional remote receiver mode through the user's own Home Assistant external URL 🌍

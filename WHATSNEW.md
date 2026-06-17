@@ -1,5 +1,12 @@
 # What's New ✨
 
+## 1.16.0 - Camera Compatibility Defaults 🧭
+
+- Added `ha_tv_pip.test_camera_stream` to check HLS, MJPEG, and snapshot availability for a camera/receiver pair 🧪
+- Added `ha_tv_pip.set_camera_defaults` and `ha_tv_pip.clear_camera_defaults` for per-camera stream strategy, substream, snapshot, duration, position, width, and height defaults ⚙️
+- Stored non-sensitive last camera compatibility results in Home Assistant diagnostics 🔎
+- Updated website and docs for camera compatibility testing and per-camera defaults 📝
+
 ## 1.15.0 - Receiver Action Defaults ⚙️
 
 - Added Home Assistant receiver options for preferred stream strategy, default duration, popup position, snapshot fallback, width, and height ⚙️

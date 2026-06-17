@@ -794,7 +794,6 @@ These should not block the MVP.
 - Android notification integration.
 - Full-screen takeover mode.
 - Per-room routing.
-- Per-camera default settings.
 - Quiet hours.
 - Do-not-disturb integration.
 - Overlay position and size options.
@@ -806,6 +805,21 @@ These should not block the MVP.
 - Companion mobile app support.
 - Local-only privacy mode.
 - Import/export settings.
+
+## Post-1.0 Compatibility Polish
+
+Completed:
+
+- ✅ Receiver-level defaults for preferred stream strategy, duration, position, snapshot fallback, width, and height.
+- ✅ Per-camera default settings through `ha_tv_pip.set_camera_defaults` and `ha_tv_pip.clear_camera_defaults`.
+- ✅ Camera compatibility testing through `ha_tv_pip.test_camera_stream`.
+- ✅ Non-sensitive last compatibility result in Home Assistant diagnostics.
+
+Still future:
+
+- WebRTC low-latency mode.
+- Restreaming or transcoding for broad camera codec support.
+- Deeper camera-platform helpers such as go2rtc or Frigate-specific setup shortcuts.
 
 ## Additional TV Platforms
 

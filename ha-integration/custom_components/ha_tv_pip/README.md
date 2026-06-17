@@ -11,6 +11,7 @@ Current beta features:
 - Local network discovery with Zeroconf / mDNS 🔎
 - TV-visible pairing code and bearer-token authenticated control 🔐
 - Camera stream, snapshot, and notification services 📹
+- Camera compatibility testing and per-camera defaults 🧭
 - Receiver entities for status, connectivity, PiP controls, launcher controls, and diagnostics 🧰
 - Optional remote receiver mode through your own Home Assistant external URL 🌍
 
@@ -143,6 +144,37 @@ Each receiver has configurable defaults in the Home Assistant integration option
 - Default popup width and height in pixels.
 
 Use `0` for duration, width, or height to keep the built-in service defaults. Explicit service data always wins, so one automation can still override the receiver defaults when needed.
+
+Per-camera defaults can be stored with `ha_tv_pip.set_camera_defaults`. They apply before receiver-level defaults, which is useful when one camera needs `mjpeg_first`, a substream entity, a different snapshot entity, or a different popup size. Use `ha_tv_pip.clear_camera_defaults` to remove stored defaults for a camera.
+
+## Camera Compatibility Test 🧭
+
+```yaml
+service: ha_tv_pip.test_camera_stream
+target:
+  device_id: living_room_tv
+data:
+  camera_entity: camera.front_door
+  stream_camera_entity: camera.front_door_sub
+  snapshot_camera_entity: camera.front_door
+```
+
+The compatibility test checks whether Home Assistant can resolve HLS, MJPEG, and snapshot URLs for the selected camera and receiver. It stores a non-sensitive last result in diagnostics, including available stream types and the recommended stream type. It does not store or expose camera URLs in the compatibility result.
+
+```yaml
+service: ha_tv_pip.set_camera_defaults
+target:
+  device_id: living_room_tv
+data:
+  camera_entity: camera.front_door
+  stream_type: mjpeg_first
+  stream_camera_entity: camera.front_door_sub
+  snapshot_fallback: true
+  duration_seconds: 30
+  position: top_right
+  width: 720
+  height: 405
+```
 
 ## Camera Service 📹
 

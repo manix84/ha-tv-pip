@@ -16,6 +16,7 @@ from .client import (
     async_show_camera,
 )
 from .const import (
+    CONF_CAMERA_DEFAULTS,
     CONF_DEFAULT_DURATION_SECONDS,
     CONF_DEFAULT_HEIGHT,
     CONF_DEFAULT_POSITION,
@@ -28,9 +29,12 @@ from .const import (
     CONF_PORT,
     CONF_TOKEN,
     DOMAIN,
+    SERVICE_CLEAR_CAMERA_DEFAULTS,
+    SERVICE_SET_CAMERA_DEFAULTS,
     SERVICE_SHOW_CAMERA,
     SERVICE_SHOW_NOTIFICATION,
     SERVICE_SHOW_SNAPSHOT,
+    SERVICE_TEST_CAMERA_STREAM,
 )
 from .remote import remote_registry
 
@@ -73,6 +77,7 @@ ATTR_TITLE = "title"
 ATTR_TITLE_COLOR = "title_color"
 ATTR_TITLE_SIZE = "title_size"
 ATTR_WIDTH = "width"
+CAMERA_COMPATIBILITY_KEY = "camera_compatibility"
 CAMERA_DOMAIN = "camera"
 COLOR_PATTERN = re.compile(r"^#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$")
 DEFAULT_NOTIFICATION_BACKGROUND_COLOR = "#B30F0E0E"
@@ -189,7 +194,9 @@ class ShowCameraRequest:
     device_ids: tuple[str, ...]
     duration_explicit: bool = False
     position_explicit: bool = False
+    snapshot_camera_entity_explicit: bool = False
     snapshot_fallback_explicit: bool = False
+    stream_camera_entity_explicit: bool = False
     stream_type_explicit: bool = False
     width_explicit: bool = False
     height_explicit: bool = False
@@ -293,6 +300,29 @@ async def async_register_services(hass: Any) -> None:
             ),
         }
     )
+    camera_defaults_schema = vol.Schema(
+        {
+            **target_schema,
+            vol.Required(ATTR_CAMERA_ENTITY): cv.entity_id,
+            vol.Optional(ATTR_SNAPSHOT_CAMERA_ENTITY): cv.entity_id,
+            vol.Optional(ATTR_SNAPSHOT_FALLBACK): bool,
+            vol.Optional(ATTR_STREAM_CAMERA_ENTITY): cv.entity_id,
+            vol.Optional(ATTR_STREAM_TYPE): vol.Any(*STREAM_TYPES),
+            vol.Optional(ATTR_DURATION_SECONDS): vol.All(
+                vol.Coerce(int),
+                vol.Range(min=1, max=3600),
+            ),
+            vol.Optional(ATTR_POSITION): vol.Any(*NOTIFICATION_POSITIONS),
+            vol.Optional(ATTR_WIDTH): vol.All(
+                vol.Coerce(int),
+                vol.Range(min=240, max=1600),
+            ),
+            vol.Optional(ATTR_HEIGHT): vol.All(
+                vol.Coerce(int),
+                vol.Range(min=120, max=900),
+            ),
+        }
+    )
     snapshot_schema = vol.Schema(
         {
             **base_schema,
@@ -353,6 +383,15 @@ async def async_register_services(hass: Any) -> None:
     async def handle_show_notification(call: Any) -> None:
         await async_handle_show_notification(hass, call)
 
+    async def handle_test_camera_stream(call: Any) -> dict[str, Any]:
+        return await async_handle_test_camera_stream(hass, call)
+
+    async def handle_set_camera_defaults(call: Any) -> dict[str, Any]:
+        return await async_handle_set_camera_defaults(hass, call)
+
+    async def handle_clear_camera_defaults(call: Any) -> dict[str, Any]:
+        return await async_handle_clear_camera_defaults(hass, call)
+
     if not hass.services.has_service(DOMAIN, SERVICE_SHOW_CAMERA):
         hass.services.async_register(
             DOMAIN,
@@ -375,6 +414,40 @@ async def async_register_services(hass: Any) -> None:
             SERVICE_SHOW_NOTIFICATION,
             handle_show_notification,
             schema=notification_schema,
+        )
+
+    response_kwargs = _service_response_kwargs()
+
+    if not hass.services.has_service(DOMAIN, SERVICE_TEST_CAMERA_STREAM):
+        hass.services.async_register(
+            DOMAIN,
+            SERVICE_TEST_CAMERA_STREAM,
+            handle_test_camera_stream,
+            schema=camera_defaults_schema,
+            **response_kwargs,
+        )
+
+    if not hass.services.has_service(DOMAIN, SERVICE_SET_CAMERA_DEFAULTS):
+        hass.services.async_register(
+            DOMAIN,
+            SERVICE_SET_CAMERA_DEFAULTS,
+            handle_set_camera_defaults,
+            schema=camera_defaults_schema,
+            **response_kwargs,
+        )
+
+    if not hass.services.has_service(DOMAIN, SERVICE_CLEAR_CAMERA_DEFAULTS):
+        hass.services.async_register(
+            DOMAIN,
+            SERVICE_CLEAR_CAMERA_DEFAULTS,
+            handle_clear_camera_defaults,
+            schema=vol.Schema(
+                {
+                    **target_schema,
+                    vol.Required(ATTR_CAMERA_ENTITY): cv.entity_id,
+                }
+            ),
+            **response_kwargs,
         )
 
 
@@ -514,6 +587,81 @@ async def async_handle_show_notification(hass: Any, call: Any) -> None:
         raise ServiceValidationError("receiver_command_failed", str(error)) from error
 
 
+async def async_handle_test_camera_stream(hass: Any, call: Any) -> dict[str, Any]:
+    """Resolve camera stream options and store a non-sensitive compatibility result."""
+
+    request = _request_from_call(call)
+    _validate_camera_entity(hass, request.camera_entity)
+    if request.stream_camera_entity is not None:
+        _validate_camera_entity(hass, request.stream_camera_entity)
+    if request.snapshot_camera_entity is not None:
+        _validate_camera_entity(hass, request.snapshot_camera_entity)
+
+    receiver = _resolve_receiver(hass, request)
+    request = _apply_camera_defaults(request, receiver, duration_fallback=30)
+    remote = remote_registry(hass)
+    prefer_external = remote.is_connected(receiver.device_id)
+    capabilities = await _async_receiver_capabilities(receiver)
+    result = await _async_camera_compatibility_report(
+        hass,
+        request,
+        receiver=receiver,
+        prefer_external=prefer_external,
+        capabilities=capabilities,
+    )
+    _store_camera_compatibility(hass, receiver, request.camera_entity, result)
+    return result
+
+
+async def async_handle_set_camera_defaults(hass: Any, call: Any) -> dict[str, Any]:
+    """Persist per-camera defaults for a receiver."""
+
+    request = _request_from_call(call)
+    _validate_camera_entity(hass, request.camera_entity)
+    if request.stream_camera_entity is not None:
+        _validate_camera_entity(hass, request.stream_camera_entity)
+    if request.snapshot_camera_entity is not None:
+        _validate_camera_entity(hass, request.snapshot_camera_entity)
+
+    receiver = _resolve_receiver(hass, request)
+    entry = _entry_for_receiver(hass, receiver.entry_id)
+    defaults = _camera_defaults_payload(request)
+    options = dict(getattr(entry, "options", {}) or {})
+    camera_defaults = dict(options.get(CONF_CAMERA_DEFAULTS, {}) or {})
+    camera_defaults[request.camera_entity] = defaults
+    options[CONF_CAMERA_DEFAULTS] = camera_defaults
+    _update_entry_options(hass, entry, options)
+    return {
+        "accepted": True,
+        "camera_entity": request.camera_entity,
+        "receiver": receiver.name,
+        "defaults": defaults,
+    }
+
+
+async def async_handle_clear_camera_defaults(hass: Any, call: Any) -> dict[str, Any]:
+    """Remove per-camera defaults for a receiver."""
+
+    request = _request_from_call(call)
+    _validate_camera_entity(hass, request.camera_entity)
+    receiver = _resolve_receiver(hass, request)
+    entry = _entry_for_receiver(hass, receiver.entry_id)
+    options = dict(getattr(entry, "options", {}) or {})
+    camera_defaults = dict(options.get(CONF_CAMERA_DEFAULTS, {}) or {})
+    removed = camera_defaults.pop(request.camera_entity, None) is not None
+    if camera_defaults:
+        options[CONF_CAMERA_DEFAULTS] = camera_defaults
+    else:
+        options.pop(CONF_CAMERA_DEFAULTS, None)
+    _update_entry_options(hass, entry, options)
+    return {
+        "accepted": True,
+        "camera_entity": request.camera_entity,
+        "receiver": receiver.name,
+        "removed": removed,
+    }
+
+
 def _request_from_call(call: Any) -> ShowCameraRequest:
     data = dict(getattr(call, "data", {}))
     target = getattr(call, "target", {}) or {}
@@ -563,7 +711,9 @@ def _request_from_call(call: Any) -> ShowCameraRequest:
         device_ids=device_ids,
         duration_explicit=ATTR_DURATION_SECONDS in data,
         position_explicit=ATTR_POSITION in data,
+        snapshot_camera_entity_explicit=ATTR_SNAPSHOT_CAMERA_ENTITY in data,
         snapshot_fallback_explicit=ATTR_SNAPSHOT_FALLBACK in data,
+        stream_camera_entity_explicit=ATTR_STREAM_CAMERA_ENTITY in data,
         stream_type_explicit=ATTR_STREAM_TYPE in data,
         width_explicit=ATTR_WIDTH in data,
         height_explicit=ATTR_HEIGHT in data,
@@ -657,6 +807,21 @@ def _configured_entries(hass: Any) -> list[Any]:
     return list(config_entries.async_entries(DOMAIN))
 
 
+def _entry_for_receiver(hass: Any, entry_id: str) -> Any:
+    for entry in _configured_entries(hass):
+        if entry.entry_id == entry_id:
+            return entry
+    raise ServiceValidationError("receiver_not_found")
+
+
+def _update_entry_options(hass: Any, entry: Any, options: dict[str, Any]) -> None:
+    config_entries = getattr(hass, "config_entries", None)
+    if config_entries is not None and hasattr(config_entries, "async_update_entry"):
+        config_entries.async_update_entry(entry, options=options)
+        return
+    entry.options = options
+
+
 def _apply_camera_defaults(
     request: ShowCameraRequest,
     receiver: ReceiverEntry,
@@ -666,6 +831,7 @@ def _apply_camera_defaults(
     """Apply receiver-level defaults without overriding explicit service data."""
 
     updates: dict[str, Any] = {}
+    camera_defaults = _camera_defaults(receiver.options, request.camera_entity)
     duration = _receiver_default_int(
         receiver.options,
         CONF_DEFAULT_DURATION_SECONDS,
@@ -688,21 +854,74 @@ def _apply_camera_defaults(
     position = str(receiver.options.get(CONF_DEFAULT_POSITION, "")).strip()
 
     if not request.duration_explicit:
-        updates["duration_seconds"] = duration or duration_fallback
-    if not request.position_explicit and position in NOTIFICATION_POSITIONS:
-        updates["position"] = position
+        updates["duration_seconds"] = (
+            _camera_default_int(
+                camera_defaults,
+                ATTR_DURATION_SECONDS,
+                minimum=1,
+                maximum=3600,
+            )
+            or duration
+            or duration_fallback
+        )
+    if not request.position_explicit:
+        camera_position = str(camera_defaults.get(ATTR_POSITION, "")).strip()
+        if camera_position in NOTIFICATION_POSITIONS:
+            updates["position"] = camera_position
+        elif position in NOTIFICATION_POSITIONS:
+            updates["position"] = position
+    if (
+        not request.snapshot_camera_entity_explicit
+        and _optional_text(camera_defaults.get(ATTR_SNAPSHOT_CAMERA_ENTITY)) is not None
+    ):
+        updates["snapshot_camera_entity"] = _optional_text(
+            camera_defaults.get(ATTR_SNAPSHOT_CAMERA_ENTITY)
+        )
     if not request.snapshot_fallback_explicit and (
-        CONF_DEFAULT_SNAPSHOT_FALLBACK in receiver.options
+        ATTR_SNAPSHOT_FALLBACK in camera_defaults
+        or CONF_DEFAULT_SNAPSHOT_FALLBACK in receiver.options
     ):
         updates["snapshot_fallback"] = bool(
-            receiver.options[CONF_DEFAULT_SNAPSHOT_FALLBACK]
+            camera_defaults.get(
+                ATTR_SNAPSHOT_FALLBACK,
+                receiver.options.get(CONF_DEFAULT_SNAPSHOT_FALLBACK),
+            )
         )
-    if not request.stream_type_explicit and stream_type in STREAM_TYPES:
-        updates["stream_type"] = stream_type
-    if not request.width_explicit and width is not None:
-        updates["width"] = width
-    if not request.height_explicit and height is not None:
-        updates["height"] = height
+    if (
+        not request.stream_camera_entity_explicit
+        and _optional_text(camera_defaults.get(ATTR_STREAM_CAMERA_ENTITY)) is not None
+    ):
+        updates["stream_camera_entity"] = _optional_text(
+            camera_defaults.get(ATTR_STREAM_CAMERA_ENTITY)
+        )
+    if not request.stream_type_explicit:
+        camera_stream_type = str(camera_defaults.get(ATTR_STREAM_TYPE, "")).strip()
+        if camera_stream_type in STREAM_TYPES:
+            updates["stream_type"] = camera_stream_type
+        elif stream_type in STREAM_TYPES:
+            updates["stream_type"] = stream_type
+    if not request.width_explicit:
+        updates["width"] = (
+            _camera_default_int(
+                camera_defaults,
+                ATTR_WIDTH,
+                minimum=240,
+                maximum=1600,
+            )
+            or width
+            or request.width
+        )
+    if not request.height_explicit:
+        updates["height"] = (
+            _camera_default_int(
+                camera_defaults,
+                ATTR_HEIGHT,
+                minimum=120,
+                maximum=900,
+            )
+            or height
+            or request.height
+        )
 
     return replace(request, **updates) if updates else request
 
@@ -760,6 +979,167 @@ def _receiver_default_int(
     if not minimum <= value <= maximum:
         return None
     return value
+
+
+def _camera_defaults(options: dict[str, Any], camera_entity: str) -> dict[str, Any]:
+    all_defaults = options.get(CONF_CAMERA_DEFAULTS)
+    if not isinstance(all_defaults, dict):
+        return {}
+    defaults = all_defaults.get(camera_entity)
+    return defaults if isinstance(defaults, dict) else {}
+
+
+def _camera_default_int(
+    defaults: dict[str, Any],
+    key: str,
+    *,
+    minimum: int,
+    maximum: int,
+) -> int | None:
+    try:
+        value = int(defaults.get(key, 0) or 0)
+    except (TypeError, ValueError):
+        return None
+    if not minimum <= value <= maximum:
+        return None
+    return value
+
+
+def _camera_defaults_payload(request: ShowCameraRequest) -> dict[str, Any]:
+    defaults: dict[str, Any] = {}
+    if request.duration_explicit and request.duration_seconds is not None:
+        defaults[ATTR_DURATION_SECONDS] = request.duration_seconds
+    if request.position_explicit:
+        defaults[ATTR_POSITION] = request.position
+    if request.snapshot_camera_entity_explicit and request.snapshot_camera_entity:
+        defaults[ATTR_SNAPSHOT_CAMERA_ENTITY] = request.snapshot_camera_entity
+    if request.snapshot_fallback_explicit:
+        defaults[ATTR_SNAPSHOT_FALLBACK] = request.snapshot_fallback
+    if request.stream_camera_entity_explicit and request.stream_camera_entity:
+        defaults[ATTR_STREAM_CAMERA_ENTITY] = request.stream_camera_entity
+    if request.stream_type_explicit:
+        defaults[ATTR_STREAM_TYPE] = request.stream_type
+    if request.width_explicit and request.width is not None:
+        defaults[ATTR_WIDTH] = request.width
+    if request.height_explicit and request.height is not None:
+        defaults[ATTR_HEIGHT] = request.height
+    return defaults
+
+
+async def _async_camera_compatibility_report(
+    hass: Any,
+    request: ShowCameraRequest,
+    *,
+    receiver: ReceiverEntry,
+    prefer_external: bool,
+    capabilities: ReceiverCapabilities | None,
+) -> dict[str, Any]:
+    stream_entity = request.stream_camera_entity or request.camera_entity
+    snapshot_entity = request.snapshot_camera_entity or request.camera_entity
+    results = [
+        await _async_stream_probe(
+            STREAM_TYPE_HLS,
+            lambda: _async_camera_stream_url(
+                hass,
+                stream_entity,
+                prefer_external=prefer_external,
+            ),
+            capabilities,
+        ),
+        await _async_stream_probe(
+            STREAM_TYPE_MJPEG,
+            lambda: _camera_mjpeg_stream_url(
+                hass,
+                stream_entity,
+                prefer_external=prefer_external,
+            ),
+            capabilities,
+        ),
+        await _async_stream_probe(
+            STREAM_TYPE_SNAPSHOT,
+            lambda: _camera_snapshot_url(
+                hass,
+                snapshot_entity,
+                prefer_external=prefer_external,
+            ),
+            capabilities,
+        ),
+    ]
+    recommended = _recommended_stream_type(results)
+    return {
+        "camera_entity": request.camera_entity,
+        "stream_camera_entity": stream_entity,
+        "snapshot_camera_entity": snapshot_entity,
+        "receiver": receiver.name,
+        "receiver_device_id": receiver.device_id,
+        "preferred_stream_type": request.stream_type,
+        "recommended_stream_type": recommended,
+        "results": results,
+    }
+
+
+async def _async_stream_probe(
+    stream_type: str,
+    resolver: Any,
+    capabilities: ReceiverCapabilities | None,
+) -> dict[str, Any]:
+    if not _supports_stream(capabilities, stream_type):
+        return {
+            "stream_type": stream_type,
+            "available": False,
+            "reason": "receiver_capability_unavailable",
+        }
+    try:
+        resolved = resolver()
+        if hasattr(resolved, "__await__"):
+            resolved = await resolved
+    except ServiceValidationError as error:
+        return {
+            "stream_type": stream_type,
+            "available": False,
+            "reason": error.code,
+        }
+    return {
+        "stream_type": stream_type,
+        "available": bool(resolved),
+    }
+
+
+def _recommended_stream_type(results: list[dict[str, Any]]) -> str | None:
+    priority = (STREAM_TYPE_HLS, STREAM_TYPE_MJPEG, STREAM_TYPE_SNAPSHOT)
+    available = {
+        str(result["stream_type"])
+        for result in results
+        if bool(result.get("available", False))
+    }
+    return next(
+        (stream_type for stream_type in priority if stream_type in available),
+        None,
+    )
+
+
+def _store_camera_compatibility(
+    hass: Any,
+    receiver: ReceiverEntry,
+    camera_entity: str,
+    result: dict[str, Any],
+) -> None:
+    data = hass.data.setdefault(DOMAIN, {})
+    compatibility = data.setdefault(CAMERA_COMPATIBILITY_KEY, {})
+    receiver_results = compatibility.setdefault(receiver.entry_id, {})
+    receiver_results[camera_entity] = result
+
+
+def _service_response_kwargs() -> dict[str, Any]:
+    try:
+        core = __import__("homeassistant.core", fromlist=["SupportsResponse"])
+    except ModuleNotFoundError:
+        return {}
+    supports_response = getattr(core, "SupportsResponse", None)
+    if supports_response is None:
+        return {}
+    response_value = getattr(supports_response, "ONLY", None)
+    return {"supports_response": response_value} if response_value is not None else {}
 
 
 def _entries_for_devices(

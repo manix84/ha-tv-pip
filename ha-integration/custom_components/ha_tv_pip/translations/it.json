@@ -256,6 +256,69 @@
           "name": "Height"
         }
       }
+    },
+    "test_camera_stream": {
+      "name": "Test camera stream",
+      "description": "Check which stream formats Home Assistant can resolve for a camera and receiver.",
+      "fields": {
+        "camera_entity": {
+          "name": "Camera entity"
+        },
+        "stream_camera_entity": {
+          "name": "Stream camera entity"
+        },
+        "snapshot_camera_entity": {
+          "name": "Snapshot fallback camera entity"
+        },
+        "stream_type": {
+          "name": "Preferred stream strategy"
+        },
+        "snapshot_fallback": {
+          "name": "Snapshot fallback"
+        }
+      }
+    },
+    "set_camera_defaults": {
+      "name": "Set camera defaults",
+      "description": "Store per-camera defaults for a paired receiver.",
+      "fields": {
+        "camera_entity": {
+          "name": "Camera entity"
+        },
+        "stream_camera_entity": {
+          "name": "Stream camera entity"
+        },
+        "snapshot_camera_entity": {
+          "name": "Snapshot fallback camera entity"
+        },
+        "stream_type": {
+          "name": "Preferred stream strategy"
+        },
+        "duration_seconds": {
+          "name": "Duration"
+        },
+        "position": {
+          "name": "Position"
+        },
+        "snapshot_fallback": {
+          "name": "Snapshot fallback"
+        },
+        "width": {
+          "name": "Width"
+        },
+        "height": {
+          "name": "Height"
+        }
+      }
+    },
+    "clear_camera_defaults": {
+      "name": "Clear camera defaults",
+      "description": "Remove stored per-camera defaults for a paired receiver.",
+      "fields": {
+        "camera_entity": {
+          "name": "Camera entity"
+        }
+      }
     }
   }
 }

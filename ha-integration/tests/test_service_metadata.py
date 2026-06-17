@@ -52,6 +52,19 @@ SERVICE_EXAMPLES: dict[str, set[str]] = {
         "width",
         "height",
     },
+    "test_camera_stream": {
+        "stream_type",
+        "snapshot_fallback",
+    },
+    "set_camera_defaults": {
+        "stream_type",
+        "duration_seconds",
+        "position",
+        "snapshot_fallback",
+        "width",
+        "height",
+    },
+    "clear_camera_defaults": set(),
 }
 
 NO_EXAMPLE_FIELDS: dict[str, set[str]] = {
@@ -64,6 +77,19 @@ NO_EXAMPLE_FIELDS: dict[str, set[str]] = {
         "camera_entity",
     },
     "show_notification": set(),
+    "test_camera_stream": {
+        "camera_entity",
+        "snapshot_camera_entity",
+        "stream_camera_entity",
+    },
+    "set_camera_defaults": {
+        "camera_entity",
+        "snapshot_camera_entity",
+        "stream_camera_entity",
+    },
+    "clear_camera_defaults": {
+        "camera_entity",
+    },
 }
 
 

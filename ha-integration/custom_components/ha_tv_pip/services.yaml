@@ -377,3 +377,144 @@ show_notification:
       name: Height
       description: Optional notification height in pixels. Omit to use the receiver default or content height.
       example: 240
+test_camera_stream:
+  target:
+    device:
+      integration: ha_tv_pip
+  fields:
+    camera_entity:
+      required: true
+      selector:
+        entity:
+          domain: camera
+      name: Camera entity
+      description: Camera entity to test against the selected receiver.
+    stream_camera_entity:
+      required: false
+      selector:
+        entity:
+          domain: camera
+      name: Stream camera entity
+      description: Optional camera entity to use for live stream compatibility checks.
+    snapshot_camera_entity:
+      required: false
+      selector:
+        entity:
+          domain: camera
+      name: Snapshot fallback camera entity
+      description: Optional camera entity to use for snapshot compatibility checks.
+    stream_type:
+      selector:
+        select:
+          options:
+            - auto
+            - hls
+            - mjpeg
+            - mjpeg_first
+            - snapshot
+      name: Preferred stream strategy
+      description: Optional stream strategy to evaluate alongside the compatibility result.
+      example: auto
+    snapshot_fallback:
+      selector:
+        boolean:
+      name: Snapshot fallback
+      description: Optional snapshot fallback preference to include in the compatibility context.
+      example: true
+set_camera_defaults:
+  target:
+    device:
+      integration: ha_tv_pip
+  fields:
+    camera_entity:
+      required: true
+      selector:
+        entity:
+          domain: camera
+      name: Camera entity
+      description: Camera entity these defaults apply to.
+    stream_camera_entity:
+      required: false
+      selector:
+        entity:
+          domain: camera
+      name: Stream camera entity
+      description: Optional camera entity to use for the live stream.
+    snapshot_camera_entity:
+      required: false
+      selector:
+        entity:
+          domain: camera
+      name: Snapshot fallback camera entity
+      description: Optional camera entity to use for the loading snapshot.
+    stream_type:
+      selector:
+        select:
+          options:
+            - auto
+            - hls
+            - mjpeg
+            - mjpeg_first
+            - snapshot
+      name: Preferred stream strategy
+      description: Per-camera stream strategy used when an action omits stream_type.
+      example: mjpeg_first
+    duration_seconds:
+      selector:
+        number:
+          min: 1
+          max: 3600
+          mode: box
+          unit_of_measurement: seconds
+      name: Duration
+      description: Per-camera duration used when an action omits duration_seconds.
+      example: 30
+    position:
+      selector:
+        select:
+          options:
+            - top_right
+            - top_left
+            - bottom_right
+            - bottom_left
+      name: Position
+      description: Per-camera popup position used when an action omits position.
+      example: top_right
+    snapshot_fallback:
+      selector:
+        boolean:
+      name: Snapshot fallback
+      description: Per-camera snapshot fallback default used when an action omits snapshot_fallback.
+      example: true
+    width:
+      selector:
+        number:
+          min: 240
+          max: 1600
+          mode: box
+          unit_of_measurement: px
+      name: Width
+      description: Per-camera popup width used when an action omits width.
+      example: 720
+    height:
+      selector:
+        number:
+          min: 120
+          max: 900
+          mode: box
+          unit_of_measurement: px
+      name: Height
+      description: Per-camera popup height used when an action omits height.
+      example: 405
+clear_camera_defaults:
+  target:
+    device:
+      integration: ha_tv_pip
+  fields:
+    camera_entity:
+      required: true
+      selector:
+        entity:
+          domain: camera
+      name: Camera entity
+      description: Camera entity whose stored defaults should be removed.

@@ -12,6 +12,7 @@ from homeassistant import config_entries  # type: ignore[import-not-found]
 from .client import ReceiverClientError, async_confirm_pairing, async_start_pairing
 from .const import (
     CONF_API_VERSION,
+    CONF_CAMERA_DEFAULTS,
     CONF_DEFAULT_DURATION_SECONDS,
     CONF_DEFAULT_HEIGHT,
     CONF_DEFAULT_POSITION,
@@ -336,6 +337,10 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
                     options[CONF_DEFAULT_WIDTH] = default_width
                 if default_height > 0:
                     options[CONF_DEFAULT_HEIGHT] = default_height
+                if CONF_CAMERA_DEFAULTS in self.config_entry.options:
+                    options[CONF_CAMERA_DEFAULTS] = dict(
+                        self.config_entry.options[CONF_CAMERA_DEFAULTS]
+                    )
                 if remote_url and remote_token:
                     options[CONF_REMOTE_HOME_ASSISTANT_URL] = remote_url
                     options[CONF_REMOTE_ACCESS_TOKEN] = remote_token
