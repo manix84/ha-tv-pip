@@ -22,6 +22,8 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import java.io.BufferedInputStream
+import java.io.ByteArrayOutputStream
 import java.net.URL
 
 class OverlayPlayerService : Service() {
@@ -37,6 +39,8 @@ class OverlayPlayerService : Service() {
     private var style: NotificationStyle = NotificationStyle()
     private var streamType: StreamType = StreamType.Hls
     private var durationSeconds: Int? = null
+    @Volatile private var mjpegRunning: Boolean = false
+    private var mjpegThread: Thread? = null
     private val autoCloseHandler = Handler(Looper.getMainLooper())
     private val mainHandler = Handler(Looper.getMainLooper())
 
@@ -75,6 +79,7 @@ class OverlayPlayerService : Service() {
                     }?.getIntExtra(PlayerActivity.EXTRA_HEIGHT, 0)?.takeIf { it > 0 }
                 )
                 streamType = when (intent?.getStringExtra(PlayerActivity.EXTRA_STREAM_TYPE)) {
+                    StreamType.Mjpeg.wireName -> StreamType.Mjpeg
                     StreamType.Snapshot.wireName -> StreamType.Snapshot
                     StreamType.Notification.wireName -> StreamType.Notification
                     else -> StreamType.Hls
@@ -117,6 +122,8 @@ class OverlayPlayerService : Service() {
             }
             if (streamType == StreamType.Snapshot) {
                 addSnapshotView(mediaContainer, url, updateStateOnLoad = true)
+            } else if (streamType == StreamType.Mjpeg) {
+                addMjpegView(mediaContainer)
             } else {
                 addPlayerView(mediaContainer)
             }
@@ -300,6 +307,108 @@ class OverlayPlayerService : Service() {
         root.addView(playerView)
     }
 
+    private fun addMjpegView(root: FrameLayout) {
+        val previewImageView = previewUrl?.let { imageUrl ->
+            addSnapshotView(root, imageUrl, updateStateOnLoad = false)
+        }
+        val streamImageView = ImageView(this).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            adjustViewBounds = true
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            setBackgroundColor(Color.BLACK)
+            alpha = if (previewImageView == null) 1f else 0.01f
+        }
+        root.addView(streamImageView)
+
+        mjpegRunning = true
+        mjpegThread = Thread {
+            var firstFrameRendered = false
+            runCatching {
+                val connection = URL(url).openConnection().apply {
+                    connectTimeout = MJPEG_CONNECT_TIMEOUT_MS
+                    readTimeout = MJPEG_READ_TIMEOUT_MS
+                }
+                BufferedInputStream(connection.getInputStream()).use { stream ->
+                    while (mjpegRunning) {
+                        val frame = readJpegFrame(stream) ?: break
+                        val bitmap = BitmapFactory.decodeByteArray(frame, 0, frame.size)
+                            ?: error(getString(R.string.error_snapshot_unsupported_image))
+                        mainHandler.post {
+                            streamImageView.setImageBitmap(bitmap)
+                            streamImageView.alpha = 1f
+                            previewImageView?.visibility = ImageView.GONE
+                            if (!firstFrameRendered) {
+                                firstFrameRendered = true
+                                updatePlaybackState(
+                                    status = PlaybackStatus.Ready,
+                                    isPlaying = true,
+                                    errorMessage = null
+                                )
+                            }
+                        }
+                    }
+                }
+            }.onFailure { error ->
+                mainHandler.post {
+                    val message = error.message ?: getString(R.string.error_unknown_snapshot)
+                    val hasPreviewFallback = previewImageView != null
+                    if (hasPreviewFallback) {
+                        streamImageView.alpha = 0f
+                        previewImageView.visibility = ImageView.VISIBLE
+                    }
+                    updatePlaybackState(
+                        status = PlaybackStatus.Error,
+                        isPlaying = false,
+                        errorMessage = if (hasPreviewFallback) {
+                            getString(R.string.snapshot_fallback_after_video_error, message)
+                        } else {
+                            message
+                        }
+                    )
+                    errorTextView?.text = if (hasPreviewFallback) {
+                        getString(R.string.video_unavailable_showing_snapshot)
+                    } else {
+                        getString(R.string.snapshot_unavailable)
+                    }
+                    errorTextView?.visibility = TextView.VISIBLE
+                    AppLog.error("MJPEG stream failed: $message", error)
+                }
+            }
+        }.apply { start() }
+    }
+
+    private fun readJpegFrame(stream: BufferedInputStream): ByteArray? {
+        val frame = ByteArrayOutputStream()
+        var previous = -1
+        var inFrame = false
+
+        while (mjpegRunning) {
+            val current = stream.read()
+            if (current == -1) {
+                return null
+            }
+
+            if (!inFrame) {
+                if (previous == JPEG_MARKER && current == JPEG_START_MARKER) {
+                    frame.reset()
+                    frame.write(JPEG_MARKER)
+                    frame.write(JPEG_START_MARKER)
+                    inFrame = true
+                }
+            } else {
+                frame.write(current)
+                if (previous == JPEG_MARKER && current == JPEG_END_MARKER) {
+                    return frame.toByteArray()
+                }
+            }
+            previous = current
+        }
+        return null
+    }
+
     private fun addSnapshotView(
         root: FrameLayout,
         imageUrl: String,
@@ -353,6 +462,9 @@ class OverlayPlayerService : Service() {
     }
 
     private fun removeOverlay() {
+        mjpegRunning = false
+        mjpegThread?.interrupt()
+        mjpegThread = null
         overlayView?.let { view ->
             runCatching { windowManager.removeView(view) }
         }
@@ -376,6 +488,7 @@ class OverlayPlayerService : Service() {
                 mode = ReceiverPlaybackMode.Overlay,
                 title = title,
                 url = url,
+                streamType = streamType.wireName,
                 errorMessage = errorMessage
             )
         )
@@ -434,6 +547,11 @@ class OverlayPlayerService : Service() {
         private const val NOTIFICATION_CORNER_RADIUS_PX = 18f
         private const val OVERLAY_MARGIN_PX = 48
         private const val DEFAULT_BACKGROUND_COLOR = "#B30F0E0E"
+        private const val MJPEG_CONNECT_TIMEOUT_MS = 5_000
+        private const val MJPEG_READ_TIMEOUT_MS = 5_000
+        private const val JPEG_MARKER = 0xFF
+        private const val JPEG_START_MARKER = 0xD8
+        private const val JPEG_END_MARKER = 0xD9
         private val DEFAULT_BACKGROUND_COLOR_INT = 0xB30F0E0E.toInt()
     }
 }

@@ -67,13 +67,22 @@ DEFAULT_NOTIFICATION_TITLE_COLOR = "#50BFF2"
 NOTIFICATION_POSITIONS = ("top_right", "top_left", "bottom_right", "bottom_left")
 STREAM_TYPE_AUTO = "auto"
 STREAM_TYPE_HLS = "hls"
+STREAM_TYPE_MJPEG = "mjpeg"
 STREAM_TYPE_NOTIFICATION = "notification"
 STREAM_TYPE_SNAPSHOT = "snapshot"
-STREAM_TYPES = (STREAM_TYPE_AUTO, STREAM_TYPE_HLS, STREAM_TYPE_SNAPSHOT)
+STREAM_TYPES = (
+    STREAM_TYPE_AUTO,
+    STREAM_TYPE_HLS,
+    STREAM_TYPE_MJPEG,
+    STREAM_TYPE_SNAPSHOT,
+)
 ERROR_MESSAGES = {
     "camera_not_found": "Camera entity was not found.",
     "camera_stream_unavailable": (
         "Home Assistant could not create an HLS stream for the camera."
+    ),
+    "camera_mjpeg_unavailable": (
+        "Home Assistant could not create an MJPEG stream URL for the camera."
     ),
     "invalid_camera_entity": "The selected entity is not a camera.",
     "invalid_duration": "Duration must be at least 1 second.",
@@ -88,7 +97,7 @@ ERROR_MESSAGES = {
         "Notification position must be top_right, top_left, bottom_right, "
         "or bottom_left."
     ),
-    "invalid_stream_type": "Stream type must be auto, hls, or snapshot.",
+    "invalid_stream_type": "Stream type must be auto, hls, mjpeg, or snapshot.",
     "missing_camera_entity": "A camera entity is required.",
     "multiple_receivers": (
         "Multiple HA TV PiP receivers are configured. Target one receiver device."
@@ -638,17 +647,33 @@ async def _async_show_camera_command(
             **_presentation_payload(request),
         )
 
+    stream_entity = request.stream_camera_entity or request.camera_entity
     preview_url = _snapshot_preview_url(
         hass,
         request,
         prefer_external=prefer_external,
     )
+    if request.stream_type == STREAM_TYPE_MJPEG:
+        return ShowCameraCommand(
+            title=title,
+            url=_camera_mjpeg_stream_url(
+                hass,
+                stream_entity,
+                prefer_external=prefer_external,
+            ),
+            duration_seconds=request.duration_seconds,
+            enter_pip=request.enter_pip,
+            stream_type=STREAM_TYPE_MJPEG,
+            preview_url=preview_url,
+            **_presentation_payload(request),
+        )
+
     try:
         return ShowCameraCommand(
             title=title,
             url=await _async_camera_stream_url(
                 hass,
-                request.stream_camera_entity or request.camera_entity,
+                stream_entity,
                 prefer_external=prefer_external,
             ),
             duration_seconds=request.duration_seconds,
@@ -666,7 +691,7 @@ async def _async_show_camera_command(
 
         _LOGGER.warning(
             "Falling back to snapshot for %s because HLS stream resolution failed: %s",
-            request.stream_camera_entity or request.camera_entity,
+            stream_entity,
             error,
         )
         return ShowCameraCommand(
@@ -779,6 +804,30 @@ def _camera_snapshot_url(
         raise ServiceValidationError("snapshot_unavailable")
 
     path = f"/api/camera_proxy/{quote(entity_id, safe='')}"
+    query = urlencode({"token": str(access_token)})
+    return _absolute_stream_url(
+        hass,
+        f"{path}?{query}",
+        prefer_external=prefer_external,
+    )
+
+
+def _camera_mjpeg_stream_url(
+    hass: Any,
+    entity_id: str,
+    *,
+    prefer_external: bool = False,
+) -> str:
+    state = hass.states.get(entity_id)
+    access_token = None if state is None else state.attributes.get("access_token")
+    if not access_token:
+        _LOGGER.error(
+            "Camera entity %s does not expose an MJPEG stream access token",
+            entity_id,
+        )
+        raise ServiceValidationError("camera_mjpeg_unavailable")
+
+    path = f"/api/camera_proxy_stream/{quote(entity_id, safe='')}"
     query = urlencode({"token": str(access_token)})
     return _absolute_stream_url(
         hass,

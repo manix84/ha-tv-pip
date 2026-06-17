@@ -39,6 +39,7 @@ from custom_components.ha_tv_pip.services import (
     ServiceValidationError,
     _absolute_stream_url,
     _async_show_camera_command,
+    _camera_mjpeg_stream_url,
     _camera_snapshot_url,
     _camera_title,
     _notification_request_from_call,
@@ -803,6 +804,45 @@ def test_show_camera_command_can_force_snapshot(
     assert command.preview_url is None
 
 
+def test_show_camera_command_can_force_mjpeg(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.helpers.network",
+        FakeNetworkModule("homeassistant.helpers.network"),
+    )
+    hass = FakeHass(
+        entries=[],
+        states={"camera.front_door": FakeState({"access_token": "stream-token"})},
+    )
+
+    command = asyncio.run(
+        _async_show_camera_command(
+            hass,
+            _request_from_call(
+                FakeCall(
+                    data={
+                        ATTR_CAMERA_ENTITY: "camera.front_door",
+                        ATTR_STREAM_TYPE: "mjpeg",
+                    }
+                )
+            ),
+            title="Front Door",
+        ),
+    )
+
+    assert command.stream_type == "mjpeg"
+    assert command.url == (
+        "http://10.0.0.2:8123/api/camera_proxy_stream/camera.front_door"
+        "?token=stream-token"
+    )
+    assert command.preview_url == (
+        "http://10.0.0.2:8123/api/camera_proxy/camera.front_door"
+        "?token=stream-token"
+    )
+
+
 def test_show_camera_command_auto_falls_back_to_snapshot(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -913,3 +953,32 @@ def test_camera_snapshot_url_requires_access_token() -> None:
     with pytest.raises(ServiceValidationError) as error:
         _camera_snapshot_url(hass, "camera.front_door")
     assert error.value.code == "snapshot_unavailable"
+
+
+def test_camera_mjpeg_stream_url_uses_external_home_assistant_url(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    network_module = FakeNetworkModule("homeassistant.helpers.network")
+    monkeypatch.setitem(sys.modules, "homeassistant.helpers.network", network_module)
+    hass = FakeHass(
+        entries=[],
+        states={"camera.front_door": FakeState({"access_token": "stream-token"})},
+    )
+
+    assert _camera_mjpeg_stream_url(
+        hass,
+        "camera.front_door",
+        prefer_external=True,
+    ) == (
+        "https://home.example.test/api/camera_proxy_stream/camera.front_door"
+        "?token=stream-token"
+    )
+
+
+def test_camera_mjpeg_stream_url_requires_access_token() -> None:
+    hass = FakeHass(entries=[], states={"camera.front_door": FakeState({})})
+
+    with pytest.raises(ServiceValidationError) as error:
+        _camera_mjpeg_stream_url(hass, "camera.front_door")
+
+    assert error.value.code == "camera_mjpeg_unavailable"

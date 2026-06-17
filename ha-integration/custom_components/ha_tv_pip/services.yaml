@@ -60,9 +60,10 @@ show_camera:
           options:
             - auto
             - hls
+            - mjpeg
             - snapshot
       name: Stream type
-      description: Choose automatic handling, force an HLS stream, or send a snapshot through the camera service.
+      description: Choose automatic handling, force an HLS stream, force an MJPEG stream, or send a snapshot through the camera service.
       example: auto
     title:
       required: false

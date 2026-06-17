@@ -39,7 +39,7 @@ export const en = {
       {
         question: "Why do some camera streams show snapshots or errors?",
         answer:
-          "Android TV devices can reject unsupported codecs or very high-resolution streams. HA TV PiP supports snapshot fallbacks now and will keep improving stream selection and compatibility.",
+          "Android TV devices can reject unsupported codecs or very high-resolution streams. HA TV PiP supports snapshot fallbacks, separate stream camera entities, and explicit MJPEG mode while broader stream selection continues to improve.",
       },
       {
         question: "Can I hide the receiver app from my TV home screen?",

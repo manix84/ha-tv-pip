@@ -190,6 +190,7 @@ class LocalControlServer(
             .put("displayMode", playback.mode.wireName)
             .put("title", playback.title)
             .put("url", playback.url)
+            .put("streamType", playback.streamType)
             .put("error", playback.errorMessage)
 
         return HttpResponse.json(status = 200, body = body)
@@ -260,13 +261,20 @@ class LocalControlServer(
         }
 
         val replacedExistingPlayback = ReceiverRuntimeState.snapshot().mode != ReceiverPlaybackMode.Idle
+        val initialMode = when (command.streamType) {
+            StreamType.Hls -> ReceiverPlaybackMode.FullScreen
+            StreamType.Mjpeg,
+            StreamType.Notification,
+            StreamType.Snapshot -> ReceiverPlaybackMode.Overlay
+        }
         ReceiverRuntimeState.update(
             ReceiverPlaybackSnapshot(
                 status = PlaybackStatus.Buffering,
                 isPlaying = false,
-                mode = ReceiverPlaybackMode.FullScreen,
+                mode = initialMode,
                 title = command.title,
-                url = command.url
+                url = command.url,
+                streamType = command.streamType.wireName
             )
         )
         onShow(command)

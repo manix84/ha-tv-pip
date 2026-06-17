@@ -93,6 +93,7 @@ class LocalControlService : Service() {
         val compatibility = DeviceCompatibilityEvaluator.from(this)
         if (
             command.streamType == StreamType.Notification ||
+            command.streamType == StreamType.Mjpeg ||
             command.streamType == StreamType.Snapshot ||
             (command.enterPip && compatibility.recommendedMode == ReceiverDisplayMode.OverlayFallback)
         ) {

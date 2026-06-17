@@ -57,6 +57,33 @@ class ShowCommandTest {
     }
 
     @Test
+    fun parsesMjpegShowRequest() {
+        val command = ShowCommand.fromJson(
+            """
+            {
+              "title": "Front Door",
+              "url": "https://example.com/api/camera_proxy_stream/camera.front_door",
+              "streamType": "mjpeg",
+              "previewUrl": "https://example.com/api/camera_proxy/camera.front_door",
+              "durationSeconds": 30,
+              "enterPip": true
+            }
+            """.trimIndent()
+        ).getOrThrow()
+
+        assertEquals(StreamType.Mjpeg, command.streamType)
+        assertEquals(
+            "https://example.com/api/camera_proxy_stream/camera.front_door",
+            command.url
+        )
+        assertEquals(
+            "https://example.com/api/camera_proxy/camera.front_door",
+            command.previewUrl
+        )
+        assertEquals(30, command.durationSeconds)
+    }
+
+    @Test
     fun parsesNotificationShowRequestWithoutUrl() {
         val command = ShowCommand.fromJson(
             """

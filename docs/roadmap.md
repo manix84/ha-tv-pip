@@ -462,10 +462,11 @@ Initial implementation:
 
 - `stream_type: auto` prefers HLS and falls back to snapshot if Home Assistant cannot resolve an HLS stream.
 - `stream_type: hls` forces HLS and reports stream resolution errors instead of changing modes.
+- `stream_type: mjpeg` forces Home Assistant's camera proxy stream endpoint and receiver-side MJPEG overlay rendering.
 - `stream_type: snapshot` sends a snapshot command through `ha_tv_pip.show_camera`.
 - `stream_camera_entity` lets users choose a separate live-stream camera entity, such as a lower-resolution or H.264 substream, while keeping the primary camera entity for titles and snapshot fallback.
 - Receiver overlays keep the snapshot preview visible if video playback fails after the HLS URL is accepted.
-- `mjpeg` and `webrtc` remain future stream types.
+- `webrtc` remains a future stream type.
 
 ## Success Criteria
 
@@ -476,11 +477,12 @@ Initial implementation:
 ## Completion Notes
 
 - Completed and tested with Home Assistant triggering a paired Chromecast receiver.
-- `stream_type: auto`, `hls`, and `snapshot` are exposed through the Home Assistant service schema.
+- `stream_type: auto`, `hls`, `mjpeg`, and `snapshot` are exposed through the Home Assistant service schema.
 - `stream_camera_entity` provides a first compatibility escape hatch for cameras that expose separate high-quality and TV-compatible stream entities.
+- MJPEG is implemented as an explicit opt-in stream type while real-device compatibility is tested.
 - Automatic mode falls back to a snapshot command when Home Assistant cannot resolve HLS.
 - Receiver overlay fallback was tested with a camera stream that produced an HLS URL but failed decoder playback; the snapshot preview remained visible with a small fallback message instead of a black box.
-- MJPEG, WebRTC, stream profile selection, and transcoding remain future capabilities.
+- WebRTC, automatic MJPEG fallback, stream profile selection, and transcoding remain future capabilities.
 
 ---
 

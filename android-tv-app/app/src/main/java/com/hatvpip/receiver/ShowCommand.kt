@@ -5,6 +5,7 @@ import org.json.JSONObject
 
 enum class StreamType(val wireName: String) {
     Hls("hls"),
+    Mjpeg("mjpeg"),
     Snapshot("snapshot"),
     Notification("notification")
 }
@@ -39,6 +40,7 @@ data class ShowCommand(
                 val json = JSONObject(body)
                 val streamType = when (val value = json.optString("streamType", "hls")) {
                     StreamType.Hls.wireName -> StreamType.Hls
+                    StreamType.Mjpeg.wireName -> StreamType.Mjpeg
                     StreamType.Snapshot.wireName -> StreamType.Snapshot
                     StreamType.Notification.wireName -> StreamType.Notification
                     else -> error("Unsupported `streamType`: $value")

@@ -99,6 +99,22 @@ def test_post_json_sends_snapshot_stream_type(monkeypatch) -> None:  # type: ign
     assert '"streamType": "snapshot"' in captured["body"]
 
 
+def test_show_camera_payload_can_send_mjpeg_stream_type() -> None:
+    payload = show_camera_payload(
+        ShowCameraCommand(
+            title="Front Door",
+            url="https://example.test/api/camera_proxy_stream/camera.front_door",
+            stream_type="mjpeg",
+            preview_url="https://example.test/api/camera_proxy/camera.front_door",
+            duration_seconds=30,
+            enter_pip=True,
+        )
+    )
+
+    assert payload["streamType"] == "mjpeg"
+    assert payload["previewUrl"] == "https://example.test/api/camera_proxy/camera.front_door"
+
+
 def test_show_camera_payload_includes_notification_style() -> None:
     payload = show_camera_payload(
         ShowCameraCommand(

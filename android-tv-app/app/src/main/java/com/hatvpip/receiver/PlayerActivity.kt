@@ -321,6 +321,7 @@ class PlayerActivity : ComponentActivity() {
                 mode = mode,
                 title = command.title,
                 url = command.url,
+                streamType = command.streamType.wireName,
                 errorMessage = playbackState.errorMessage
             )
         )
@@ -383,6 +384,7 @@ private fun Intent.toShowCommand(): ShowCommand =
         title = getStringExtra(PlayerActivity.EXTRA_TITLE) ?: "Test Video",
         url = getStringExtra(PlayerActivity.EXTRA_URL) ?: PlayerActivity.TEST_STREAM_URL,
         streamType = when (getStringExtra(PlayerActivity.EXTRA_STREAM_TYPE)) {
+            StreamType.Mjpeg.wireName -> StreamType.Mjpeg
             StreamType.Snapshot.wireName -> StreamType.Snapshot
             StreamType.Notification.wireName -> StreamType.Notification
             else -> StreamType.Hls
