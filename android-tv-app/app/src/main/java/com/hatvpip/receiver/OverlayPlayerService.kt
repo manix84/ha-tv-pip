@@ -276,12 +276,12 @@ class OverlayPlayerService : Service() {
                                 message
                             }
                         )
-                        errorTextView?.text = if (hasPreviewFallback) {
-                            getString(R.string.video_unavailable_showing_snapshot)
+                        errorTextView?.text = error.toOverlayMessage(this@OverlayPlayerService)
+                        errorTextView?.visibility = if (hasPreviewFallback) {
+                            TextView.GONE
                         } else {
-                            error.toOverlayMessage(this@OverlayPlayerService)
+                            TextView.VISIBLE
                         }
-                        errorTextView?.visibility = TextView.VISIBLE
                         AppLog.error("Overlay playback failed: $message", error)
                     }
                 }
@@ -368,12 +368,12 @@ class OverlayPlayerService : Service() {
                             message
                         }
                     )
-                    errorTextView?.text = if (hasPreviewFallback) {
-                        getString(R.string.video_unavailable_showing_snapshot)
+                    errorTextView?.text = getString(R.string.snapshot_unavailable)
+                    errorTextView?.visibility = if (hasPreviewFallback) {
+                        TextView.GONE
                     } else {
-                        getString(R.string.snapshot_unavailable)
+                        TextView.VISIBLE
                     }
-                    errorTextView?.visibility = TextView.VISIBLE
                     AppLog.error("MJPEG stream failed: $message", error)
                 }
             }

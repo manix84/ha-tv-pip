@@ -1,10 +1,15 @@
 # What's New ✨
 
+## 1.4.1 - Target Selection And Stream Fallback 🎯
+
+- Rejected non-device Home Assistant targets with a clear HA TV PiP validation error instead of generic schema failures 🎯
+- Improved `stream_type: auto` so Home Assistant tries MJPEG before falling back to snapshots when HLS URL resolution fails 📹
+- Updated docs and website FAQ wording for the new HLS to MJPEG to snapshot fallback order 📝
+
 ## 1.3.0 - Stream Compatibility 📹
 
 - Added optional `stream_camera_entity` support so camera alerts can use a more compatible live-stream entity while keeping the primary camera for titles and snapshot fallback 📹
 - Added explicit `stream_type: mjpeg` support using Home Assistant's camera proxy stream endpoint and receiver-side MJPEG overlay rendering 📺
-- Kept MJPEG opt-in while HLS remains the default automatic stream path, pending broader real-device testing 🧪
 - Added receiver status reporting for the active stream type so MJPEG tests are easier to diagnose 🔎
 - Updated unsupported-stream guidance to suggest compatible substreams, H.264, or `stream_type: mjpeg` 🩺
 - Added a copyable website example for MJPEG fallback automations 🌐

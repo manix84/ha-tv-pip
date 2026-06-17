@@ -117,7 +117,6 @@
     <string name="error_pip_params_rejected">Os parâmetros Picture-in-Picture foram rejeitados: %1$s</string>
     <string name="error_overlay_fallback_failed">Falha no fallback de sobreposição: %1$s</string>
     <string name="snapshot_fallback_after_video_error">Mostrando snapshot de fallback após erro de vídeo: %1$s</string>
-    <string name="video_unavailable_showing_snapshot">Stream de vídeo indisponível; mostrando snapshot de fallback</string>
     <string name="error_snapshot_unsupported_image">A resposta do snapshot não era uma imagem suportada</string>
     <string name="error_unknown_snapshot">erro de snapshot desconhecido</string>
     <string name="snapshot_unavailable">Snapshot indisponível</string>

@@ -130,7 +130,6 @@
     <string name="error_pip_params_rejected">Picture-in-Picture parameters were rejected: %1$s</string>
     <string name="error_overlay_fallback_failed">Overlay fallback failed: %1$s</string>
     <string name="snapshot_fallback_after_video_error">Showing snapshot fallback after video error: %1$s</string>
-    <string name="video_unavailable_showing_snapshot">Video stream unavailable; showing snapshot fallback</string>
     <string name="error_snapshot_unsupported_image">Snapshot response was not a supported image</string>
     <string name="error_unknown_snapshot">unknown snapshot error</string>
     <string name="snapshot_unavailable">Snapshot unavailable</string>

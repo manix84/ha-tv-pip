@@ -683,18 +683,13 @@ async def _async_show_camera_command(
         prefer_external=prefer_external,
     )
     if request.stream_type == STREAM_TYPE_MJPEG:
-        return ShowCameraCommand(
+        return _mjpeg_show_camera_command(
+            hass,
+            request,
             title=title,
-            url=_camera_mjpeg_stream_url(
-                hass,
-                stream_entity,
-                prefer_external=prefer_external,
-            ),
-            duration_seconds=request.duration_seconds,
-            enter_pip=request.enter_pip,
-            stream_type=STREAM_TYPE_MJPEG,
+            stream_entity=stream_entity,
             preview_url=preview_url,
-            **_presentation_payload(request),
+            prefer_external=prefer_external,
         )
 
     try:
@@ -718,10 +713,27 @@ async def _async_show_camera_command(
         ):
             raise
 
+        try:
+            _LOGGER.warning(
+                "Falling back to MJPEG for %s because HLS stream resolution failed: %s",
+                stream_entity,
+                error,
+            )
+            return _mjpeg_show_camera_command(
+                hass,
+                request,
+                title=title,
+                stream_entity=stream_entity,
+                preview_url=preview_url,
+                prefer_external=prefer_external,
+            )
+        except ServiceValidationError as mjpeg_error:
+            if mjpeg_error.code != "camera_mjpeg_unavailable":
+                raise
+
         _LOGGER.warning(
-            "Falling back to snapshot for %s because HLS stream resolution failed: %s",
+            "Falling back to snapshot for %s because HLS and MJPEG failed.",
             stream_entity,
-            error,
         )
         return ShowCameraCommand(
             title=title,
@@ -735,6 +747,30 @@ async def _async_show_camera_command(
             stream_type=STREAM_TYPE_SNAPSHOT,
             **_presentation_payload(request),
         )
+
+
+def _mjpeg_show_camera_command(
+    hass: Any,
+    request: ShowCameraRequest,
+    *,
+    title: str,
+    stream_entity: str,
+    preview_url: str | None,
+    prefer_external: bool = False,
+) -> ShowCameraCommand:
+    return ShowCameraCommand(
+        title=title,
+        url=_camera_mjpeg_stream_url(
+            hass,
+            stream_entity,
+            prefer_external=prefer_external,
+        ),
+        duration_seconds=request.duration_seconds,
+        enter_pip=request.enter_pip,
+        stream_type=STREAM_TYPE_MJPEG,
+        preview_url=preview_url,
+        **_presentation_payload(request),
+    )
 
 
 def _snapshot_preview_url(

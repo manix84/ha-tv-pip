@@ -117,7 +117,6 @@
     <string name="error_pip_params_rejected">Picture-in-Picture-parameters zijn geweigerd: %1$s</string>
     <string name="error_overlay_fallback_failed">Overlay-fallback mislukt: %1$s</string>
     <string name="snapshot_fallback_after_video_error">Snapshot-fallback na videofout wordt getoond: %1$s</string>
-    <string name="video_unavailable_showing_snapshot">Videostream niet beschikbaar; snapshot-fallback wordt getoond</string>
     <string name="error_snapshot_unsupported_image">Snapshotantwoord was geen ondersteunde afbeelding</string>
     <string name="error_unknown_snapshot">onbekende snapshotfout</string>
     <string name="snapshot_unavailable">Snapshot niet beschikbaar</string>
