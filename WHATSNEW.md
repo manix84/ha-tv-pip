@@ -1,6 +1,6 @@
 # What's New ✨
 
-## 1.9.0 - Diagnostics Redaction 🔐
+## 1.10.0 - Diagnostics Redaction 🔐
 
 - Recursively redacted receiver diagnostics for stream URLs, preview URLs, fallback URLs, remote URLs, and tokens 🔐
 - Added tests so future stream diagnostics fields do not leak private camera or Home Assistant URLs 🧪
