@@ -2,7 +2,7 @@ import type { WebsiteContent } from "./types";
 
 export const it = {
     codeBlock: { copyAriaLabel: "Copia YAML Home Assistant negli appunti", copyFailed: "Copia non riuscita", copied: "Copiato", copyTitle: "Copia YAML", toolbar: "YAML Home Assistant" },
-    currentStatus: { body: ["HA TV PiP ora supporta discovery, pairing visibile sulla TV, controllo autenticato del receiver, popup di stream camera, snapshot, notifiche stilizzate, gestione del receiver e trasporto receiver remoto.", "L'attuale passaggio Stage 12 prepara il progetto a una prima beta pubblica: controlli completi, packaging release, validazione zip HACS, aggiornamenti del sito, documenti di installazione e preparazione del release candidate."], eyebrow: "Stato attuale", title: "Stage 12: hardening beta" },
+    currentStatus: { body: ["HA TV PiP ora supporta discovery, pairing visibile sulla TV, controllo autenticato del receiver, popup di stream camera, snapshot, notifiche stilizzate, gestione del receiver e trasporto receiver remoto.", "Stage 12 è completato. Il primo release candidate è pubblicato con APK Android debug e release, zip di integrazione pronti per HACS, controlli verificati, aggiornamenti del sito, documenti di installazione ed esempi di notifiche avanzate."], eyebrow: "Stato attuale", title: "Stage 12: hardening beta" },
     example: { eyebrow: "Automazione di esempio", title: "Dove stiamo andando." },
     faqItems: [
       { question: "HA TV PiP è un servizio cloud?", answer: "No. Il controllo locale resta il comportamento predefinito e la modalità receiver remoto collega la TV in uscita al tuo URL esterno di Home Assistant. HA TV PiP non gestisce un relay ospitato." },

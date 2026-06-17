@@ -64,6 +64,7 @@ jobs:
         run: npm run package:integration
 
       - name: Create draft GitHub Release with assets
+        id: release_assets
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ steps.version.outputs.tag }}
@@ -73,9 +74,9 @@ jobs:
             IS_DRAFT=$(gh release view "$RELEASE_TAG" --json isDraft --jq '.isDraft')
             if [ "$IS_DRAFT" != "true" ]; then
               echo "Release $RELEASE_TAG already exists and is published."
-              echo "Published releases can be immutable, so assets cannot be replaced."
-              echo "Bump the root package.json version before creating another release."
-              exit 1
+              echo "Published releases can be immutable, so assets will not be replaced."
+              echo "publish=false" >> "$GITHUB_OUTPUT"
+              exit 0
             fi
 
             gh release upload "$RELEASE_TAG" \
@@ -84,6 +85,7 @@ jobs:
               "dist/ha-tv-pip-integration-v$RELEASE_VERSION.zip" \
               "dist/ha-tv-pip-integration.zip" \
               --clobber
+            echo "publish=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -96,8 +98,10 @@ jobs:
             --target "${{ github.sha }}" \
             --title "HA TV PiP v$RELEASE_VERSION" \
             --notes "Automated release for v$RELEASE_VERSION."
+          echo "publish=true" >> "$GITHUB_OUTPUT"
 
       - name: Publish GitHub Release
+        if: steps.release_assets.outputs.publish == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ steps.version.outputs.tag }}

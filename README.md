@@ -38,7 +38,7 @@ Phase 10 distribution prep is complete except for actual Play Store deployment, 
 
 Stage 11 is complete in `0.45.0`. HA TV PiP now supports styled text-only notifications plus camera and snapshot popups with optional title/message footers, configurable corner position, title/message colors, text sizes, translucent glass backgrounds, and overlay width/height options.
 
-Stage 12 is in progress. The focus is beta release hardening: full quality checks, release packaging verification, Android artifact builds, HACS zip validation, website build validation, public install docs, Stage 11 website examples, and a release-candidate workflow before broader testing.
+Stage 12 is complete in `0.48.0`. The beta release hardening pass validated full quality checks, release packaging, Android debug and release APK builds, HACS zip layout, website build output, public install docs, Stage 11 examples, and the first GitHub release-candidate workflow.
 
 ## Monorepo Layout 🧱
 

@@ -6,6 +6,7 @@
 - Updated release docs for immutable GitHub Releases and draft-first asset publishing 📦
 - Added Stage 11 enhanced notification examples to the website and automation examples 🔔
 - Expanded HACS-facing integration README install, setup, service, option, and limitation guidance 🧩
+- Published the first Stage 12 GitHub release candidate with Android debug APK, Android release APK, versioned integration zip, and stable HACS zip ✅
 
 ## 0.47.0 - Release Workflow Fix 📦
 

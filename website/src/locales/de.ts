@@ -11,7 +11,7 @@ export const de = {
     currentStatus: {
       body: [
         "HA TV PiP unterstützt jetzt Erkennung, sichtbares Pairing auf dem Fernseher, authentifizierte Receiver-Steuerung, Kamerastream-Popups, Schnappschüsse, gestaltete Benachrichtigungen, Receiver-Verwaltung und Remote-Receiver-Transport.",
-        "Der aktuelle Stage-12-Durchlauf härtet das Projekt für eine erste öffentliche Beta: vollständige Checks, Release-Pakete, HACS-Zip-Validierung, Website-Updates, Installationsdokumentation und Release-Candidate-Vorbereitung.",
+        "Stage 12 ist abgeschlossen. Der erste Release Candidate ist mit Android-Debug- und Release-APKs, HACS-fähigen Integrations-Zips, geprüften Checks, Website-Updates, Installationsdokumentation und erweiterten Benachrichtigungsbeispielen veröffentlicht.",
       ],
       eyebrow: "Aktueller Stand",
       title: "Stage 12: Beta-Release-Härtung",

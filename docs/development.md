@@ -636,7 +636,7 @@ When code is pushed or merged into `main`, `.github/workflows/release.yml`:
 7. Creates draft GitHub Release `vX.Y.Z` with the Android APKs, versioned integration zip, and stable HACS integration zip already attached.
 8. Publishes the draft GitHub Release.
 
-Published GitHub Releases are treated as immutable. The workflow will not replace assets on an existing published release; bump the root `package.json` version before producing another release. If an older failed workflow already created a published release without assets, delete that failed release manually or move forward with the next version.
+Published GitHub Releases are treated as immutable. The workflow will not replace assets on an existing published release; it exits cleanly when the release for the current version already exists. Bump the root `package.json` version before producing another release. If an older failed workflow already created a published release without assets, delete that failed release manually or move forward with the next version.
 
 For version `1.2.3`, expected release assets are:
 
@@ -674,7 +674,7 @@ Default HACS repository inclusion is a separate later step. Before submitting to
 
 ## Stage 12 Beta Release Hardening
 
-Stage 12 is the next development focus after Stage 11. It should be treated as a release-quality pass rather than a feature-expansion pass.
+Stage 12 completed in `0.48.0` as a release-quality pass rather than a feature-expansion pass.
 
 Run the full repository check before release-candidate work:
 

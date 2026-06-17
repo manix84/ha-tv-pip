@@ -2,7 +2,7 @@ import type { WebsiteContent } from "./types";
 
 export const pl = {
     codeBlock: { copyAriaLabel: "Skopiuj YAML Home Assistant do schowka", copyFailed: "Kopiowanie nie powiodło się", copied: "Skopiowano", copyTitle: "Kopiuj YAML", toolbar: "YAML Home Assistant" },
-    currentStatus: { body: ["HA TV PiP obsługuje już wykrywanie, parowanie widoczne na telewizorze, uwierzytelnione sterowanie odbiornikiem, popupy kamer, snapshoty, stylizowane powiadomienia, zarządzanie odbiornikiem i zdalny transport odbiornika.", "Obecny etap Stage 12 utwardza projekt przed pierwszą publiczną betą: pełne testy, pakowanie wydań, walidację zip HACS, aktualizacje strony, dokumentację instalacji i przygotowanie release candidate."], eyebrow: "Aktualny stan", title: "Stage 12: utwardzanie bety" },
+    currentStatus: { body: ["HA TV PiP obsługuje już wykrywanie, parowanie widoczne na telewizorze, uwierzytelnione sterowanie odbiornikiem, popupy kamer, snapshoty, stylizowane powiadomienia, zarządzanie odbiornikiem i zdalny transport odbiornika.", "Stage 12 jest ukończony. Pierwszy release candidate został opublikowany z APK debug i release dla Androida, zipami integracji gotowymi dla HACS, zweryfikowanymi testami, aktualizacjami strony, dokumentacją instalacji i przykładami rozszerzonych powiadomień."], eyebrow: "Aktualny stan", title: "Stage 12: utwardzanie bety" },
     example: { eyebrow: "Przykładowa automatyzacja", title: "Kierunek rozwoju." },
     faqItems: [
       { question: "Czy HA TV PiP jest usługą chmurową?", answer: "Nie. Sterowanie lokalne pozostaje domyślne, a tryb zdalnego odbiornika łączy telewizor wychodząco z Twoim własnym zewnętrznym URL Home Assistant. HA TV PiP nie uruchamia hostowanego przekaźnika." },

@@ -2,7 +2,7 @@ import type { WebsiteContent } from "./types";
 
 export const ptbr = {
     codeBlock: { copyAriaLabel: "Copiar YAML do Home Assistant para a área de transferência", copyFailed: "Falha ao copiar", copied: "Copiado", copyTitle: "Copiar YAML", toolbar: "YAML do Home Assistant" },
-    currentStatus: { body: ["O HA TV PiP agora oferece descoberta, pareamento visível na TV, controle autenticado do receptor, popups de câmera, snapshots, notificações estilizadas, gerenciamento do receptor e transporte remoto do receptor.", "A etapa Stage 12 atual prepara o projeto para uma primeira beta pública: verificações completas, empacotamento de release, validação do zip HACS, atualizações do site, docs de instalação e preparação de release candidate."], eyebrow: "Status atual", title: "Stage 12: hardening da beta" },
+    currentStatus: { body: ["O HA TV PiP agora oferece descoberta, pareamento visível na TV, controle autenticado do receptor, popups de câmera, snapshots, notificações estilizadas, gerenciamento do receptor e transporte remoto do receptor.", "A Stage 12 está concluída. O primeiro release candidate foi publicado com APKs Android debug e release, zips de integração prontos para HACS, verificações validadas, atualizações do site, docs de instalação e exemplos de notificações avançadas."], eyebrow: "Status atual", title: "Stage 12: hardening da beta" },
     example: { eyebrow: "Automação de exemplo", title: "Para onde isso está indo." },
     faqItems: [
       { question: "O HA TV PiP é um serviço em nuvem?", answer: "Não. O controle local continua sendo o padrão, e o modo receptor remoto conecta sua TV de saída ao seu próprio URL externo do Home Assistant. O HA TV PiP não executa um relay hospedado." },

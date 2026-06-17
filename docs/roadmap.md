@@ -924,5 +924,5 @@ Stage 12 is not a new feature stage. It is a release-quality stage that turns th
 - ✅ Add richer Stage 11 automation examples.
 - ✅ Audit install docs.
 - ✅ Verify release asset names and zip contents.
-- 🚧 Commit and push Stage 12 release-candidate changes.
-- 🚧 Create first release candidate.
+- ✅ Commit and push Stage 12 release-candidate changes.
+- ✅ Create first release candidate.
