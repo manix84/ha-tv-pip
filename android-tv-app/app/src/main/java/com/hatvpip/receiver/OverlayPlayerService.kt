@@ -537,6 +537,8 @@ class OverlayPlayerService : Service() {
                 title = title,
                 url = url,
                 previewUrl = previewUrl,
+                fallbackUrl = fallbackUrl,
+                fallbackStreamType = fallbackStreamType?.wireName,
                 streamType = streamType.wireName,
                 errorMessage = errorMessage
             )

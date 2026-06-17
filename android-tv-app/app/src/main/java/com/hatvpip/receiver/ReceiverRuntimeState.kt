@@ -16,6 +16,8 @@ data class ReceiverPlaybackSnapshot(
     val title: String? = null,
     val url: String? = null,
     val previewUrl: String? = null,
+    val fallbackUrl: String? = null,
+    val fallbackStreamType: String? = null,
     val streamType: String? = null,
     val errorMessage: String? = null,
     val updatedAtMillis: Long = System.currentTimeMillis()

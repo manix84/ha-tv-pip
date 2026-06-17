@@ -324,6 +324,8 @@ class PlayerActivity : ComponentActivity() {
                 title = command.title,
                 url = command.url,
                 previewUrl = command.previewUrl,
+                fallbackUrl = command.fallbackUrl,
+                fallbackStreamType = command.fallbackStreamType?.wireName,
                 streamType = command.streamType.wireName,
                 errorMessage = playbackState.errorMessage
             )

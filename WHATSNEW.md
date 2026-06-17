@@ -1,5 +1,10 @@
 # What's New ✨
 
+## 1.11.0 - Fallback Playback Diagnostics 🔎
+
+- Added fallback stream URL/type fields to Android receiver playback status so stream-fallback decisions are visible in `/status` 🔎
+- Updated receiver status documentation to describe playable fallback diagnostics 📺
+
 ## 1.10.0 - Diagnostics Redaction 🔐
 
 - Recursively redacted receiver diagnostics for stream URLs, preview URLs, fallback URLs, remote URLs, and tokens 🔐

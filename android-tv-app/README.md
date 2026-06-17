@@ -110,7 +110,7 @@ Stage 4 requires pairing before `/show` and `/close`. Start pairing from Home As
 During an active pairing request, the app shows a TV-side pairing popup with the code. If the popup is dismissed, the same code remains visible in the Pairing dashboard section until it expires or pairing completes.
 
 Duplicate `/show` requests replace the current playback or overlay. `durationSeconds` is enforced for both full-screen playback and the overlay fallback.
-`/status` also reports endpoint diagnostics, including control uptime, request count, the previous request, and a nested `playback` object with display mode, stream type, media URL, preview URL, error detail, and update time.
+`/status` also reports endpoint diagnostics, including control uptime, request count, the previous request, and a nested `playback` object with display mode, stream type, media URL, preview URL, playable fallback URL/type, error detail, and update time.
 MJPEG playback uses explicit connection/read timeouts and bounded frame reads so malformed or unexpectedly large camera frames fail cleanly.
 `/close` reports whether a display was active and which display mode it closed.
 `GET /` returns API metadata and the supported endpoint list. Known endpoints return `405 Method Not Allowed` when called with the wrong HTTP method.

@@ -151,7 +151,7 @@ Example `/show` request:
 Completed behaviour:
 
 - The Android TV app starts an unauthenticated local HTTP endpoint on port `8765`.
-- `GET /status` reports app version, stable device id, playback state, display mode, title, URL, preview URL, stream type, error detail, and nested playback diagnostics.
+- `GET /status` reports app version, stable device id, playback state, display mode, title, URL, preview URL, playable fallback URL/type, stream type, error detail, and nested playback diagnostics.
 - `POST /show` accepts HLS commands.
 - `POST /close` closes playback and stops the overlay fallback.
 - On Google TV devices that reject native PiP, `enterPip: true` can start the overlay fallback directly.

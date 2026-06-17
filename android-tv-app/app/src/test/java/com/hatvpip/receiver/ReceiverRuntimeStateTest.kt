@@ -16,6 +16,8 @@ class ReceiverRuntimeStateTest {
                 title = "Front Door",
                 url = "https://example.test/stream.m3u8",
                 previewUrl = "https://example.test/snapshot.jpg",
+                fallbackUrl = "https://example.test/fallback.mjpeg",
+                fallbackStreamType = "mjpeg",
                 streamType = "hls",
                 errorMessage = "decoder failed",
                 updatedAtMillis = 1_234L
@@ -30,6 +32,8 @@ class ReceiverRuntimeStateTest {
         assertEquals("Front Door", snapshot.title)
         assertEquals("https://example.test/stream.m3u8", snapshot.url)
         assertEquals("https://example.test/snapshot.jpg", snapshot.previewUrl)
+        assertEquals("https://example.test/fallback.mjpeg", snapshot.fallbackUrl)
+        assertEquals("mjpeg", snapshot.fallbackStreamType)
         assertEquals("hls", snapshot.streamType)
         assertEquals("decoder failed", snapshot.errorMessage)
         assertEquals(1_234L, snapshot.updatedAtMillis)
@@ -45,6 +49,8 @@ class ReceiverRuntimeStateTest {
                 title = "Front Door",
                 url = "https://example.test/stream.m3u8",
                 previewUrl = "https://example.test/snapshot.jpg",
+                fallbackUrl = "https://example.test/fallback.mjpeg",
+                fallbackStreamType = "mjpeg",
                 streamType = "mjpeg",
                 updatedAtMillis = 1_234L
             )
@@ -57,6 +63,8 @@ class ReceiverRuntimeStateTest {
         assertNull(snapshot.title)
         assertNull(snapshot.url)
         assertNull(snapshot.previewUrl)
+        assertNull(snapshot.fallbackUrl)
+        assertNull(snapshot.fallbackStreamType)
         assertNull(snapshot.streamType)
         assertNull(snapshot.errorMessage)
     }

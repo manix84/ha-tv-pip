@@ -191,6 +191,8 @@ class LocalControlServer(
             .put("title", playback.title)
             .put("url", playback.url)
             .put("previewUrl", playback.previewUrl)
+            .put("fallbackUrl", playback.fallbackUrl)
+            .put("fallbackStreamType", playback.fallbackStreamType)
             .put("streamType", playback.streamType)
             .put("error", playback.errorMessage)
             .put(
@@ -203,6 +205,8 @@ class LocalControlServer(
                     .put("title", playback.title)
                     .put("url", playback.url)
                     .put("previewUrl", playback.previewUrl)
+                    .put("fallbackUrl", playback.fallbackUrl)
+                    .put("fallbackStreamType", playback.fallbackStreamType)
                     .put("streamType", playback.streamType)
                     .put("error", playback.errorMessage)
                     .put("updatedAtMillis", playback.updatedAtMillis)
@@ -290,6 +294,8 @@ class LocalControlServer(
                 title = command.title,
                 url = command.url,
                 previewUrl = command.previewUrl,
+                fallbackUrl = command.fallbackUrl,
+                fallbackStreamType = command.fallbackStreamType?.wireName,
                 streamType = command.streamType.wireName
             )
         )
