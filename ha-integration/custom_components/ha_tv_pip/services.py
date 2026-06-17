@@ -71,6 +71,7 @@ ATTR_MESSAGE_SIZE = "message_size"
 ATTR_POSITION = "position"
 ATTR_SNAPSHOT_CAMERA_ENTITY = "snapshot_camera_entity"
 ATTR_SNAPSHOT_FALLBACK = "snapshot_fallback"
+ATTR_SAVE_RECOMMENDATION = "save_recommendation"
 ATTR_STREAM_CAMERA_ENTITY = "stream_camera_entity"
 ATTR_STREAM_TYPE = "stream_type"
 ATTR_TITLE = "title"
@@ -301,27 +302,32 @@ async def async_register_services(hass: Any) -> None:
             ),
         }
     )
-    camera_defaults_schema = vol.Schema(
+    camera_defaults_fields = {
+        **target_schema,
+        vol.Required(ATTR_CAMERA_ENTITY): cv.entity_id,
+        vol.Optional(ATTR_SNAPSHOT_CAMERA_ENTITY): cv.entity_id,
+        vol.Optional(ATTR_SNAPSHOT_FALLBACK): bool,
+        vol.Optional(ATTR_STREAM_CAMERA_ENTITY): cv.entity_id,
+        vol.Optional(ATTR_STREAM_TYPE): vol.Any(*STREAM_TYPES),
+        vol.Optional(ATTR_DURATION_SECONDS): vol.All(
+            vol.Coerce(int),
+            vol.Range(min=1, max=3600),
+        ),
+        vol.Optional(ATTR_POSITION): vol.Any(*NOTIFICATION_POSITIONS),
+        vol.Optional(ATTR_WIDTH): vol.All(
+            vol.Coerce(int),
+            vol.Range(min=240, max=1600),
+        ),
+        vol.Optional(ATTR_HEIGHT): vol.All(
+            vol.Coerce(int),
+            vol.Range(min=120, max=900),
+        ),
+    }
+    camera_defaults_schema = vol.Schema(camera_defaults_fields)
+    camera_test_schema = vol.Schema(
         {
-            **target_schema,
-            vol.Required(ATTR_CAMERA_ENTITY): cv.entity_id,
-            vol.Optional(ATTR_SNAPSHOT_CAMERA_ENTITY): cv.entity_id,
-            vol.Optional(ATTR_SNAPSHOT_FALLBACK): bool,
-            vol.Optional(ATTR_STREAM_CAMERA_ENTITY): cv.entity_id,
-            vol.Optional(ATTR_STREAM_TYPE): vol.Any(*STREAM_TYPES),
-            vol.Optional(ATTR_DURATION_SECONDS): vol.All(
-                vol.Coerce(int),
-                vol.Range(min=1, max=3600),
-            ),
-            vol.Optional(ATTR_POSITION): vol.Any(*NOTIFICATION_POSITIONS),
-            vol.Optional(ATTR_WIDTH): vol.All(
-                vol.Coerce(int),
-                vol.Range(min=240, max=1600),
-            ),
-            vol.Optional(ATTR_HEIGHT): vol.All(
-                vol.Coerce(int),
-                vol.Range(min=120, max=900),
-            ),
+            **camera_defaults_fields,
+            vol.Optional(ATTR_SAVE_RECOMMENDATION, default=False): bool,
         }
     )
     snapshot_schema = vol.Schema(
@@ -424,7 +430,7 @@ async def async_register_services(hass: Any) -> None:
             DOMAIN,
             SERVICE_TEST_CAMERA_STREAM,
             handle_test_camera_stream,
-            schema=camera_defaults_schema,
+            schema=camera_test_schema,
             **response_kwargs,
         )
 
@@ -752,6 +758,18 @@ async def async_handle_test_camera_stream(hass: Any, call: Any) -> dict[str, Any
         prefer_external=prefer_external,
         capabilities=capabilities,
     )
+    if bool(getattr(call, "data", {}).get(ATTR_SAVE_RECOMMENDATION, False)):
+        saved_defaults = _save_camera_recommendation_defaults(
+            hass,
+            receiver,
+            request,
+            result,
+        )
+        result = {
+            **result,
+            "saved_as_defaults": bool(saved_defaults),
+            "saved_defaults": saved_defaults,
+        }
     _store_camera_compatibility(hass, receiver, request.camera_entity, result)
     return result
 
@@ -1166,6 +1184,27 @@ def _camera_defaults_payload(request: ShowCameraRequest) -> dict[str, Any]:
         defaults[ATTR_WIDTH] = request.width
     if request.height_explicit and request.height is not None:
         defaults[ATTR_HEIGHT] = request.height
+    return defaults
+
+
+def _save_camera_recommendation_defaults(
+    hass: Any,
+    receiver: ReceiverEntry,
+    request: ShowCameraRequest,
+    result: dict[str, Any],
+) -> dict[str, Any]:
+    recommended = str(result.get("recommended_stream_type") or "").strip()
+    if recommended not in STREAM_TYPES:
+        return {}
+
+    entry = _entry_for_receiver(hass, receiver.entry_id)
+    defaults = _camera_defaults_payload(request)
+    defaults[ATTR_STREAM_TYPE] = recommended
+    options = dict(getattr(entry, "options", {}) or {})
+    camera_defaults = dict(options.get(CONF_CAMERA_DEFAULTS, {}) or {})
+    camera_defaults[request.camera_entity] = defaults
+    options[CONF_CAMERA_DEFAULTS] = camera_defaults
+    _update_entry_options(hass, entry, options)
     return defaults
 
 

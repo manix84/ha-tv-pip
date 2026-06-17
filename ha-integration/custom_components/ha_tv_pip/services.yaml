@@ -421,6 +421,12 @@ test_camera_stream:
       name: Snapshot fallback
       description: Optional snapshot fallback preference to include in the compatibility context.
       example: true
+    save_recommendation:
+      selector:
+        boolean:
+      name: Save recommendation
+      description: Save the recommended stream strategy and any explicit test fields as per-camera defaults.
+      example: false
 set_camera_defaults:
   target:
     device:

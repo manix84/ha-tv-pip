@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.19.0 - Save Camera Recommendations ⚙️
+
+- Added `save_recommendation` to `ha_tv_pip.test_camera_stream` so a successful compatibility test can store the recommended stream strategy as a per-camera default 🧭
+- Saved explicit test fields such as width, height, duration, position, snapshot fallback, and stream/snapshot entities alongside the recommendation when provided ⚙️
+- Updated service metadata, translations, docs, and tests for the recommendation-saving workflow 🧪
+
 ## 1.18.0 - Camera Result Diagnostics 🔎
 
 - Added a `Last Camera Result` receiver sensor showing the latest camera/snapshot command outcome without exposing stream URLs 🩺

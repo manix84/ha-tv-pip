@@ -818,6 +818,7 @@ Completed:
 - ✅ Graceful media-footer downgrade when receiver capabilities are missing optional presentation support.
 - ✅ Last camera command result sensor and redacted diagnostics for accepted/failed camera and snapshot actions.
 - ✅ Recommendation reasons for camera compatibility tests so users know why `auto`, `mjpeg_first`, HLS, MJPEG, or snapshot was suggested.
+- ✅ `save_recommendation` on `ha_tv_pip.test_camera_stream` so compatibility tests can write recommended per-camera defaults.
 
 Still future:
 

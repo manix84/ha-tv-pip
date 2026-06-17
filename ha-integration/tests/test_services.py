@@ -37,6 +37,7 @@ from custom_components.ha_tv_pip.services import (
     ATTR_MESSAGE_COLOR,
     ATTR_MESSAGE_SIZE,
     ATTR_POSITION,
+    ATTR_SAVE_RECOMMENDATION,
     ATTR_SNAPSHOT_CAMERA_ENTITY,
     ATTR_SNAPSHOT_FALLBACK,
     ATTR_STREAM_CAMERA_ENTITY,
@@ -1569,6 +1570,91 @@ def test_camera_stream_test_recommends_auto_with_playable_fallback(
         result["recommendation_reason"]
         == "hls_available_with_mjpeg_playable_fallback"
     )
+
+
+def test_camera_stream_test_can_save_recommendation_as_defaults(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from custom_components.ha_tv_pip import services
+
+    class FakeRemoteRegistry:
+        def is_connected(self, device_id: str) -> bool:
+            return False
+
+    monkeypatch.setattr(services, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(
+        services,
+        "_async_receiver_capabilities",
+        lambda receiver: asyncio.sleep(
+            0,
+            result=_capabilities(playable_fallback=False),
+        ),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.components.camera",
+        FakeCameraModule("/api/hls/front-door"),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.exceptions",
+        FakeExceptionsModule("homeassistant.exceptions"),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.helpers.network",
+        FakeNetworkModule("homeassistant.helpers.network"),
+    )
+
+    entry = FakeEntry(
+        entry_id="entry-1",
+        data={
+            CONF_DEVICE_ID: "device-1",
+            CONF_NAME: "Nursery TV",
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "token",
+        },
+    )
+    hass = FakeHass(
+        entries=[entry],
+        states={"camera.front_door": FakeState({"access_token": "stream-token"})},
+    )
+
+    result = asyncio.run(
+        services.async_handle_test_camera_stream(
+            hass,
+            FakeCall(
+                data={
+                    ATTR_CAMERA_ENTITY: "camera.front_door",
+                    ATTR_HEIGHT: 405,
+                    ATTR_SAVE_RECOMMENDATION: True,
+                    ATTR_SNAPSHOT_FALLBACK: True,
+                    ATTR_WIDTH: 720,
+                },
+                target={ATTR_DEVICE_ID: "device-1"},
+            ),
+        )
+    )
+
+    assert result["recommended_stream_type"] == "mjpeg_first"
+    assert result["saved_as_defaults"] is True
+    assert result["saved_defaults"] == {
+        ATTR_HEIGHT: 405,
+        ATTR_SNAPSHOT_FALLBACK: True,
+        ATTR_STREAM_TYPE: "mjpeg_first",
+        ATTR_WIDTH: 720,
+    }
+    assert entry.options == {
+        "camera_defaults": {
+            "camera.front_door": {
+                ATTR_HEIGHT: 405,
+                ATTR_SNAPSHOT_FALLBACK: True,
+                ATTR_STREAM_TYPE: "mjpeg_first",
+                ATTR_WIDTH: 720,
+            }
+        }
+    }
 
 
 def test_show_camera_service_stores_last_camera_result(

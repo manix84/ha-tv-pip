@@ -278,6 +278,9 @@
         },
         "snapshot_fallback": {
           "name": "Snapshot fallback"
+        },
+        "save_recommendation": {
+          "name": "Save recommendation"
         }
       }
     },

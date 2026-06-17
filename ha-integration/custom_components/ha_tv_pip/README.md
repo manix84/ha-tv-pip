@@ -169,11 +169,17 @@ data:
   camera_entity: camera.front_door
   stream_camera_entity: camera.front_door_sub
   snapshot_camera_entity: camera.front_door
+  save_recommendation: true
+  snapshot_fallback: true
+  width: 720
+  height: 405
 ```
 
 The compatibility test checks whether Home Assistant can resolve HLS, MJPEG, and snapshot URLs for the selected camera and receiver. It stores a non-sensitive last result in diagnostics, including available stream types and the recommended stream type. It does not store or expose camera URLs in the compatibility result.
 
 The result also includes `recommendation_reason`, which explains why the integration recommends `auto`, `mjpeg_first`, `hls`, `mjpeg`, or `snapshot`. For example, a receiver that supports playable fallback may prefer `auto`, while a receiver without playable fallback can recommend `mjpeg_first` when both HLS and MJPEG are available.
+
+Set `save_recommendation: true` to save the recommended stream strategy as per-camera defaults. Any explicit test fields, such as width, height, duration, position, snapshot fallback, stream camera entity, or snapshot camera entity, are saved with it. If no compatible stream is found, no defaults are saved.
 
 After a real camera or snapshot action runs, the receiver device's `Last Camera Result` sensor shows whether the latest command was accepted or failed. Its attributes include the requested stream strategy, final stream type, transport, fallback usage, popup size, and failure reason where available. URLs are not stored.
 

@@ -48,6 +48,8 @@ Receiver/integration compatibility checks now compare receiver API and capabilit
 
 Camera troubleshooting now includes a `Last Camera Result` receiver sensor and redacted diagnostics for the latest camera or snapshot command. The result records the requested stream strategy, final stream type sent to the receiver, transport path, fallback usage, popup size, status, and failure reason where available without storing camera URLs.
 
+`ha_tv_pip.test_camera_stream` can now save its recommended stream strategy as per-camera defaults with `save_recommendation: true`. Any explicit test fields, such as width, height, position, duration, snapshot fallback, or stream/snapshot entities, are saved with the recommendation so future automations can omit them.
+
 ## Monorepo Layout 🧱
 
 ```txt

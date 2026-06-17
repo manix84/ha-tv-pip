@@ -53,6 +53,7 @@ SERVICE_EXAMPLES: dict[str, set[str]] = {
         "height",
     },
     "test_camera_stream": {
+        "save_recommendation",
         "stream_type",
         "snapshot_fallback",
     },
