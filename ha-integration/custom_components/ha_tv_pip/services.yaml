@@ -1,12 +1,8 @@
 show_camera:
+  target:
+    device:
+      integration: ha_tv_pip
   fields:
-    receiver_device_id:
-      required: false
-      selector:
-        device:
-          integration: ha_tv_pip
-      name: Receiver device
-      description: Paired Android TV or Google TV receiver to display the camera on.
     camera_entity:
       required: true
       selector:
@@ -156,14 +152,10 @@ show_camera:
       description: Optional overlay height in pixels. Media popups default to 640x360; text-only notifications default to content height.
       example: 405
 show_snapshot:
+  target:
+    device:
+      integration: ha_tv_pip
   fields:
-    receiver_device_id:
-      required: false
-      selector:
-        device:
-          integration: ha_tv_pip
-      name: Receiver device
-      description: Paired Android TV or Google TV receiver to display the snapshot on.
     camera_entity:
       required: true
       selector:
@@ -280,14 +272,10 @@ show_snapshot:
       description: Optional overlay height in pixels. Media popups default to 640x360; text-only notifications default to content height.
       example: 405
 show_notification:
+  target:
+    device:
+      integration: ha_tv_pip
   fields:
-    receiver_device_id:
-      required: false
-      selector:
-        device:
-          integration: ha_tv_pip
-      name: Receiver device
-      description: Paired Android TV or Google TV receiver to display the notification on.
     title:
       default: Home Assistant
       selector:

@@ -2,7 +2,7 @@
 
 Automation examples use the Stage 7 `ha_tv_pip.show_camera` stream type options, the Stage 6 `ha_tv_pip.show_snapshot` service, and the Stage 11 `ha_tv_pip.show_notification` service.
 
-Replace `receiver_device_id`, `camera_entity`, and trigger entity ids with values from your Home Assistant instance. Use a compatible H.264/HLS camera stream where possible; lower-resolution secondary streams are often more reliable on Android TV devices than high-resolution main streams.
+Replace the target `device_id`, `camera_entity`, and trigger entity ids with values from your Home Assistant instance. The target device picker is limited to HA TV PiP receiver devices. Use a compatible H.264/HLS camera stream where possible; lower-resolution secondary streams are often more reliable on Android TV devices than high-resolution main streams.
 
 ## Camera Popup With Snapshot Preview And Footer 📹
 
@@ -14,8 +14,9 @@ trigger:
     to: "on"
 action:
   - service: ha_tv_pip.show_camera
+    target:
+      device_id: living_room_tv
     data:
-      receiver_device_id: living_room_tv
       camera_entity: camera.front_door
       duration_seconds: 30
       enter_pip: true
@@ -42,8 +43,9 @@ trigger:
     to: "on"
 action:
   - service: ha_tv_pip.show_snapshot
+    target:
+      device_id: living_room_tv
     data:
-      receiver_device_id: living_room_tv
       camera_entity: camera.front_door
       duration_seconds: 10
       enter_pip: true
@@ -65,8 +67,9 @@ trigger:
     to: "on"
 action:
   - service: ha_tv_pip.show_notification
+    target:
+      device_id: living_room_tv
     data:
-      receiver_device_id: living_room_tv
       title: Front door
       message: Someone is at the door
       duration_seconds: 15
@@ -92,8 +95,9 @@ trigger:
     to: "on"
 action:
   - service: ha_tv_pip.show_camera
+    target:
+      device_id: living_room_tv
     data:
-      receiver_device_id: living_room_tv
       camera_entity: camera.driveway
       duration_seconds: 20
       enter_pip: true

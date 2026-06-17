@@ -27,7 +27,6 @@ from custom_components.ha_tv_pip.services import (
     ATTR_MESSAGE_COLOR,
     ATTR_MESSAGE_SIZE,
     ATTR_POSITION,
-    ATTR_RECEIVER_DEVICE_ID,
     ATTR_SNAPSHOT_CAMERA_ENTITY,
     ATTR_SNAPSHOT_FALLBACK,
     ATTR_STREAM_CAMERA_ENTITY,
@@ -127,6 +126,19 @@ class FakeCameraModule(types.ModuleType):
         return self.stream_url
 
 
+@dataclass
+class FakeDevice:
+    config_entries: set[str]
+
+
+class FakeDeviceRegistry:
+    def __init__(self, devices: dict[str, FakeDevice]) -> None:
+        self._devices = devices
+
+    def async_get(self, device_id: str) -> FakeDevice | None:
+        return self._devices.get(device_id)
+
+
 def test_request_from_call_reads_target_and_defaults() -> None:
     request = _request_from_call(
         FakeCall(
@@ -142,6 +154,32 @@ def test_request_from_call_reads_target_and_defaults() -> None:
     assert request.snapshot_camera_entity is None
     assert request.snapshot_fallback is True
     assert request.stream_type == "auto"
+
+
+def test_request_from_call_accepts_ha_target_device_id_from_data() -> None:
+    request = _request_from_call(
+        FakeCall(
+            data={
+                ATTR_CAMERA_ENTITY: "camera.front_door",
+                ATTR_DEVICE_ID: "ha-device-1",
+            },
+        )
+    )
+
+    assert request.device_ids == ("ha-device-1",)
+
+
+def test_request_from_call_ignores_empty_ha_target_device_id_from_data() -> None:
+    request = _request_from_call(
+        FakeCall(
+            data={
+                ATTR_CAMERA_ENTITY: "camera.front_door",
+                ATTR_DEVICE_ID: None,
+            },
+        )
+    )
+
+    assert request.device_ids == ()
 
 
 def test_request_from_call_accepts_title_and_duration() -> None:
@@ -196,19 +234,6 @@ def test_request_from_call_accepts_overlay_message_style() -> None:
     assert request.background_color == "#B30F0E0E"
     assert request.width == 720
     assert request.height == 360
-
-
-def test_request_from_call_accepts_receiver_device_id_field() -> None:
-    request = _request_from_call(
-        FakeCall(
-            data={
-                ATTR_CAMERA_ENTITY: "camera.front_door",
-                ATTR_RECEIVER_DEVICE_ID: "device-1",
-            },
-        )
-    )
-
-    assert request.device_ids == ("device-1",)
 
 
 def test_request_from_call_rejects_invalid_stream_type() -> None:
@@ -337,6 +362,54 @@ def test_resolve_receiver_requires_target_when_multiple_entries() -> None:
             ),
         )
     assert error.value.code == "multiple_receivers"
+
+
+def test_resolve_receiver_matches_home_assistant_target_device_id(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    device_registry_module = types.ModuleType("homeassistant.helpers.device_registry")
+    registry = FakeDeviceRegistry(
+        {"ha-device-2": FakeDevice(config_entries={"entry-2"})}
+    )
+    device_registry_module.async_get = lambda hass: registry  # type: ignore[attr-defined]
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.helpers.device_registry",
+        device_registry_module,
+    )
+    entries = [
+        FakeEntry(
+            "entry-1",
+            {
+                CONF_DEVICE_ID: "receiver-1",
+                CONF_HOST: "10.0.0.1",
+                CONF_PORT: 8765,
+                CONF_TOKEN: "a",
+            },
+        ),
+        FakeEntry(
+            "entry-2",
+            {
+                CONF_DEVICE_ID: "receiver-2",
+                CONF_HOST: "10.0.0.2",
+                CONF_PORT: 8765,
+                CONF_TOKEN: "b",
+            },
+        ),
+    ]
+
+    receiver = _resolve_receiver(
+        FakeHass(entries=entries),
+        _request_from_call(
+            FakeCall(
+                data={ATTR_CAMERA_ENTITY: "camera.front_door"},
+                target={ATTR_DEVICE_ID: "ha-device-2"},
+            )
+        ),
+    )
+
+    assert receiver.device_id == "receiver-2"
+    assert receiver.host == "10.0.0.2"
 
 
 def test_validate_camera_entity_requires_camera_domain_and_state() -> None:

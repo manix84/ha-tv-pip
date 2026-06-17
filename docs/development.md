@@ -1105,8 +1105,9 @@ Stage 7 Home Assistant stream type testing:
 
 ```yaml
 action: ha_tv_pip.show_camera
+target:
+  device_id: living_room_tv
 data:
-  receiver_device_id: living_room_tv
   camera_entity: camera.front_door
   duration_seconds: 30
   enter_pip: true
@@ -1116,7 +1117,7 @@ data:
   snapshot_camera_entity: camera.front_door_sub
 ```
 
-Use the Home Assistant device ID for `receiver_device_id` and a camera entity that exposes a TV-compatible stream. `stream_type` defaults to `auto`, which prefers HLS and falls back to a snapshot command if Home Assistant cannot resolve a stream. Advanced calls can force `stream_type: hls`, `stream_type: mjpeg`, or `stream_type: snapshot`. `stream_type: mjpeg` uses Home Assistant's camera proxy stream endpoint and the Android overlay renderer, so it is currently opt-in rather than part of automatic fallback ordering. `stream_camera_entity` is optional and defaults to `camera_entity`; use it when a separate lower-resolution, H.264, or MJPEG entity is more reliable for live playback on Android TV. `snapshot_fallback` is optional and enabled by default; it lets the receiver show a camera snapshot while the video stream loads. `snapshot_camera_entity` is optional and defaults to `camera_entity`, which is useful when a secondary camera entity provides a faster or lower-resolution still preview. Lower-resolution, H.264, or MJPEG camera streams are generally more reliable for TV popups than high-resolution main streams. The Android receiver enables Media3 decoder fallback and shows a clear unsupported-stream message, but it cannot replace transcoding for unsupported camera formats.
+Use the standard Home Assistant `target.device_id` selector for the HA TV PiP receiver and a camera entity that exposes a TV-compatible stream. The target selector is limited to HA TV PiP devices. `stream_type` defaults to `auto`, which prefers HLS and falls back to a snapshot command if Home Assistant cannot resolve a stream. Advanced calls can force `stream_type: hls`, `stream_type: mjpeg`, or `stream_type: snapshot`. `stream_type: mjpeg` uses Home Assistant's camera proxy stream endpoint and the Android overlay renderer, so it is currently opt-in rather than part of automatic fallback ordering. `stream_camera_entity` is optional and defaults to `camera_entity`; use it when a separate lower-resolution, H.264, or MJPEG entity is more reliable for live playback on Android TV. `snapshot_fallback` is optional and enabled by default; it lets the receiver show a camera snapshot while the video stream loads. `snapshot_camera_entity` is optional and defaults to `camera_entity`, which is useful when a secondary camera entity provides a faster or lower-resolution still preview. Lower-resolution, H.264, or MJPEG camera streams are generally more reliable for TV popups than high-resolution main streams. The Android receiver enables Media3 decoder fallback and shows a clear unsupported-stream message, but it cannot replace transcoding for unsupported camera formats.
 
 Stage 8 is complete in `0.26.0`. It includes receiver status, connected, test, close, diagnostics, Hide Launcher, and Open Launcher controls.
 
@@ -1152,8 +1153,9 @@ Stage 6 snapshot service testing:
 
 ```yaml
 action: ha_tv_pip.show_snapshot
+target:
+  device_id: living_room_tv
 data:
-  receiver_device_id: living_room_tv
   camera_entity: camera.front_door
   duration_seconds: 10
   enter_pip: true

@@ -316,8 +316,9 @@ Initial service:
 
 ```yaml
 action: ha_tv_pip.show_camera
+target:
+  device_id: living_room_tv
 data:
-  receiver_device_id: living_room_tv
   camera_entity: camera.front_door
   duration_seconds: 30
   enter_pip: true
@@ -336,7 +337,7 @@ The integration should:
 Initial behaviour:
 
 - Registers `ha_tv_pip.show_camera`.
-- Accepts `receiver_device_id`, `camera_entity`, `duration_seconds`, `enter_pip`, and optional `title`.
+- Accepts Home Assistant `target.device_id`, `camera_entity`, `duration_seconds`, `enter_pip`, and optional `title`.
 - Resolves HLS streams with Home Assistant's camera stream API.
 - Sends authenticated `/show` commands to the paired receiver.
 - Requires paired receiver config entries with stored tokens.
@@ -354,8 +355,9 @@ trigger:
     to: "on"
 action:
   - service: ha_tv_pip.show_camera
+    target:
+      device_id: living_room_tv
     data:
-      receiver_device_id: living_room_tv
       camera_entity: camera.front_door_bell
       duration_seconds: 30
       enter_pip: true
@@ -366,7 +368,7 @@ action:
 - Home Assistant automation can trigger a TV PiP camera popup.
 - Errors are visible and understandable in Home Assistant logs.
 - Receiver playback errors are visible through the receiver status endpoint.
-- Multiple configured TVs can be targeted separately with `receiver_device_id`.
+- Multiple configured TVs can be targeted separately with Home Assistant `target.device_id`.
 
 ## Completion Notes
 
@@ -390,8 +392,9 @@ Support still image popups for cameras or alerts where video is unnecessary or u
 
 ```yaml
 action: ha_tv_pip.show_snapshot
+target:
+  device_id: living_room_tv
 data:
-  receiver_device_id: living_room_tv
   camera_entity: camera.front_door
   duration_seconds: 10
   enter_pip: true

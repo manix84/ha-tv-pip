@@ -98,9 +98,6 @@
         "enter_pip": {
           "name": "PiP openen"
         },
-        "receiver_device_id": {
-          "name": "Receiverapparaat"
-        },
         "snapshot_camera_entity": {
           "name": "Snapshot-fallbackcamera"
         },
@@ -158,9 +155,6 @@
         "enter_pip": {
           "name": "PiP openen"
         },
-        "receiver_device_id": {
-          "name": "Receiverapparaat"
-        },
         "title": {
           "name": "Titel"
         },
@@ -217,9 +211,6 @@
         },
         "position": {
           "name": "Position"
-        },
-        "receiver_device_id": {
-          "name": "Receiver device"
         },
         "title": {
           "name": "Title"

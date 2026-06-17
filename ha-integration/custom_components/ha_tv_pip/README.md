@@ -133,8 +133,9 @@ Diagnostics:
 
 ```yaml
 service: ha_tv_pip.show_camera
+target:
+  device_id: living_room_tv
 data:
-  receiver_device_id: living_room_tv
   camera_entity: camera.front_door
   duration_seconds: 30
   enter_pip: true
@@ -156,8 +157,9 @@ For cameras with multiple streams, use a TV-compatible H.264/HLS stream where po
 
 ```yaml
 service: ha_tv_pip.show_snapshot
+target:
+  device_id: living_room_tv
 data:
-  receiver_device_id: living_room_tv
   camera_entity: camera.front_door
   duration_seconds: 10
   enter_pip: true
@@ -171,8 +173,9 @@ The service resolves a Home Assistant camera proxy snapshot URL and sends it to 
 
 ```yaml
 service: ha_tv_pip.show_notification
+target:
+  device_id: living_room_tv
 data:
-  receiver_device_id: living_room_tv
   title: Front door
   message: Someone is at the door
   duration_seconds: 15

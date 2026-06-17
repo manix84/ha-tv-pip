@@ -49,7 +49,6 @@ ATTR_MESSAGE = "message"
 ATTR_MESSAGE_COLOR = "message_color"
 ATTR_MESSAGE_SIZE = "message_size"
 ATTR_POSITION = "position"
-ATTR_RECEIVER_DEVICE_ID = "receiver_device_id"
 ATTR_SNAPSHOT_CAMERA_ENTITY = "snapshot_camera_entity"
 ATTR_SNAPSHOT_FALLBACK = "snapshot_fallback"
 ATTR_STREAM_CAMERA_ENTITY = "stream_camera_entity"
@@ -191,8 +190,7 @@ async def async_register_services(hass: Any) -> None:
 
     base_schema = {
         vol.Required(ATTR_CAMERA_ENTITY): cv.entity_id,
-        vol.Optional(ATTR_DEVICE_ID): vol.Any(str, [str]),
-        vol.Optional(ATTR_RECEIVER_DEVICE_ID): vol.Any(str, [str]),
+        vol.Optional(ATTR_DEVICE_ID): vol.Any(str, [str], None),
         vol.Optional(ATTR_ENTER_PIP, default=True): bool,
         vol.Optional(ATTR_TITLE): str,
         vol.Optional(ATTR_MESSAGE): str,
@@ -255,8 +253,7 @@ async def async_register_services(hass: Any) -> None:
     )
     notification_schema = vol.Schema(
         {
-            vol.Optional(ATTR_DEVICE_ID): vol.Any(str, [str]),
-            vol.Optional(ATTR_RECEIVER_DEVICE_ID): vol.Any(str, [str]),
+            vol.Optional(ATTR_DEVICE_ID): vol.Any(str, [str], None),
             vol.Optional(ATTR_TITLE, default=DEFAULT_NOTIFICATION_TITLE): str,
             vol.Optional(ATTR_MESSAGE): str,
             vol.Optional(ATTR_DURATION_SECONDS, default=15): vol.All(
@@ -461,11 +458,7 @@ async def async_handle_show_notification(hass: Any, call: Any) -> None:
 def _request_from_call(call: Any) -> ShowCameraRequest:
     data = dict(getattr(call, "data", {}))
     target = getattr(call, "target", {}) or {}
-    device_ids = _tuple_value(
-        data.get(ATTR_RECEIVER_DEVICE_ID)
-        or data.get(ATTR_DEVICE_ID)
-        or target.get(ATTR_DEVICE_ID)
-    )
+    device_ids = _tuple_value(target.get(ATTR_DEVICE_ID) or data.get(ATTR_DEVICE_ID))
 
     duration_value = data.get(ATTR_DURATION_SECONDS, 30)
     duration_seconds = int(duration_value) if duration_value is not None else None
@@ -514,11 +507,7 @@ def _request_from_call(call: Any) -> ShowCameraRequest:
 def _notification_request_from_call(call: Any) -> ShowNotificationRequest:
     data = dict(getattr(call, "data", {}))
     target = getattr(call, "target", {}) or {}
-    device_ids = _tuple_value(
-        data.get(ATTR_RECEIVER_DEVICE_ID)
-        or data.get(ATTR_DEVICE_ID)
-        or target.get(ATTR_DEVICE_ID)
-    )
+    device_ids = _tuple_value(target.get(ATTR_DEVICE_ID) or data.get(ATTR_DEVICE_ID))
     duration_value = data.get(ATTR_DURATION_SECONDS, 15)
     duration_seconds = int(duration_value) if duration_value is not None else None
     if duration_seconds is not None and duration_seconds < 1:
@@ -601,17 +590,30 @@ def _entries_for_devices(
     entries: list[Any],
     device_ids: tuple[str, ...],
 ) -> list[Any]:
-    device_registry_module = __import__(
-        "homeassistant.helpers.device_registry",
-        fromlist=["async_get"],
-    )
-    device_registry = device_registry_module.async_get(hass)
+    device_id_set = set(device_ids)
+    direct_matches = [
+        entry
+        for entry in entries
+        if entry.entry_id in device_id_set
+        or str(entry.data.get(CONF_DEVICE_ID, "")) in device_id_set
+    ]
+    if direct_matches:
+        return direct_matches
+
     matched_entry_ids: set[str] = set()
-    for device_id in device_ids:
-        device = device_registry.async_get(device_id)
-        if device is None:
-            continue
-        matched_entry_ids.update(device.config_entries)
+    try:
+        device_registry_module = __import__(
+            "homeassistant.helpers.device_registry",
+            fromlist=["async_get"],
+        )
+        device_registry = device_registry_module.async_get(hass)
+        for device_id in device_ids:
+            device = device_registry.async_get(device_id)
+            if device is None:
+                continue
+            matched_entry_ids.update(device.config_entries)
+    except ModuleNotFoundError:
+        _LOGGER.debug("Home Assistant device registry is unavailable")
 
     return [entry for entry in entries if entry.entry_id in matched_entry_ids]
 

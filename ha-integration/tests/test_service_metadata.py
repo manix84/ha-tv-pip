@@ -56,18 +56,14 @@ SERVICE_EXAMPLES: dict[str, set[str]] = {
 
 NO_EXAMPLE_FIELDS: dict[str, set[str]] = {
     "show_camera": {
-        "receiver_device_id",
         "camera_entity",
         "snapshot_camera_entity",
         "stream_camera_entity",
     },
     "show_snapshot": {
-        "receiver_device_id",
         "camera_entity",
     },
-    "show_notification": {
-        "receiver_device_id",
-    },
+    "show_notification": set(),
 }
 
 
@@ -85,6 +81,28 @@ def test_device_and_entity_selectors_do_not_need_examples() -> None:
     for service, fields in NO_EXAMPLE_FIELDS.items():
         for field in fields:
             assert metadata[service][field] is None
+
+
+def test_services_target_only_ha_tv_pip_devices() -> None:
+    content = SERVICES_YAML.read_text(encoding="utf-8")
+
+    for service in SERVICE_EXAMPLES:
+        service_block = _service_block(content, service)
+        assert "  target:\n" in service_block
+        assert "    device:\n" in service_block
+        assert "      integration: ha_tv_pip\n" in service_block
+        assert "receiver_device_id:" not in service_block
+
+
+def _service_block(content: str, service: str) -> str:
+    lines = content.splitlines(keepends=True)
+    start = next(index for index, line in enumerate(lines) if line == f"{service}:\n")
+    end = len(lines)
+    for index in range(start + 1, len(lines)):
+        if lines[index] and not lines[index].startswith(" "):
+            end = index
+            break
+    return "".join(lines[start:end])
 
 
 def _read_service_field_examples() -> dict[str, dict[str, str | None]]:

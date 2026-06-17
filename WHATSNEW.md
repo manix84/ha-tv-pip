@@ -8,6 +8,7 @@
 - Added receiver status reporting for the active stream type so MJPEG tests are easier to diagnose 🔎
 - Updated unsupported-stream guidance to suggest compatible substreams, H.264, or `stream_type: mjpeg` 🩺
 - Added a copyable website example for MJPEG fallback automations 🌐
+- Standardized receiver selection on Home Assistant `target.device_id` and removed the duplicate `receiver_device_id` service field 🎯
 - Updated Home Assistant service metadata, Tier 1 translation labels, tests, and docs for separate stream camera selection 🏠
 
 ## 0.48.0 - Stage 12 Release Hardening 📦

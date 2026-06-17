@@ -258,7 +258,7 @@ Initial service:
 ha_tv_pip.show_camera
 ```
 
-The Stage 5 service resolves Home Assistant camera HLS URLs and sends authenticated `/show` commands to paired receivers. It uses `receiver_device_id` to target receiver devices because the integration does not expose entities yet.
+The Stage 5 service resolves Home Assistant camera HLS URLs and sends authenticated `/show` commands to paired receivers. It uses Home Assistant's standard `target.device_id` selector, filtered to HA TV PiP receiver devices.
 
 Implemented receiver display services include `ha_tv_pip.show_camera`, `ha_tv_pip.show_snapshot`, and `ha_tv_pip.show_notification`. Camera and snapshot commands can also carry optional notification presentation fields for title/message footers.
 
@@ -565,7 +565,7 @@ Phase 4 currently adds:
 Phase 5 currently adds:
 
 - `ha_tv_pip.show_camera` Home Assistant service
-- Paired receiver targeting with `receiver_device_id`
+- Paired receiver targeting with Home Assistant `target.device_id`
 - Home Assistant HLS camera stream resolution
 - Authenticated receiver `/show` calls
 - Receiver-side stream error reporting for unsupported codecs or profiles
