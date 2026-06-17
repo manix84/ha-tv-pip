@@ -1,6 +1,6 @@
 # What's New ✨
 
-## 1.14.0 - Capability-Aware Stream Selection 🧭
+## 1.13.1 - Capability-Aware Stream Selection 🧭
 
 - Used receiver-reported capabilities to reject unsupported forced stream, snapshot, notification, and media-text commands before sending them 🛡️
 - Updated automatic stream selection to skip unsupported receiver formats and only send playable fallback URLs when the receiver supports them 📺
