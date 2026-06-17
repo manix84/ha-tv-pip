@@ -3,7 +3,7 @@ import type { WebsiteContent } from "./types";
 export const fr = {
     codeBlock: { copyAriaLabel: "Copier le YAML Home Assistant dans le presse-papiers", copyFailed: "Échec de la copie", copied: "Copié", copyTitle: "Copier le YAML", toolbar: "YAML Home Assistant" },
     currentStatus: { body: ["HA TV PiP prend maintenant en charge la découverte, l'appairage visible sur le téléviseur, le contrôle authentifié du récepteur, les popups de flux caméra, les instantanés, les notifications stylisées, la gestion du récepteur et le transport de récepteur distant.", "Stage 12 est terminé. Le premier release candidate est publié avec les APK Android debug et release, les zips d'intégration prêts pour HACS, les contrôles vérifiés, les mises à jour du site, la documentation d'installation et des exemples de notifications enrichies."], eyebrow: "État actuel", title: "Stage 12 : durcissement bêta" },
-    example: { eyebrow: "Exemple d'automatisation", title: "La direction prévue." },
+    example: { eyebrow: "Exemple d'automatisation", mjpegTitle: "Repli MJPEG", standardTitle: "Parcours HLS par défaut", tabAriaLabel: "Type d'exemple d'automatisation", title: "La direction prévue." },
     faqItems: [
       { question: "HA TV PiP est-il un service cloud ?", answer: "Non. Le contrôle local reste le comportement par défaut, et le mode récepteur distant connecte votre téléviseur en sortie à votre propre URL externe Home Assistant. HA TV PiP n'exécute pas de relais hébergé." },
       { question: "Dois-je ouvrir des ports sur mon routeur ?", answer: "Non, aucune redirection de port vers le téléviseur n'est prévue. En mode récepteur distant, le téléviseur ouvre une connexion WebSocket sortante vers Home Assistant." },

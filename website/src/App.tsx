@@ -34,6 +34,7 @@ const releasesUrl = "https://github.com/manix84/ha-tv-pip/releases";
 const licenseUrl = "https://github.com/manix84/ha-tv-pip/blob/main/LICENSE";
 
 export const localePreferenceKey = "ha-tv-pip-locale";
+type ExampleTab = "standard" | "mjpeg";
 
 const routedLocaleCodes = new Set<WebsiteLocale>(
   supportedLocales
@@ -149,6 +150,28 @@ action:
       height: 405
 `;
 
+const mjpegAutomationExample = `
+alias: Show front door alert with MJPEG fallback
+trigger:
+  - platform: state
+    entity_id: binary_sensor.front_door_bell_visitor
+    to: "on"
+action:
+  - service: ha_tv_pip.show_camera
+    target:
+      device_id: living_room_tv
+    data:
+      camera_entity: camera.front_door
+      stream_type: mjpeg
+      stream_camera_entity: camera.front_door_sub
+      snapshot_fallback: true
+      snapshot_camera_entity: camera.front_door
+      duration_seconds: 30
+      enter_pip: true
+      title: Front door
+      message: Motion detected
+`;
+
 function App() {
   const [locale, setLocale] = useState<WebsiteLocale>(() =>
     getInitialLocale(
@@ -164,6 +187,7 @@ function App() {
       ? saved
       : "auto";
   });
+  const [exampleTab, setExampleTab] = useState<ExampleTab>("standard");
 
   useEffect(() => {
     window.localStorage.setItem("ha-tv-pip-theme", themeMode);
@@ -191,6 +215,7 @@ function App() {
   }, [locale]);
 
   const content = websiteContent[locale];
+  const activeExample = exampleTab === "standard" ? automationExample : mjpegAutomationExample;
   const visualCards = content.visualCards.map((card, index) => ({
     ...card,
     image: index === 0 ? controlMockup : networkMockup,
@@ -345,11 +370,47 @@ function App() {
       </Section>
 
       <Section eyebrow={content.example.eyebrow} title={content.example.title}>
-        <CodeBlock
-          code={automationExample}
-          labels={content.codeBlock}
-          language="home-assistant-yaml"
-        />
+        <div className={styles.exampleTabs}>
+          <div
+            aria-label={content.example.tabAriaLabel}
+            className={styles.exampleTabList}
+            role="tablist"
+          >
+            <button
+              aria-controls="example-panel"
+              aria-selected={exampleTab === "standard"}
+              id="example-tab-standard"
+              onClick={() => setExampleTab("standard")}
+              role="tab"
+              type="button"
+            >
+              {content.example.standardTitle}
+            </button>
+            <button
+              aria-controls="example-panel"
+              aria-selected={exampleTab === "mjpeg"}
+              id="example-tab-mjpeg"
+              onClick={() => setExampleTab("mjpeg")}
+              role="tab"
+              type="button"
+            >
+              {content.example.mjpegTitle}
+            </button>
+          </div>
+          <div
+            aria-labelledby={
+              exampleTab === "standard" ? "example-tab-standard" : "example-tab-mjpeg"
+            }
+            id="example-panel"
+            role="tabpanel"
+          >
+            <CodeBlock
+              code={activeExample}
+              labels={content.codeBlock}
+              language="home-assistant-yaml"
+            />
+          </div>
+        </div>
       </Section>
 
       <Section

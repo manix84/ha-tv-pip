@@ -350,6 +350,52 @@
   padding: 1rem;
 }
 
+.exampleTabs {
+  display: grid;
+  gap: 1rem;
+}
+
+.exampleTabList {
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: inline-flex;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  width: fit-content;
+}
+
+.exampleTabList button {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.2;
+  padding: 0.7rem 0.95rem;
+}
+
+.exampleTabList button:hover,
+.exampleTabList button:focus-visible {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.exampleTabList button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.exampleTabList button[aria-selected="true"] {
+  background: var(--accent-soft);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
 .faqGrid,
 .translationGrid {
   display: grid;
@@ -504,5 +550,11 @@
 
   .footerNavigation {
     align-items: flex-start;
+  }
+
+  .exampleTabList {
+    align-items: stretch;
+    display: grid;
+    width: 100%;
   }
 }

@@ -16,7 +16,7 @@ export const de = {
       eyebrow: "Aktueller Stand",
       title: "Stage 12: Beta-Release-Härtung",
     },
-    example: { eyebrow: "Beispiel-Automation", title: "Wohin es geht." },
+    example: { eyebrow: "Beispiel-Automation", mjpegTitle: "MJPEG-Fallback", standardTitle: "Standard-HLS-Pfad", tabAriaLabel: "Beispiel-Automationstyp", title: "Wohin es geht." },
     faqItems: [
       {
         question: "Ist HA TV PiP ein Cloud-Dienst?",

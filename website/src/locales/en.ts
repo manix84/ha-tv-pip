@@ -18,6 +18,9 @@ export const en = {
     },
     example: {
       eyebrow: "Example automation",
+      mjpegTitle: "MJPEG fallback",
+      standardTitle: "Default HLS path",
+      tabAriaLabel: "Example automation type",
       title: "Where this is headed.",
     },
     faqItems: [

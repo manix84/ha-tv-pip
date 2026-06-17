@@ -3,7 +3,7 @@ import type { WebsiteContent } from "./types";
 export const nl = {
     codeBlock: { copyAriaLabel: "Kopieer Home Assistant YAML naar het klembord", copyFailed: "Kopiëren mislukt", copied: "Gekopieerd", copyTitle: "YAML kopiëren", toolbar: "Home Assistant YAML" },
     currentStatus: { body: ["HA TV PiP ondersteunt nu discovery, koppelen met code op de tv, geauthenticeerde receiverbediening, camera-pop-ups, snapshots, gestylede notificaties, receiverbeheer en remote receiver transport.", "Stage 12 is afgerond. De eerste release candidate is gepubliceerd met Android debug- en release-APK's, HACS-klare integratiezips, geverifieerde checks, website-updates, installatiedocs en voorbeelden voor uitgebreide notificaties."], eyebrow: "Huidige status", title: "Stage 12: beta-release hardening" },
-    example: { eyebrow: "Voorbeeldautomatisering", title: "Waar dit naartoe gaat." },
+    example: { eyebrow: "Voorbeeldautomatisering", mjpegTitle: "MJPEG-fallback", standardTitle: "Standaard HLS-pad", tabAriaLabel: "Type voorbeeldautomatisering", title: "Waar dit naartoe gaat." },
     faqItems: [
       { question: "Is HA TV PiP een clouddienst?", answer: "Nee. Lokale bediening blijft de standaard, en remote receiver mode verbindt je tv uitgaand met je eigen externe Home Assistant URL. HA TV PiP draait geen gehoste relay." },
       { question: "Moet ik poorten openen op mijn router?", answer: "Nee, port forwarding naar de tv is niet gepland. In remote receiver mode opent de tv een uitgaande WebSocket-verbinding naar Home Assistant." },

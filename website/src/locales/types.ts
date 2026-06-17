@@ -16,6 +16,9 @@ export type WebsiteContent = {
   };
   example: {
     eyebrow: string;
+    mjpegTitle: string;
+    standardTitle: string;
+    tabAriaLabel: string;
     title: string;
   };
   faqItems: Array<{ answer: string; question: string }>;
