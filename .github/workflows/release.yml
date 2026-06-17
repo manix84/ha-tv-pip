@@ -59,30 +59,41 @@ jobs:
       - name: Package Home Assistant integration
         run: npm run package:integration
 
-      - name: Create or update GitHub Release
+      - name: Create draft GitHub Release with assets
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ steps.version.outputs.tag }}
           RELEASE_VERSION: ${{ steps.version.outputs.version }}
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            gh release edit "$RELEASE_TAG" \
-              --title "HA TV PiP v$RELEASE_VERSION" \
-              --notes "Automated release for v$RELEASE_VERSION."
-          else
-            gh release create "$RELEASE_TAG" \
-              --target "${{ github.sha }}" \
-              --title "HA TV PiP v$RELEASE_VERSION" \
-              --notes "Automated release for v$RELEASE_VERSION."
+            IS_DRAFT=$(gh release view "$RELEASE_TAG" --json isDraft --jq '.isDraft')
+            if [ "$IS_DRAFT" != "true" ]; then
+              echo "Release $RELEASE_TAG already exists and is published."
+              echo "Published releases can be immutable, so assets cannot be replaced."
+              echo "Bump the root package.json version before creating another release."
+              exit 1
+            fi
+
+            gh release upload "$RELEASE_TAG" \
+              "dist/ha-tv-pip-android-v$RELEASE_VERSION.apk" \
+              "dist/ha-tv-pip-integration-v$RELEASE_VERSION.zip" \
+              "dist/ha-tv-pip-integration.zip" \
+              --clobber
+            exit 0
           fi
 
-      - name: Upload release assets
+          gh release create "$RELEASE_TAG" \
+            "dist/ha-tv-pip-android-v$RELEASE_VERSION.apk" \
+            "dist/ha-tv-pip-integration-v$RELEASE_VERSION.zip" \
+            "dist/ha-tv-pip-integration.zip" \
+            --draft \
+            --target "${{ github.sha }}" \
+            --title "HA TV PiP v$RELEASE_VERSION" \
+            --notes "Automated release for v$RELEASE_VERSION."
+
+      - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ steps.version.outputs.tag }}
         run: |
-          gh release upload "$RELEASE_TAG" \
-            "dist/ha-tv-pip-android-v${{ steps.version.outputs.version }}.apk" \
-            "dist/ha-tv-pip-integration-v${{ steps.version.outputs.version }}.zip" \
-            "dist/ha-tv-pip-integration.zip" \
-            --clobber
+          gh release edit "$RELEASE_TAG" --draft=false

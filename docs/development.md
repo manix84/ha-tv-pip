@@ -633,8 +633,10 @@ When code is pushed or merged into `main`, `.github/workflows/release.yml`:
 4. Runs the version consistency check.
 5. Builds the Android release APK.
 6. Packages the Home Assistant integration zip.
-7. Creates or updates GitHub Release `vX.Y.Z`.
-8. Uploads the Android APK, versioned integration zip, and stable HACS integration zip to the GitHub Release.
+7. Creates draft GitHub Release `vX.Y.Z` with the Android APK, versioned integration zip, and stable HACS integration zip already attached.
+8. Publishes the draft GitHub Release.
+
+Published GitHub Releases are treated as immutable. The workflow will not replace assets on an existing published release; bump the root `package.json` version before producing another release. If an older failed workflow already created a published release without assets, delete that failed release manually or move forward with the next version.
 
 For version `1.2.3`, expected release assets are:
 
@@ -659,7 +661,7 @@ The repo therefore uses root `hacs.json` with:
 }
 ```
 
-The release workflow uploads that stable zip whenever it creates or updates a GitHub Release from `main`. Its internal path is:
+The release workflow attaches that stable zip while creating the draft GitHub Release from `main`. Its internal path is:
 
 ```txt
 custom_components/ha_tv_pip/

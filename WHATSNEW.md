@@ -1,5 +1,10 @@
 # What's New ✨
 
+## 0.47.0 - Release Workflow Fix 📦
+
+- Changed release automation to attach assets while the GitHub Release is still a draft so published immutable releases are not mutated 📦
+- Documented that already-published failed releases must be deleted manually or replaced by bumping to the next version 📝
+
 ## 0.46.0 - Stage 12 Planning 📦
 
 - Defined Stage 12 as beta release hardening instead of a new feature stage 🚧
