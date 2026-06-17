@@ -1,6 +1,6 @@
 # What's New ✨
 
-## 1.13.2 - Receiver Visibility Entities 🧰
+## 1.14.0 - Receiver Visibility Entities 🧰
 
 - Added focused Home Assistant sensors for active display mode, active stream type, last receiver error, and receiver app version 🔎
 - Added a remote-connected binary sensor and a refresh-status button for receiver troubleshooting 🧰
