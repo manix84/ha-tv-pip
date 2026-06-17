@@ -35,11 +35,22 @@ config_entries.OptionsFlow = FakeOptionsFlow  # type: ignore[attr-defined]
 voluptuous.Schema = lambda schema: schema  # type: ignore[attr-defined]
 voluptuous.Required = lambda key: key  # type: ignore[attr-defined]
 voluptuous.Optional = lambda key, default=None: key  # type: ignore[attr-defined]
+voluptuous.Any = lambda *values: values  # type: ignore[attr-defined]
 homeassistant.config_entries = config_entries  # type: ignore[attr-defined]
 sys.modules.setdefault("homeassistant", homeassistant)
 sys.modules.setdefault("homeassistant.config_entries", config_entries)
 sys.modules.setdefault("voluptuous", voluptuous)
 
+from custom_components.ha_tv_pip.const import (  # noqa: E402
+    CONF_DEFAULT_DURATION_SECONDS,
+    CONF_DEFAULT_HEIGHT,
+    CONF_DEFAULT_POSITION,
+    CONF_DEFAULT_SNAPSHOT_FALLBACK,
+    CONF_DEFAULT_STREAM_TYPE,
+    CONF_DEFAULT_WIDTH,
+    CONF_REMOTE_ACCESS_TOKEN,
+    CONF_REMOTE_HOME_ASSISTANT_URL,
+)
 from custom_components.ha_tv_pip.config_flow import (  # noqa: E402
     ConfigFlow,
     ReceiverOptionsFlow,
@@ -170,4 +181,60 @@ def test_options_flow_init_step_returns_remote_setup_form(
     assert result["step_id"] == "init"
     assert result["description_placeholders"] == {
         "suggested_url": "https://example.ui.nabu.casa"
+    }
+
+
+def test_options_flow_stores_receiver_defaults_and_remote_setup(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    flow = ReceiverOptionsFlow()
+    flow.hass = object()
+    flow.config_entry = types.SimpleNamespace(options={})
+
+    monkeypatch.setattr(
+        "custom_components.ha_tv_pip.config_flow.suggested_remote_home_assistant_url",
+        lambda hass: "https://example.ui.nabu.casa",
+    )
+
+    async def fake_sync(
+        hass: Any,
+        config_entry: Any,
+        remote_url: str,
+        remote_token: str,
+    ) -> bool:
+        return True
+
+    monkeypatch.setattr(
+        "custom_components.ha_tv_pip.config_flow.async_sync_remote_setup_values",
+        fake_sync,
+    )
+
+    result = asyncio.run(
+        flow.async_step_init(
+            {
+                CONF_DEFAULT_DURATION_SECONDS: 30,
+                CONF_DEFAULT_HEIGHT: 360,
+                CONF_DEFAULT_POSITION: "bottom_right",
+                CONF_DEFAULT_SNAPSHOT_FALLBACK: False,
+                CONF_DEFAULT_STREAM_TYPE: "mjpeg_first",
+                CONF_DEFAULT_WIDTH: 640,
+                CONF_REMOTE_ACCESS_TOKEN: "remote-token",
+                CONF_REMOTE_HOME_ASSISTANT_URL: "https://ha.example.test",
+            }
+        )
+    )
+
+    assert result == {
+        "type": "create_entry",
+        "title": "",
+        "data": {
+            CONF_DEFAULT_DURATION_SECONDS: 30,
+            CONF_DEFAULT_HEIGHT: 360,
+            CONF_DEFAULT_POSITION: "bottom_right",
+            CONF_DEFAULT_SNAPSHOT_FALLBACK: False,
+            CONF_DEFAULT_STREAM_TYPE: "mjpeg_first",
+            CONF_DEFAULT_WIDTH: 640,
+            CONF_REMOTE_ACCESS_TOKEN: "remote-token",
+            CONF_REMOTE_HOME_ASSISTANT_URL: "https://ha.example.test",
+        },
     }

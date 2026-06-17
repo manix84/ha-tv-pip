@@ -40,6 +40,8 @@ Stage 11 is complete in `0.45.0`. HA TV PiP now supports styled text-only notifi
 
 Stage 12 is complete in `0.48.0`. The beta release hardening pass validated full quality checks, release packaging, Android debug and release APK builds, HACS zip layout, website build output, public install docs, Stage 11 examples, and the first GitHub release-candidate workflow.
 
+Post-1.0 compatibility polish now includes receiver-level Home Assistant defaults for preferred stream strategy, duration, popup position, snapshot fallback, width, and height. Individual automations can still override any of those values per action.
+
 ## Monorepo Layout 🧱
 
 ```txt

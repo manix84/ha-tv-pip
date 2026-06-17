@@ -12,6 +12,12 @@ from homeassistant import config_entries  # type: ignore[import-not-found]
 from .client import ReceiverClientError, async_confirm_pairing, async_start_pairing
 from .const import (
     CONF_API_VERSION,
+    CONF_DEFAULT_DURATION_SECONDS,
+    CONF_DEFAULT_HEIGHT,
+    CONF_DEFAULT_POSITION,
+    CONF_DEFAULT_SNAPSHOT_FALLBACK,
+    CONF_DEFAULT_STREAM_TYPE,
+    CONF_DEFAULT_WIDTH,
     CONF_DEVICE_ID,
     CONF_HOST,
     CONF_NAME,
@@ -28,6 +34,11 @@ from .discovery import ReceiverDiscovery, parse_discovery_properties
 from .remote_setup import (
     async_sync_remote_setup_values,
     suggested_remote_home_assistant_url,
+)
+from .services import (
+    NOTIFICATION_POSITIONS,
+    STREAM_TYPE_AUTO,
+    STREAM_TYPES,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -216,10 +227,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
 
 
 class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
-    """Options flow for remote receiver provisioning."""
+    """Options flow for receiver defaults and remote receiver provisioning."""
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> Any:
-        """Configure remote receiver provisioning from Home Assistant."""
+        """Configure receiver defaults and remote provisioning from Home Assistant."""
 
         errors: dict[str, str] = {}
         suggested_url = suggested_remote_home_assistant_url(self.hass)
@@ -232,6 +243,43 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
         current_token = str(
             self.config_entry.options.get(CONF_REMOTE_ACCESS_TOKEN, "")
         ).strip()
+        current_stream_type = str(
+            self.config_entry.options.get(CONF_DEFAULT_STREAM_TYPE, STREAM_TYPE_AUTO)
+        ).strip()
+        if current_stream_type not in STREAM_TYPES:
+            current_stream_type = STREAM_TYPE_AUTO
+        current_position = str(
+            self.config_entry.options.get(CONF_DEFAULT_POSITION, "top_right")
+        ).strip()
+        if current_position not in NOTIFICATION_POSITIONS:
+            current_position = "top_right"
+        current_duration = (
+            _optional_default_int(
+                self.config_entry.options.get(CONF_DEFAULT_DURATION_SECONDS),
+                minimum=0,
+                maximum=3600,
+            )
+            or 0
+        )
+        current_width = (
+            _optional_default_int(
+                self.config_entry.options.get(CONF_DEFAULT_WIDTH),
+                minimum=0,
+                maximum=1600,
+            )
+            or 0
+        )
+        current_height = (
+            _optional_default_int(
+                self.config_entry.options.get(CONF_DEFAULT_HEIGHT),
+                minimum=0,
+                maximum=900,
+            )
+            or 0
+        )
+        current_snapshot_fallback = bool(
+            self.config_entry.options.get(CONF_DEFAULT_SNAPSHOT_FALLBACK, True)
+        )
 
         if user_input is not None:
             raw_remote_url = str(
@@ -239,11 +287,55 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
             ).strip()
             remote_token = str(user_input.get(CONF_REMOTE_ACCESS_TOKEN, "")).strip()
             remote_url = raw_remote_url or (suggested_url if remote_token else "")
+            default_stream_type = str(
+                user_input.get(CONF_DEFAULT_STREAM_TYPE, STREAM_TYPE_AUTO)
+            ).strip()
+            default_position = str(
+                user_input.get(CONF_DEFAULT_POSITION, "top_right")
+            ).strip()
+            default_duration = _optional_default_int(
+                user_input.get(CONF_DEFAULT_DURATION_SECONDS),
+                minimum=0,
+                maximum=3600,
+            )
+            default_width = _optional_default_int(
+                user_input.get(CONF_DEFAULT_WIDTH),
+                minimum=0,
+                maximum=1600,
+            )
+            default_height = _optional_default_int(
+                user_input.get(CONF_DEFAULT_HEIGHT),
+                minimum=0,
+                maximum=900,
+            )
+            default_snapshot_fallback = bool(
+                user_input.get(CONF_DEFAULT_SNAPSHOT_FALLBACK, True)
+            )
 
             if bool(remote_url) != bool(remote_token):
                 errors["base"] = "remote_fields_required"
+            elif default_stream_type not in STREAM_TYPES:
+                errors[CONF_DEFAULT_STREAM_TYPE] = "invalid_default_stream_type"
+            elif default_position not in NOTIFICATION_POSITIONS:
+                errors[CONF_DEFAULT_POSITION] = "invalid_default_position"
+            elif default_duration is None:
+                errors[CONF_DEFAULT_DURATION_SECONDS] = "invalid_default_duration"
+            elif default_width is None:
+                errors[CONF_DEFAULT_WIDTH] = "invalid_default_overlay_size"
+            elif default_height is None:
+                errors[CONF_DEFAULT_HEIGHT] = "invalid_default_overlay_size"
             else:
-                options: dict[str, str] = {}
+                options: dict[str, Any] = {
+                    CONF_DEFAULT_STREAM_TYPE: default_stream_type,
+                    CONF_DEFAULT_POSITION: default_position,
+                    CONF_DEFAULT_SNAPSHOT_FALLBACK: default_snapshot_fallback,
+                }
+                if default_duration > 0:
+                    options[CONF_DEFAULT_DURATION_SECONDS] = default_duration
+                if default_width > 0:
+                    options[CONF_DEFAULT_WIDTH] = default_width
+                if default_height > 0:
+                    options[CONF_DEFAULT_HEIGHT] = default_height
                 if remote_url and remote_token:
                     options[CONF_REMOTE_HOME_ASSISTANT_URL] = remote_url
                     options[CONF_REMOTE_ACCESS_TOKEN] = remote_token
@@ -262,11 +354,46 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
 
             current_url = raw_remote_url or suggested_url
             current_token = remote_token
+            if default_stream_type in STREAM_TYPES:
+                current_stream_type = default_stream_type
+            if default_position in NOTIFICATION_POSITIONS:
+                current_position = default_position
+            if default_duration is not None:
+                current_duration = default_duration
+            if default_width is not None:
+                current_width = default_width
+            if default_height is not None:
+                current_height = default_height
+            current_snapshot_fallback = default_snapshot_fallback
 
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema(
                 {
+                    vol.Optional(
+                        CONF_DEFAULT_STREAM_TYPE,
+                        default=current_stream_type,
+                    ): vol.Any(*STREAM_TYPES),
+                    vol.Optional(
+                        CONF_DEFAULT_DURATION_SECONDS,
+                        default=current_duration,
+                    ): int,
+                    vol.Optional(
+                        CONF_DEFAULT_POSITION,
+                        default=current_position,
+                    ): vol.Any(*NOTIFICATION_POSITIONS),
+                    vol.Optional(
+                        CONF_DEFAULT_SNAPSHOT_FALLBACK,
+                        default=current_snapshot_fallback,
+                    ): bool,
+                    vol.Optional(
+                        CONF_DEFAULT_WIDTH,
+                        default=current_width,
+                    ): int,
+                    vol.Optional(
+                        CONF_DEFAULT_HEIGHT,
+                        default=current_height,
+                    ): int,
                     vol.Optional(
                         CONF_REMOTE_HOME_ASSISTANT_URL,
                         default=current_url,
@@ -282,6 +409,23 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
             },
             errors=errors,
         )
+
+
+def _optional_default_int(
+    value: Any,
+    *,
+    minimum: int,
+    maximum: int,
+) -> int | None:
+    """Return a stored numeric default, using 0 to mean no receiver default."""
+
+    try:
+        parsed_value = int(value or 0)
+    except (TypeError, ValueError):
+        return None
+    if not minimum <= parsed_value <= maximum:
+        return None
+    return parsed_value
 
 
 def _create_receiver_entry(

@@ -10,6 +10,12 @@ import pytest
 
 from custom_components.ha_tv_pip.client import ReceiverCapabilities, ShowCameraCommand
 from custom_components.ha_tv_pip.const import (
+    CONF_DEFAULT_DURATION_SECONDS,
+    CONF_DEFAULT_HEIGHT,
+    CONF_DEFAULT_POSITION,
+    CONF_DEFAULT_SNAPSHOT_FALLBACK,
+    CONF_DEFAULT_STREAM_TYPE,
+    CONF_DEFAULT_WIDTH,
     CONF_DEVICE_ID,
     CONF_HOST,
     CONF_NAME,
@@ -58,6 +64,7 @@ class FakeCall:
 class FakeEntry:
     entry_id: str
     data: dict[str, Any]
+    options: dict[str, Any] | None = None
 
 
 @dataclass
@@ -933,6 +940,283 @@ def test_show_camera_service_falls_back_to_local_http_when_remote_disconnected(
         "port": 8765,
         "token": "token",
         "url": "http://10.0.0.2:8123/api/hls/front-door",
+    }
+
+
+def test_show_camera_service_applies_receiver_defaults(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from custom_components.ha_tv_pip import services
+
+    captured: dict[str, Any] = {}
+
+    class FakeRemoteRegistry:
+        def is_connected(self, device_id: str) -> bool:
+            return False
+
+        async def async_send_show(
+            self,
+            *,
+            device_id: str,
+            command: ShowCameraCommand,
+        ) -> bool:
+            return False
+
+    async def fake_command(
+        hass: Any,
+        request: Any,
+        *,
+        title: str,
+        prefer_external: bool = False,
+        capabilities: ReceiverCapabilities | None = None,
+    ) -> ShowCameraCommand:
+        captured.update(
+            {
+                "duration_seconds": request.duration_seconds,
+                "height": request.height,
+                "position": request.position,
+                "snapshot_fallback": request.snapshot_fallback,
+                "stream_type": request.stream_type,
+                "width": request.width,
+            }
+        )
+        return ShowCameraCommand(
+            title=title,
+            url="http://camera",
+            duration_seconds=request.duration_seconds,
+            enter_pip=True,
+        )
+
+    async def fake_local_show(*args: Any, **kwargs: Any) -> None:
+        return None
+
+    monkeypatch.setattr(services, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(
+        services,
+        "_async_receiver_capabilities",
+        lambda receiver: asyncio.sleep(0, result=None),
+    )
+    monkeypatch.setattr(services, "_async_show_camera_command", fake_command)
+    monkeypatch.setattr(services, "async_show_camera", fake_local_show)
+
+    entry = FakeEntry(
+        entry_id="entry-1",
+        data={
+            CONF_DEVICE_ID: "device-1",
+            CONF_NAME: "Nursery TV",
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "token",
+        },
+        options={
+            CONF_DEFAULT_DURATION_SECONDS: 42,
+            CONF_DEFAULT_HEIGHT: 405,
+            CONF_DEFAULT_POSITION: "bottom_left",
+            CONF_DEFAULT_SNAPSHOT_FALLBACK: False,
+            CONF_DEFAULT_STREAM_TYPE: "mjpeg_first",
+            CONF_DEFAULT_WIDTH: 720,
+        },
+    )
+    hass = FakeHass(
+        entries=[entry],
+        states={"camera.front_door": FakeState({"friendly_name": "Front Door"})},
+    )
+
+    asyncio.run(
+        services.async_handle_show_camera(
+            hass,
+            FakeCall(data={ATTR_CAMERA_ENTITY: "camera.front_door"}),
+        )
+    )
+
+    assert captured == {
+        "duration_seconds": 42,
+        "height": 405,
+        "position": "bottom_left",
+        "snapshot_fallback": False,
+        "stream_type": "mjpeg_first",
+        "width": 720,
+    }
+
+
+def test_show_camera_service_keeps_explicit_values_over_receiver_defaults(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from custom_components.ha_tv_pip import services
+
+    captured: dict[str, Any] = {}
+
+    class FakeRemoteRegistry:
+        def is_connected(self, device_id: str) -> bool:
+            return False
+
+        async def async_send_show(
+            self,
+            *,
+            device_id: str,
+            command: ShowCameraCommand,
+        ) -> bool:
+            return False
+
+    async def fake_command(
+        hass: Any,
+        request: Any,
+        *,
+        title: str,
+        prefer_external: bool = False,
+        capabilities: ReceiverCapabilities | None = None,
+    ) -> ShowCameraCommand:
+        captured.update(
+            {
+                "duration_seconds": request.duration_seconds,
+                "height": request.height,
+                "position": request.position,
+                "snapshot_fallback": request.snapshot_fallback,
+                "stream_type": request.stream_type,
+                "width": request.width,
+            }
+        )
+        return ShowCameraCommand(
+            title=title,
+            url="http://camera",
+            duration_seconds=request.duration_seconds,
+            enter_pip=True,
+        )
+
+    async def fake_local_show(*args: Any, **kwargs: Any) -> None:
+        return None
+
+    monkeypatch.setattr(services, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(
+        services,
+        "_async_receiver_capabilities",
+        lambda receiver: asyncio.sleep(0, result=None),
+    )
+    monkeypatch.setattr(services, "_async_show_camera_command", fake_command)
+    monkeypatch.setattr(services, "async_show_camera", fake_local_show)
+
+    entry = FakeEntry(
+        entry_id="entry-1",
+        data={
+            CONF_DEVICE_ID: "device-1",
+            CONF_NAME: "Nursery TV",
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "token",
+        },
+        options={
+            CONF_DEFAULT_DURATION_SECONDS: 42,
+            CONF_DEFAULT_HEIGHT: 405,
+            CONF_DEFAULT_POSITION: "bottom_left",
+            CONF_DEFAULT_SNAPSHOT_FALLBACK: False,
+            CONF_DEFAULT_STREAM_TYPE: "mjpeg_first",
+            CONF_DEFAULT_WIDTH: 720,
+        },
+    )
+    hass = FakeHass(
+        entries=[entry],
+        states={"camera.front_door": FakeState({"friendly_name": "Front Door"})},
+    )
+
+    asyncio.run(
+        services.async_handle_show_camera(
+            hass,
+            FakeCall(
+                data={
+                    ATTR_CAMERA_ENTITY: "camera.front_door",
+                    ATTR_DURATION_SECONDS: 12,
+                    ATTR_HEIGHT: 360,
+                    ATTR_POSITION: "top_left",
+                    ATTR_SNAPSHOT_FALLBACK: True,
+                    ATTR_STREAM_TYPE: "hls",
+                    ATTR_WIDTH: 640,
+                }
+            ),
+        )
+    )
+
+    assert captured == {
+        "duration_seconds": 12,
+        "height": 360,
+        "position": "top_left",
+        "snapshot_fallback": True,
+        "stream_type": "hls",
+        "width": 640,
+    }
+
+
+def test_show_notification_service_applies_receiver_popup_defaults(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from custom_components.ha_tv_pip import services
+
+    sent: dict[str, Any] = {}
+
+    class FakeRemoteRegistry:
+        def is_connected(self, device_id: str) -> bool:
+            return False
+
+        async def async_send_show(
+            self,
+            *,
+            device_id: str,
+            command: ShowCameraCommand,
+        ) -> bool:
+            return False
+
+    async def fake_capabilities(receiver: Any) -> ReceiverCapabilities:
+        return _capabilities()
+
+    async def fake_local_show(
+        host: str,
+        port: int,
+        *,
+        token: str,
+        command: ShowCameraCommand,
+    ) -> None:
+        sent.update(
+            {
+                "duration_seconds": command.duration_seconds,
+                "height": command.height,
+                "position": command.position,
+                "width": command.width,
+            }
+        )
+
+    monkeypatch.setattr(services, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(services, "_async_receiver_capabilities", fake_capabilities)
+    monkeypatch.setattr(services, "async_show_camera", fake_local_show)
+
+    entry = FakeEntry(
+        entry_id="entry-1",
+        data={
+            CONF_DEVICE_ID: "device-1",
+            CONF_NAME: "Nursery TV",
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "token",
+        },
+        options={
+            CONF_DEFAULT_DURATION_SECONDS: 20,
+            CONF_DEFAULT_HEIGHT: 240,
+            CONF_DEFAULT_POSITION: "bottom_right",
+            CONF_DEFAULT_WIDTH: 512,
+        },
+    )
+    hass = FakeHass(entries=[entry])
+
+    asyncio.run(
+        services.async_handle_show_notification(
+            hass,
+            FakeCall(data={ATTR_TITLE: "Doorbell"}),
+        )
+    )
+
+    assert sent == {
+        "duration_seconds": 20,
+        "height": 240,
+        "position": "bottom_right",
+        "width": 512,
     }
 
 

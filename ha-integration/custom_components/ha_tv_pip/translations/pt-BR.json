@@ -40,16 +40,26 @@
   "options": {
     "error": {
       "cannot_connect": "Não foi possível enviar as configurações do receptor remoto para o receptor Android TV. Verifique se a TV está online e pareada.",
-      "remote_fields_required": "Insira a URL externa do Home Assistant e o token de acesso, ou deixe ambos em branco para desativar o modo de receptor remoto."
+      "remote_fields_required": "Insira a URL externa do Home Assistant e o token de acesso, ou deixe ambos em branco para desativar o modo de receptor remoto.",
+      "invalid_default_duration": "Default duration must be 0 or between 1 and 3600 seconds.",
+      "invalid_default_overlay_size": "Default width and height must be 0 or within the supported overlay size range.",
+      "invalid_default_position": "Choose a supported popup position.",
+      "invalid_default_stream_type": "Choose a supported stream strategy."
     },
     "step": {
       "init": {
         "data": {
           "remote_access_token": "Token de acesso de longa duração do Home Assistant",
-          "remote_home_assistant_url": "URL externa do Home Assistant"
+          "remote_home_assistant_url": "URL externa do Home Assistant",
+          "default_duration_seconds": "Default duration",
+          "default_height": "Default height",
+          "default_position": "Default position",
+          "default_snapshot_fallback": "Snapshot fallback by default",
+          "default_stream_type": "Preferred stream strategy",
+          "default_width": "Default width"
         },
-        "description": "Configure o modo de receptor remoto para esta TV. O Home Assistant enviará estas configurações ao receptor pareado pela conexão local. URL externa sugerida: {suggested_url}",
-        "title": "Configuração do receptor remoto"
+        "description": "Set receiver defaults used when an action does not provide its own value. Use 0 for duration, width, or height to keep the built-in service default. Remote receiver settings are sent to the paired TV over the local connection. Suggested external URL: {suggested_url}",
+        "title": "Receiver defaults and remote setup"
       }
     }
   },

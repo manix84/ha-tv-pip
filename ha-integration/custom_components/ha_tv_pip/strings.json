@@ -40,16 +40,26 @@
   "options": {
     "error": {
       "cannot_connect": "Could not send the remote receiver settings to the Android TV receiver. Check that the TV is online and paired.",
+      "invalid_default_duration": "Default duration must be 0 or between 1 and 3600 seconds.",
+      "invalid_default_overlay_size": "Default width and height must be 0 or within the supported overlay size range.",
+      "invalid_default_position": "Choose a supported popup position.",
+      "invalid_default_stream_type": "Choose a supported stream strategy.",
       "remote_fields_required": "Enter both the Home Assistant external URL and access token, or leave both blank to disable remote receiver mode."
     },
     "step": {
       "init": {
         "data": {
+          "default_duration_seconds": "Default duration",
+          "default_height": "Default height",
+          "default_position": "Default position",
+          "default_snapshot_fallback": "Snapshot fallback by default",
+          "default_stream_type": "Preferred stream strategy",
+          "default_width": "Default width",
           "remote_access_token": "Home Assistant long-lived access token",
           "remote_home_assistant_url": "Home Assistant external URL"
         },
-        "description": "Configure remote receiver mode for this TV. Home Assistant will send these settings to the paired receiver over the local connection. Suggested external URL: {suggested_url}",
-        "title": "Remote receiver setup"
+        "description": "Set receiver defaults used when an action does not provide its own value. Use 0 for duration, width, or height to keep the built-in service default. Remote receiver settings are sent to the paired TV over the local connection. Suggested external URL: {suggested_url}",
+        "title": "Receiver defaults and remote setup"
       }
     }
   },

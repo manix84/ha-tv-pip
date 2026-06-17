@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING, Any
 from urllib.parse import quote, urlencode, urljoin, urlparse
 
@@ -16,6 +16,12 @@ from .client import (
     async_show_camera,
 )
 from .const import (
+    CONF_DEFAULT_DURATION_SECONDS,
+    CONF_DEFAULT_HEIGHT,
+    CONF_DEFAULT_POSITION,
+    CONF_DEFAULT_SNAPSHOT_FALLBACK,
+    CONF_DEFAULT_STREAM_TYPE,
+    CONF_DEFAULT_WIDTH,
     CONF_DEVICE_ID,
     CONF_HOST,
     CONF_NAME,
@@ -156,6 +162,7 @@ class ReceiverEntry:
     host: str
     port: int
     token: str
+    options: dict[str, Any]
 
 
 @dataclass(frozen=True)
@@ -180,6 +187,12 @@ class ShowCameraRequest:
     stream_type: str
     title: str | None
     device_ids: tuple[str, ...]
+    duration_explicit: bool = False
+    position_explicit: bool = False
+    snapshot_fallback_explicit: bool = False
+    stream_type_explicit: bool = False
+    width_explicit: bool = False
+    height_explicit: bool = False
 
 
 @dataclass(frozen=True)
@@ -199,6 +212,10 @@ class ShowNotificationRequest:
     width: int | None
     height: int | None
     device_ids: tuple[str, ...]
+    duration_explicit: bool = False
+    position_explicit: bool = False
+    width_explicit: bool = False
+    height_explicit: bool = False
 
 
 class ServiceValidationError(HomeAssistantError):
@@ -232,9 +249,7 @@ async def async_register_services(hass: Any) -> None:
         vol.Optional(ATTR_ENTER_PIP, default=True): bool,
         vol.Optional(ATTR_TITLE): str,
         vol.Optional(ATTR_MESSAGE): str,
-        vol.Optional(ATTR_POSITION, default="top_right"): vol.Any(
-            *NOTIFICATION_POSITIONS
-        ),
+        vol.Optional(ATTR_POSITION): vol.Any(*NOTIFICATION_POSITIONS),
         vol.Optional(
             ATTR_TITLE_COLOR,
             default=DEFAULT_NOTIFICATION_TITLE_COLOR,
@@ -269,12 +284,10 @@ async def async_register_services(hass: Any) -> None:
         {
             **base_schema,
             vol.Optional(ATTR_SNAPSHOT_CAMERA_ENTITY): cv.entity_id,
-            vol.Optional(ATTR_SNAPSHOT_FALLBACK, default=True): bool,
+            vol.Optional(ATTR_SNAPSHOT_FALLBACK): bool,
             vol.Optional(ATTR_STREAM_CAMERA_ENTITY): cv.entity_id,
-            vol.Optional(ATTR_STREAM_TYPE, default=STREAM_TYPE_AUTO): vol.Any(
-                *STREAM_TYPES
-            ),
-            vol.Optional(ATTR_DURATION_SECONDS, default=30): vol.All(
+            vol.Optional(ATTR_STREAM_TYPE): vol.Any(*STREAM_TYPES),
+            vol.Optional(ATTR_DURATION_SECONDS): vol.All(
                 vol.Coerce(int),
                 vol.Range(min=1, max=3600),
             ),
@@ -283,7 +296,7 @@ async def async_register_services(hass: Any) -> None:
     snapshot_schema = vol.Schema(
         {
             **base_schema,
-            vol.Optional(ATTR_DURATION_SECONDS, default=10): vol.All(
+            vol.Optional(ATTR_DURATION_SECONDS): vol.All(
                 vol.Coerce(int),
                 vol.Range(min=1, max=3600),
             ),
@@ -294,14 +307,12 @@ async def async_register_services(hass: Any) -> None:
             **target_schema,
             vol.Optional(ATTR_TITLE, default=DEFAULT_NOTIFICATION_TITLE): str,
             vol.Optional(ATTR_MESSAGE): str,
-            vol.Optional(ATTR_DURATION_SECONDS, default=15): vol.All(
+            vol.Optional(ATTR_DURATION_SECONDS): vol.All(
                 vol.Coerce(int),
                 vol.Range(min=1, max=3600),
             ),
             vol.Optional(ATTR_ENTER_PIP, default=True): bool,
-            vol.Optional(ATTR_POSITION, default="top_right"): vol.Any(
-                *NOTIFICATION_POSITIONS
-            ),
+            vol.Optional(ATTR_POSITION): vol.Any(*NOTIFICATION_POSITIONS),
             vol.Optional(
                 ATTR_TITLE_COLOR,
                 default=DEFAULT_NOTIFICATION_TITLE_COLOR,
@@ -375,6 +386,7 @@ async def async_handle_show_camera(hass: Any, call: Any) -> None:
     if request.stream_camera_entity is not None:
         _validate_camera_entity(hass, request.stream_camera_entity)
     receiver = _resolve_receiver(hass, request)
+    request = _apply_camera_defaults(request, receiver, duration_fallback=30)
     title = request.title or _camera_title(hass, request.camera_entity)
     remote = remote_registry(hass)
     prefer_external = remote.is_connected(receiver.device_id)
@@ -415,6 +427,7 @@ async def async_handle_show_snapshot(hass: Any, call: Any) -> None:
     request = _request_from_call(call)
     _validate_camera_entity(hass, request.camera_entity)
     receiver = _resolve_receiver(hass, request)
+    request = _apply_camera_defaults(request, receiver, duration_fallback=10)
     remote = remote_registry(hass)
     prefer_external = remote.is_connected(receiver.device_id)
     capabilities = await _async_receiver_capabilities(receiver)
@@ -459,6 +472,7 @@ async def async_handle_show_notification(hass: Any, call: Any) -> None:
 
     request = _notification_request_from_call(call)
     receiver = _resolve_receiver(hass, request)
+    request = _apply_notification_defaults(request, receiver)
     remote = remote_registry(hass)
     prefer_external = remote.is_connected(receiver.device_id)
     capabilities = await _async_receiver_capabilities(receiver)
@@ -547,6 +561,12 @@ def _request_from_call(call: Any) -> ShowCameraRequest:
         stream_camera_entity=_optional_text(data.get(ATTR_STREAM_CAMERA_ENTITY)),
         stream_type=stream_type,
         device_ids=device_ids,
+        duration_explicit=ATTR_DURATION_SECONDS in data,
+        position_explicit=ATTR_POSITION in data,
+        snapshot_fallback_explicit=ATTR_SNAPSHOT_FALLBACK in data,
+        stream_type_explicit=ATTR_STREAM_TYPE in data,
+        width_explicit=ATTR_WIDTH in data,
+        height_explicit=ATTR_HEIGHT in data,
     )
 
 
@@ -583,6 +603,10 @@ def _notification_request_from_call(call: Any) -> ShowNotificationRequest:
         width=_optional_overlay_dimension(data.get(ATTR_WIDTH), 240, 1600),
         height=_optional_overlay_dimension(data.get(ATTR_HEIGHT), 120, 900),
         device_ids=device_ids,
+        duration_explicit=ATTR_DURATION_SECONDS in data,
+        position_explicit=ATTR_POSITION in data,
+        width_explicit=ATTR_WIDTH in data,
+        height_explicit=ATTR_HEIGHT in data,
     )
 
 
@@ -621,6 +645,7 @@ def _resolve_receiver(
         host=str(data[CONF_HOST]),
         port=int(data[CONF_PORT]),
         token=token,
+        options=dict(getattr(entry, "options", {}) or {}),
     )
 
 
@@ -630,6 +655,111 @@ def _configured_entries(hass: Any) -> list[Any]:
         data_entries = getattr(hass, "data", {}).get(DOMAIN, {}).get("entries", {})
         return list(data_entries.values())
     return list(config_entries.async_entries(DOMAIN))
+
+
+def _apply_camera_defaults(
+    request: ShowCameraRequest,
+    receiver: ReceiverEntry,
+    *,
+    duration_fallback: int,
+) -> ShowCameraRequest:
+    """Apply receiver-level defaults without overriding explicit service data."""
+
+    updates: dict[str, Any] = {}
+    duration = _receiver_default_int(
+        receiver.options,
+        CONF_DEFAULT_DURATION_SECONDS,
+        minimum=1,
+        maximum=3600,
+    )
+    width = _receiver_default_int(
+        receiver.options,
+        CONF_DEFAULT_WIDTH,
+        minimum=240,
+        maximum=1600,
+    )
+    height = _receiver_default_int(
+        receiver.options,
+        CONF_DEFAULT_HEIGHT,
+        minimum=120,
+        maximum=900,
+    )
+    stream_type = str(receiver.options.get(CONF_DEFAULT_STREAM_TYPE, "")).strip()
+    position = str(receiver.options.get(CONF_DEFAULT_POSITION, "")).strip()
+
+    if not request.duration_explicit:
+        updates["duration_seconds"] = duration or duration_fallback
+    if not request.position_explicit and position in NOTIFICATION_POSITIONS:
+        updates["position"] = position
+    if not request.snapshot_fallback_explicit and (
+        CONF_DEFAULT_SNAPSHOT_FALLBACK in receiver.options
+    ):
+        updates["snapshot_fallback"] = bool(
+            receiver.options[CONF_DEFAULT_SNAPSHOT_FALLBACK]
+        )
+    if not request.stream_type_explicit and stream_type in STREAM_TYPES:
+        updates["stream_type"] = stream_type
+    if not request.width_explicit and width is not None:
+        updates["width"] = width
+    if not request.height_explicit and height is not None:
+        updates["height"] = height
+
+    return replace(request, **updates) if updates else request
+
+
+def _apply_notification_defaults(
+    request: ShowNotificationRequest,
+    receiver: ReceiverEntry,
+) -> ShowNotificationRequest:
+    """Apply receiver-level popup defaults to notification service calls."""
+
+    updates: dict[str, Any] = {}
+    duration = _receiver_default_int(
+        receiver.options,
+        CONF_DEFAULT_DURATION_SECONDS,
+        minimum=1,
+        maximum=3600,
+    )
+    width = _receiver_default_int(
+        receiver.options,
+        CONF_DEFAULT_WIDTH,
+        minimum=240,
+        maximum=1600,
+    )
+    height = _receiver_default_int(
+        receiver.options,
+        CONF_DEFAULT_HEIGHT,
+        minimum=120,
+        maximum=900,
+    )
+    position = str(receiver.options.get(CONF_DEFAULT_POSITION, "")).strip()
+
+    if not request.duration_explicit:
+        updates["duration_seconds"] = duration or 15
+    if not request.position_explicit and position in NOTIFICATION_POSITIONS:
+        updates["position"] = position
+    if not request.width_explicit and width is not None:
+        updates["width"] = width
+    if not request.height_explicit and height is not None:
+        updates["height"] = height
+
+    return replace(request, **updates) if updates else request
+
+
+def _receiver_default_int(
+    options: dict[str, Any],
+    key: str,
+    *,
+    minimum: int,
+    maximum: int,
+) -> int | None:
+    try:
+        value = int(options.get(key, 0) or 0)
+    except (TypeError, ValueError):
+        return None
+    if not minimum <= value <= maximum:
+        return None
+    return value
 
 
 def _entries_for_devices(

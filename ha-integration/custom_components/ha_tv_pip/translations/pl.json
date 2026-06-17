@@ -40,16 +40,26 @@
   "options": {
     "error": {
       "cannot_connect": "Nie można wysłać ustawień odbiornika zdalnego do odbiornika Android TV. Sprawdź, czy telewizor jest online i sparowany.",
-      "remote_fields_required": "Wpisz zewnętrzny adres URL Home Assistant oraz token dostępu albo pozostaw oba pola puste, aby wyłączyć tryb odbiornika zdalnego."
+      "remote_fields_required": "Wpisz zewnętrzny adres URL Home Assistant oraz token dostępu albo pozostaw oba pola puste, aby wyłączyć tryb odbiornika zdalnego.",
+      "invalid_default_duration": "Default duration must be 0 or between 1 and 3600 seconds.",
+      "invalid_default_overlay_size": "Default width and height must be 0 or within the supported overlay size range.",
+      "invalid_default_position": "Choose a supported popup position.",
+      "invalid_default_stream_type": "Choose a supported stream strategy."
     },
     "step": {
       "init": {
         "data": {
           "remote_access_token": "Długoterminowy token dostępu Home Assistant",
-          "remote_home_assistant_url": "Zewnętrzny adres URL Home Assistant"
+          "remote_home_assistant_url": "Zewnętrzny adres URL Home Assistant",
+          "default_duration_seconds": "Default duration",
+          "default_height": "Default height",
+          "default_position": "Default position",
+          "default_snapshot_fallback": "Snapshot fallback by default",
+          "default_stream_type": "Preferred stream strategy",
+          "default_width": "Default width"
         },
-        "description": "Skonfiguruj tryb odbiornika zdalnego dla tego telewizora. Home Assistant wyśle te ustawienia do sparowanego odbiornika przez połączenie lokalne. Sugerowany zewnętrzny adres URL: {suggested_url}",
-        "title": "Konfiguracja odbiornika zdalnego"
+        "description": "Set receiver defaults used when an action does not provide its own value. Use 0 for duration, width, or height to keep the built-in service default. Remote receiver settings are sent to the paired TV over the local connection. Suggested external URL: {suggested_url}",
+        "title": "Receiver defaults and remote setup"
       }
     }
   },

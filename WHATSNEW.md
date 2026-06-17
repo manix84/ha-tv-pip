@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.15.0 - Receiver Action Defaults ⚙️
+
+- Added Home Assistant receiver options for preferred stream strategy, default duration, popup position, snapshot fallback, width, and height ⚙️
+- Made `ha_tv_pip.show_camera`, `ha_tv_pip.show_snapshot`, and `ha_tv_pip.show_notification` use receiver defaults only when the action does not provide its own value 🏠
+- Updated HA action metadata so UI-mode actions can omit fields and rely on receiver defaults cleanly 🧭
+
 ## 1.14.0 - Receiver Visibility Entities 🧰
 
 - Added focused Home Assistant sensors for active display mode, active stream type, last receiver error, and receiver app version 🔎

@@ -132,6 +132,18 @@ Diagnostics:
 - Config entry diagnostics redact pairing tokens and active stream URLs.
 - Use diagnostics when reporting setup, pairing, stream compatibility, or remote receiver issues.
 
+## Receiver Defaults ⚙️
+
+Each receiver has configurable defaults in the Home Assistant integration options. These defaults are used only when an action does not provide its own value:
+
+- Preferred stream strategy: `auto`, `hls`, `mjpeg`, `mjpeg_first`, or `snapshot`.
+- Default duration in seconds.
+- Default popup position: `top_right`, `top_left`, `bottom_right`, or `bottom_left`.
+- Snapshot fallback default for camera streams.
+- Default popup width and height in pixels.
+
+Use `0` for duration, width, or height to keep the built-in service defaults. Explicit service data always wins, so one automation can still override the receiver defaults when needed.
+
 ## Camera Service 📹
 
 ```yaml
@@ -150,7 +162,7 @@ data:
   position: top_right
 ```
 
-The service defaults to `stream_type: auto`, which checks the receiver's reported capabilities, resolves an HLS stream URL through Home Assistant's camera stream API when supported, and sends it to the paired receiver with the stored bearer token. If HLS is not supported or Home Assistant cannot produce an HLS stream in automatic mode, the integration tries Home Assistant's MJPEG camera proxy stream before falling back to a snapshot command. When HLS URL resolution succeeds and the receiver supports playable fallbacks, automatic mode also sends an optional MJPEG fallback URL so the Android overlay can switch streams if the receiver later rejects HLS playback. Advanced users can force `stream_type: hls`, force `stream_type: mjpeg`, prefer MJPEG with fallback using `stream_type: mjpeg_first`, or force `stream_type: snapshot`.
+The service defaults to the receiver's preferred stream strategy, or `stream_type: auto` when no receiver default is configured. Automatic mode checks the receiver's reported capabilities, resolves an HLS stream URL through Home Assistant's camera stream API when supported, and sends it to the paired receiver with the stored bearer token. If HLS is not supported or Home Assistant cannot produce an HLS stream in automatic mode, the integration tries Home Assistant's MJPEG camera proxy stream before falling back to a snapshot command. When HLS URL resolution succeeds and the receiver supports playable fallbacks, automatic mode also sends an optional MJPEG fallback URL so the Android overlay can switch streams if the receiver later rejects HLS playback. Advanced users can force `stream_type: hls`, force `stream_type: mjpeg`, prefer MJPEG with fallback using `stream_type: mjpeg_first`, or force `stream_type: snapshot`.
 `stream_type: mjpeg` uses Home Assistant's camera proxy stream endpoint and the receiver's overlay renderer. It is useful when a camera exposes an MJPEG stream that is more reliable on Android TV than its HLS profile. Use `stream_type: mjpeg_first` when MJPEG usually works best but HLS should still be tried before falling back to a snapshot.
 `stream_camera_entity` is optional and defaults to `camera_entity`; set it when a lower-resolution, H.264, or MJPEG camera entity is more reliable for live playback on Android TV. When `snapshot_fallback` is enabled, the integration also sends a snapshot preview so the receiver can show a still image while the video stream loads. `snapshot_camera_entity` is optional and defaults to `camera_entity`; set it when a separate camera entity provides a better still image or substream preview.
 `title`, `message`, and the styling fields are optional; when either `title` or `message` is present, the receiver renders the text below the camera or snapshot inside the same rounded glass popup. Width and height can be used by themselves to resize the media popup without showing a text footer.
@@ -193,7 +205,7 @@ data:
   height: 240
 ```
 
-The service sends a styled text notification to the paired receiver as `streamType: notification`. It is useful for alert-style messages that do not need a camera stream or snapshot. Position values are `top_right`, `top_left`, `bottom_right`, and `bottom_left`; colors must be six-digit or alpha hex values. Optional `width` and `height` values are pixels; text-only notifications default to `512px` wide and content height, while media popups default to `640x360`. Notifications use rounded glass-style containers on the TV.
+The service sends a styled text notification to the paired receiver as `streamType: notification`. It is useful for alert-style messages that do not need a camera stream or snapshot. Position values are `top_right`, `top_left`, `bottom_right`, and `bottom_left`; colors must be six-digit or alpha hex values. Optional `width` and `height` values are pixels; when omitted, the receiver defaults are used first, then text-only notifications default to `512px` wide and content height while media popups default to `640x360`. Notifications use rounded glass-style containers on the TV.
 
 ## Remote Receiver Mode 🌍
 
