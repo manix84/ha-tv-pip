@@ -8,7 +8,13 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 from urllib.parse import quote, urlencode, urljoin, urlparse
 
-from .client import ReceiverClientError, ShowCameraCommand, async_show_camera
+from .client import (
+    ReceiverCapabilities,
+    ReceiverClientError,
+    ShowCameraCommand,
+    async_get_receiver_status,
+    async_show_camera,
+)
 from .const import (
     CONF_DEVICE_ID,
     CONF_HOST,
@@ -104,6 +110,9 @@ ERROR_MESSAGES = {
     ),
     "invalid_stream_type": (
         "Stream type must be auto, hls, mjpeg, mjpeg_first, or snapshot."
+    ),
+    "receiver_capability_unavailable": (
+        "The selected receiver does not report support for the requested feature."
     ),
     "missing_camera_entity": "A camera entity is required.",
     "multiple_receivers": (
@@ -369,11 +378,14 @@ async def async_handle_show_camera(hass: Any, call: Any) -> None:
     title = request.title or _camera_title(hass, request.camera_entity)
     remote = remote_registry(hass)
     prefer_external = remote.is_connected(receiver.device_id)
+    capabilities = await _async_receiver_capabilities(receiver)
+    _validate_camera_capabilities(request, capabilities)
     command = await _async_show_camera_command(
         hass,
         request,
         title=title,
         prefer_external=prefer_external,
+        capabilities=capabilities,
     )
     _LOGGER.info(
         "Sending camera %s to receiver %s using %s transport and %s stream",
@@ -405,6 +417,8 @@ async def async_handle_show_snapshot(hass: Any, call: Any) -> None:
     receiver = _resolve_receiver(hass, request)
     remote = remote_registry(hass)
     prefer_external = remote.is_connected(receiver.device_id)
+    capabilities = await _async_receiver_capabilities(receiver)
+    _validate_stream_capability(capabilities, STREAM_TYPE_SNAPSHOT)
     snapshot_url = _camera_snapshot_url(
         hass,
         request.camera_entity,
@@ -447,6 +461,8 @@ async def async_handle_show_notification(hass: Any, call: Any) -> None:
     receiver = _resolve_receiver(hass, request)
     remote = remote_registry(hass)
     prefer_external = remote.is_connected(receiver.device_id)
+    capabilities = await _async_receiver_capabilities(receiver)
+    _validate_notification_capabilities(capabilities)
     _LOGGER.info(
         "Sending notification to receiver %s using %s transport",
         receiver.name,
@@ -665,8 +681,10 @@ async def _async_show_camera_command(
     *,
     title: str,
     prefer_external: bool = False,
+    capabilities: ReceiverCapabilities | None = None,
 ) -> ShowCameraCommand:
     if request.stream_type == STREAM_TYPE_SNAPSHOT:
+        _validate_stream_capability(capabilities, STREAM_TYPE_SNAPSHOT)
         return ShowCameraCommand(
             title=title,
             url=_camera_snapshot_url(
@@ -686,7 +704,19 @@ async def _async_show_camera_command(
         request,
         prefer_external=prefer_external,
     )
-    if request.stream_type in (STREAM_TYPE_MJPEG, STREAM_TYPE_MJPEG_FIRST):
+    supports_mjpeg = _supports_stream(capabilities, STREAM_TYPE_MJPEG)
+    supports_hls = _supports_stream(capabilities, STREAM_TYPE_HLS)
+    supports_snapshot = _supports_stream(capabilities, STREAM_TYPE_SNAPSHOT)
+
+    if request.stream_type == STREAM_TYPE_MJPEG:
+        _validate_stream_capability(capabilities, STREAM_TYPE_MJPEG)
+
+    if request.stream_type == STREAM_TYPE_HLS:
+        _validate_stream_capability(capabilities, STREAM_TYPE_HLS)
+
+    if request.stream_type in (STREAM_TYPE_MJPEG, STREAM_TYPE_MJPEG_FIRST) and (
+        supports_mjpeg or capabilities is None
+    ):
         try:
             return _mjpeg_show_camera_command(
                 hass,
@@ -709,8 +739,15 @@ async def _async_show_camera_command(
             )
 
     try:
+        if request.stream_type == STREAM_TYPE_AUTO and not supports_hls:
+            raise ServiceValidationError("camera_stream_unavailable")
+
         fallback_url = None
-        if request.stream_type == STREAM_TYPE_AUTO:
+        if (
+            request.stream_type == STREAM_TYPE_AUTO
+            and supports_mjpeg
+            and _supports_playable_fallback(capabilities)
+        ):
             fallback_url = _optional_camera_mjpeg_stream_url(
                 hass,
                 stream_entity,
@@ -738,7 +775,7 @@ async def _async_show_camera_command(
         ):
             raise
 
-        if request.stream_type != STREAM_TYPE_MJPEG_FIRST:
+        if request.stream_type != STREAM_TYPE_MJPEG_FIRST and supports_mjpeg:
             try:
                 _LOGGER.warning(
                     "Falling back to MJPEG for %s because HLS stream "
@@ -758,8 +795,11 @@ async def _async_show_camera_command(
                 if mjpeg_error.code != "camera_mjpeg_unavailable":
                     raise
 
+        if not supports_snapshot:
+            raise
+
         _LOGGER.warning(
-            "Falling back to snapshot for %s because HLS and MJPEG failed.",
+            "Falling back to snapshot for %s because compatible video streams failed.",
             stream_entity,
         )
         return ShowCameraCommand(
@@ -968,6 +1008,82 @@ def _optional_camera_snapshot_url(
             error,
         )
         return None
+
+
+async def _async_receiver_capabilities(
+    receiver: ReceiverEntry,
+) -> ReceiverCapabilities | None:
+    try:
+        status = await async_get_receiver_status(receiver.host, receiver.port)
+    except ReceiverClientError as error:
+        _LOGGER.debug(
+            "Could not fetch receiver capabilities for %s: %s",
+            receiver.name,
+            error,
+        )
+        return None
+
+    return status.capabilities
+
+
+def _validate_camera_capabilities(
+    request: ShowCameraRequest,
+    capabilities: ReceiverCapabilities | None,
+) -> None:
+    if capabilities is None:
+        return
+
+    if request.stream_type == STREAM_TYPE_MJPEG_FIRST:
+        if not any(
+            _supports_stream(capabilities, stream_type)
+            for stream_type in (
+                STREAM_TYPE_MJPEG,
+                STREAM_TYPE_HLS,
+                STREAM_TYPE_SNAPSHOT,
+            )
+        ):
+            raise ServiceValidationError("receiver_capability_unavailable")
+    elif request.stream_type != STREAM_TYPE_AUTO:
+        _validate_stream_capability(capabilities, request.stream_type)
+    elif not any(
+        _supports_stream(capabilities, stream_type)
+        for stream_type in (STREAM_TYPE_HLS, STREAM_TYPE_MJPEG, STREAM_TYPE_SNAPSHOT)
+    ):
+        raise ServiceValidationError("receiver_capability_unavailable")
+
+    if _presentation_payload(request) and not capabilities.media_with_notification_text:
+        raise ServiceValidationError("receiver_capability_unavailable")
+
+
+def _validate_notification_capabilities(
+    capabilities: ReceiverCapabilities | None,
+) -> None:
+    _validate_stream_capability(capabilities, STREAM_TYPE_NOTIFICATION)
+    if capabilities is None:
+        return
+    if not capabilities.styled_notifications:
+        raise ServiceValidationError("receiver_capability_unavailable")
+
+
+def _validate_stream_capability(
+    capabilities: ReceiverCapabilities | None,
+    stream_type: str,
+) -> None:
+    if not _supports_stream(capabilities, stream_type):
+        raise ServiceValidationError("receiver_capability_unavailable")
+
+
+def _supports_stream(
+    capabilities: ReceiverCapabilities | None,
+    stream_type: str,
+) -> bool:
+    if capabilities is None:
+        return True
+    return stream_type in capabilities.stream_types
+
+
+def _supports_playable_fallback(capabilities: ReceiverCapabilities | None) -> bool:
+    return capabilities is None or capabilities.playable_fallback
 
 
 def _tuple_value(value: Any) -> tuple[str, ...]:

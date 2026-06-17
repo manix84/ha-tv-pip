@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.14.0 - Capability-Aware Stream Selection 🧭
+
+- Used receiver-reported capabilities to reject unsupported forced stream, snapshot, notification, and media-text commands before sending them 🛡️
+- Updated automatic stream selection to skip unsupported receiver formats and only send playable fallback URLs when the receiver supports them 📺
+- Refreshed troubleshooting and promotional wording around receiver capability checks 📚
+
 ## 1.13.0 - Home Assistant Capability Parsing 🏠
 
 - Parsed Android receiver capability metadata into a typed Home Assistant status model 🧭

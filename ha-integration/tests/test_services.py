@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 
-from custom_components.ha_tv_pip.client import ShowCameraCommand
+from custom_components.ha_tv_pip.client import ReceiverCapabilities, ShowCameraCommand
 from custom_components.ha_tv_pip.const import (
     CONF_DEVICE_ID,
     CONF_HOST,
@@ -124,6 +124,29 @@ class FakeCameraModule(types.ModuleType):
         if self.stream_url == "raise":
             raise FakeHomeAssistantError("stream failed")
         return self.stream_url
+
+
+def _capabilities(
+    *,
+    stream_types: tuple[str, ...] = ("hls", "mjpeg", "snapshot", "notification"),
+    playable_fallback: bool = True,
+    styled_notifications: bool = True,
+    media_with_notification_text: bool = True,
+) -> ReceiverCapabilities:
+    return ReceiverCapabilities(
+        capabilities_version=1,
+        stream_types=stream_types,
+        positions=("top_right", "top_left", "bottom_right", "bottom_left"),
+        preview_image=True,
+        playable_fallback=playable_fallback,
+        native_picture_in_picture=True,
+        overlay_fallback=True,
+        styled_notifications=styled_notifications,
+        media_with_notification_text=media_with_notification_text,
+        launcher_management=True,
+        local_pairing=True,
+        remote_receiver_settings=True,
+    )
 
 
 @dataclass
@@ -765,8 +788,10 @@ def test_show_camera_service_prefers_connected_remote_receiver(
         *,
         title: str,
         prefer_external: bool = False,
+        capabilities: ReceiverCapabilities | None = None,
     ) -> ShowCameraCommand:
         sent["prefer_external"] = prefer_external
+        sent["capabilities"] = capabilities
         return ShowCameraCommand(
             title=title,
             url="https://home.example.test/api/hls/front-door",
@@ -779,6 +804,11 @@ def test_show_camera_service_prefers_connected_remote_receiver(
         raise AssertionError("local HTTP fallback should not be used")
 
     monkeypatch.setattr(services, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(
+        services,
+        "_async_receiver_capabilities",
+        lambda receiver: asyncio.sleep(0, result=None),
+    )
     monkeypatch.setattr(services, "_async_show_camera_command", fake_command)
     monkeypatch.setattr(services, "async_show_camera", fail_local_show)
 
@@ -806,6 +836,7 @@ def test_show_camera_service_prefers_connected_remote_receiver(
 
     assert sent == {
         "prefer_external": True,
+        "capabilities": None,
         "device_id": "device-1",
         "url": "https://home.example.test/api/hls/front-door",
         "preview_url": "https://home.example.test/api/camera_proxy/camera.front_door",
@@ -837,8 +868,10 @@ def test_show_camera_service_falls_back_to_local_http_when_remote_disconnected(
         *,
         title: str,
         prefer_external: bool = False,
+        capabilities: ReceiverCapabilities | None = None,
     ) -> ShowCameraCommand:
         sent["prefer_external"] = prefer_external
+        sent["capabilities"] = capabilities
         return ShowCameraCommand(
             title=title,
             url="http://10.0.0.2:8123/api/hls/front-door",
@@ -863,6 +896,11 @@ def test_show_camera_service_falls_back_to_local_http_when_remote_disconnected(
         )
 
     monkeypatch.setattr(services, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(
+        services,
+        "_async_receiver_capabilities",
+        lambda receiver: asyncio.sleep(0, result=None),
+    )
     monkeypatch.setattr(services, "_async_show_camera_command", fake_command)
     monkeypatch.setattr(services, "async_show_camera", fake_local_show)
 
@@ -890,11 +928,149 @@ def test_show_camera_service_falls_back_to_local_http_when_remote_disconnected(
 
     assert sent == {
         "prefer_external": False,
+        "capabilities": None,
         "host": "10.0.0.236",
         "port": 8765,
         "token": "token",
         "url": "http://10.0.0.2:8123/api/hls/front-door",
     }
+
+
+def test_show_snapshot_service_rejects_receiver_without_snapshot_capability(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from custom_components.ha_tv_pip import services
+
+    class FakeRemoteRegistry:
+        def is_connected(self, device_id: str) -> bool:
+            return False
+
+    async def fake_capabilities(receiver: Any) -> ReceiverCapabilities:
+        return _capabilities(stream_types=("hls", "mjpeg"))
+
+    async def fail_show(*args: Any, **kwargs: Any) -> None:
+        raise AssertionError("unsupported snapshot should not be sent")
+
+    monkeypatch.setattr(services, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(services, "_async_receiver_capabilities", fake_capabilities)
+    monkeypatch.setattr(services, "async_show_camera", fail_show)
+
+    entry = FakeEntry(
+        entry_id="entry-1",
+        data={
+            CONF_DEVICE_ID: "device-1",
+            CONF_NAME: "Nursery TV",
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "token",
+        },
+    )
+    hass = FakeHass(
+        entries=[entry],
+        states={"camera.front_door": FakeState({"access_token": "snapshot-token"})},
+    )
+
+    with pytest.raises(ServiceValidationError) as error:
+        asyncio.run(
+            services.async_handle_show_snapshot(
+                hass,
+                FakeCall(data={ATTR_CAMERA_ENTITY: "camera.front_door"}),
+            )
+        )
+
+    assert error.value.code == "receiver_capability_unavailable"
+
+
+def test_show_notification_service_rejects_receiver_without_notification_capability(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from custom_components.ha_tv_pip import services
+
+    class FakeRemoteRegistry:
+        def is_connected(self, device_id: str) -> bool:
+            return False
+
+    async def fake_capabilities(receiver: Any) -> ReceiverCapabilities:
+        return _capabilities(stream_types=("hls", "snapshot"))
+
+    async def fail_show(*args: Any, **kwargs: Any) -> None:
+        raise AssertionError("unsupported notification should not be sent")
+
+    monkeypatch.setattr(services, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(services, "_async_receiver_capabilities", fake_capabilities)
+    monkeypatch.setattr(services, "async_show_camera", fail_show)
+
+    entry = FakeEntry(
+        entry_id="entry-1",
+        data={
+            CONF_DEVICE_ID: "device-1",
+            CONF_NAME: "Nursery TV",
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "token",
+        },
+    )
+    hass = FakeHass(entries=[entry])
+
+    with pytest.raises(ServiceValidationError) as error:
+        asyncio.run(
+            services.async_handle_show_notification(
+                hass,
+                FakeCall(data={ATTR_TITLE: "Doorbell"}),
+            )
+        )
+
+    assert error.value.code == "receiver_capability_unavailable"
+
+
+def test_show_camera_service_rejects_media_text_when_receiver_lacks_capability(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from custom_components.ha_tv_pip import services
+
+    class FakeRemoteRegistry:
+        def is_connected(self, device_id: str) -> bool:
+            return False
+
+    async def fake_capabilities(receiver: Any) -> ReceiverCapabilities:
+        return _capabilities(media_with_notification_text=False)
+
+    async def fail_command(*args: Any, **kwargs: Any) -> ShowCameraCommand:
+        raise AssertionError("unsupported media text should not build a command")
+
+    monkeypatch.setattr(services, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(services, "_async_receiver_capabilities", fake_capabilities)
+    monkeypatch.setattr(services, "_async_show_camera_command", fail_command)
+
+    entry = FakeEntry(
+        entry_id="entry-1",
+        data={
+            CONF_DEVICE_ID: "device-1",
+            CONF_NAME: "Nursery TV",
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "token",
+        },
+    )
+    hass = FakeHass(
+        entries=[entry],
+        states={"camera.front_door": FakeState({"friendly_name": "Front Door"})},
+    )
+
+    with pytest.raises(ServiceValidationError) as error:
+        asyncio.run(
+            services.async_handle_show_camera(
+                hass,
+                FakeCall(
+                    data={
+                        ATTR_CAMERA_ENTITY: "camera.front_door",
+                        ATTR_TITLE: "Doorbell",
+                    }
+                ),
+            )
+        )
+
+    assert error.value.code == "receiver_capability_unavailable"
 
 
 def test_show_camera_command_can_force_snapshot(
@@ -1157,6 +1333,177 @@ def test_show_camera_command_auto_falls_back_to_snapshot_when_mjpeg_unavailable(
         "http://10.0.0.2:8123/api/camera_proxy/camera.front_door"
         "?token=snapshot-token"
     )
+
+
+def test_show_camera_command_rejects_forced_unsupported_receiver_stream(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.helpers.network",
+        FakeNetworkModule("homeassistant.helpers.network"),
+    )
+    hass = FakeHass(
+        entries=[],
+        states={"camera.front_door": FakeState({"access_token": "stream-token"})},
+    )
+
+    with pytest.raises(ServiceValidationError) as error:
+        asyncio.run(
+            _async_show_camera_command(
+                hass,
+                _request_from_call(
+                    FakeCall(
+                        data={
+                            ATTR_CAMERA_ENTITY: "camera.front_door",
+                            ATTR_STREAM_TYPE: "mjpeg",
+                        }
+                    )
+                ),
+                title="Front Door",
+                capabilities=_capabilities(stream_types=("hls", "snapshot")),
+            )
+        )
+
+    assert error.value.code == "receiver_capability_unavailable"
+
+
+def test_show_camera_command_auto_skips_unsupported_hls_for_mjpeg(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.helpers.network",
+        FakeNetworkModule("homeassistant.helpers.network"),
+    )
+    hass = FakeHass(
+        entries=[],
+        states={"camera.front_door": FakeState({"access_token": "stream-token"})},
+    )
+
+    command = asyncio.run(
+        _async_show_camera_command(
+            hass,
+            _request_from_call(
+                FakeCall(data={ATTR_CAMERA_ENTITY: "camera.front_door"})
+            ),
+            title="Front Door",
+            capabilities=_capabilities(stream_types=("mjpeg", "snapshot")),
+        )
+    )
+
+    assert command.stream_type == "mjpeg"
+    assert command.url == (
+        "http://10.0.0.2:8123/api/camera_proxy_stream/camera.front_door"
+        "?token=stream-token"
+    )
+
+
+def test_show_camera_command_auto_uses_snapshot_when_only_snapshot_supported(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.helpers.network",
+        FakeNetworkModule("homeassistant.helpers.network"),
+    )
+    hass = FakeHass(
+        entries=[],
+        states={"camera.front_door": FakeState({"access_token": "snapshot-token"})},
+    )
+
+    command = asyncio.run(
+        _async_show_camera_command(
+            hass,
+            _request_from_call(
+                FakeCall(data={ATTR_CAMERA_ENTITY: "camera.front_door"})
+            ),
+            title="Front Door",
+            capabilities=_capabilities(stream_types=("snapshot",)),
+        )
+    )
+
+    assert command.stream_type == "snapshot"
+    assert command.url == (
+        "http://10.0.0.2:8123/api/camera_proxy/camera.front_door"
+        "?token=snapshot-token"
+    )
+
+
+def test_show_camera_command_auto_omits_playable_fallback_when_unsupported(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    camera_module = FakeCameraModule("/api/hls/front-door")
+    monkeypatch.setitem(sys.modules, "homeassistant.components.camera", camera_module)
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.exceptions",
+        FakeExceptionsModule("homeassistant.exceptions"),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.helpers.network",
+        FakeNetworkModule("homeassistant.helpers.network"),
+    )
+    hass = FakeHass(
+        entries=[],
+        states={"camera.front_door": FakeState({"access_token": "stream-token"})},
+    )
+
+    command = asyncio.run(
+        _async_show_camera_command(
+            hass,
+            _request_from_call(
+                FakeCall(data={ATTR_CAMERA_ENTITY: "camera.front_door"})
+            ),
+            title="Front Door",
+            capabilities=_capabilities(playable_fallback=False),
+        )
+    )
+
+    assert command.stream_type == "hls"
+    assert command.fallback_url is None
+    assert command.fallback_stream_type is None
+
+
+def test_show_camera_command_mjpeg_first_skips_unsupported_mjpeg_for_hls(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    camera_module = FakeCameraModule("/api/hls/front-door")
+    monkeypatch.setitem(sys.modules, "homeassistant.components.camera", camera_module)
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.exceptions",
+        FakeExceptionsModule("homeassistant.exceptions"),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.helpers.network",
+        FakeNetworkModule("homeassistant.helpers.network"),
+    )
+    hass = FakeHass(
+        entries=[],
+        states={"camera.front_door": FakeState({"access_token": "snapshot-token"})},
+    )
+
+    command = asyncio.run(
+        _async_show_camera_command(
+            hass,
+            _request_from_call(
+                FakeCall(
+                    data={
+                        ATTR_CAMERA_ENTITY: "camera.front_door",
+                        ATTR_STREAM_TYPE: "mjpeg_first",
+                    }
+                )
+            ),
+            title="Front Door",
+            capabilities=_capabilities(stream_types=("hls", "snapshot")),
+        )
+    )
+
+    assert command.stream_type == "hls"
+    assert command.url == "http://10.0.0.2:8123/api/hls/front-door"
 
 
 def test_show_camera_command_forced_hls_does_not_fallback(

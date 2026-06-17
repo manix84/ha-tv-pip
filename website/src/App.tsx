@@ -270,6 +270,7 @@ function App() {
 
       <Section
         eyebrow={content.problem.eyebrow}
+        id="problem"
         title={content.problem.title}
       >
         <p className={styles.copy}>{content.problem.body}</p>
@@ -277,6 +278,7 @@ function App() {
 
       <Section
         eyebrow={content.solution.eyebrow}
+        id="solution"
         title={content.solution.title}
       >
         <div className={styles.solutionShowcase}>
@@ -296,6 +298,7 @@ function App() {
 
       <Section
         eyebrow={content.flow.eyebrow}
+        id="how-it-works"
         title={content.flow.title}
       >
         <div className={styles.flowShowcase}>
@@ -314,6 +317,7 @@ function App() {
 
       <Section
         eyebrow={content.featuresSection.eyebrow}
+        id="features"
         title={content.featuresSection.title}
       >
         <div className={styles.visualGrid}>
@@ -342,6 +346,7 @@ function App() {
 
       <Section
         eyebrow={content.currentStatus.eyebrow}
+        id="status"
         title={content.currentStatus.title}
       >
         <div className={styles.statusPanel}>
@@ -360,6 +365,7 @@ function App() {
 
       <Section
         eyebrow={content.roadmap.eyebrow}
+        id="roadmap"
         title={content.roadmap.title}
       >
         <ul className={styles.roadmap}>
@@ -369,7 +375,11 @@ function App() {
         </ul>
       </Section>
 
-      <Section eyebrow={content.example.eyebrow} title={content.example.title}>
+      <Section
+        eyebrow={content.example.eyebrow}
+        id="examples"
+        title={content.example.title}
+      >
         <div className={styles.exampleTabs}>
           <div
             aria-label={content.example.tabAriaLabel}
@@ -415,6 +425,7 @@ function App() {
 
       <Section
         eyebrow={content.faqSection.eyebrow}
+        id="faq"
         title={content.faqSection.title}
       >
         <div className={styles.faqGrid}>

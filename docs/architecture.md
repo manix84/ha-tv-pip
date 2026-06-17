@@ -417,7 +417,7 @@ Actual implementation order:
 ```
 
 The Home Assistant integration is responsible for selecting the most appropriate stream type.
-Future versions should understand receiver playback capabilities and camera stream profiles so unsupported main streams can fall back to a compatible profile, restreaming path, or transcoding path.
+The integration now reads receiver-reported capabilities before sending commands, so forced unsupported features can fail early with a service error and automatic stream selection can skip unsupported receiver formats. Future versions should also understand camera stream profiles so unsupported main streams can fall back to a compatible profile, restreaming path, or transcoding path.
 
 The Android TV app is responsible for rendering it.
 
