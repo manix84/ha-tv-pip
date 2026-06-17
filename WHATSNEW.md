@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.18.0 - Camera Result Diagnostics 🔎
+
+- Added a `Last Camera Result` receiver sensor showing the latest camera/snapshot command outcome without exposing stream URLs 🩺
+- Stored redacted command outcome diagnostics with requested stream type, final stream type, transport, fallback usage, size, and failure reason when available 🔐
+- Added clearer `ha_tv_pip.test_camera_stream` recommendation reasons, including when `auto`, `mjpeg_first`, HLS, MJPEG, or snapshot is the best next default 📹
+
 ## 1.17.0 - Receiver Compatibility Checks 🧩
 
 - Added a computed receiver compatibility summary for compatible, degraded, legacy, and incompatible receiver states 🧩

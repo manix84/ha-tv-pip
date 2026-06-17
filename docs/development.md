@@ -1125,6 +1125,10 @@ Per-camera defaults are stored through `ha_tv_pip.set_camera_defaults` and remov
 
 `ha_tv_pip.test_camera_stream` checks HLS, MJPEG, and snapshot URL availability for a camera/receiver pair. The test result is stored in config entry diagnostics without active stream URLs, so users can share compatibility data without exposing camera endpoints.
 
+The compatibility test includes `recommended_stream_type` and `recommendation_reason`. `auto` is recommended when HLS is available and the receiver can carry an MJPEG playable fallback. `mjpeg_first` is recommended when HLS and MJPEG are available but playable fallback is not, because it reduces receiver decoder risk while still allowing HLS fallback. HLS, MJPEG, or snapshot are recommended when only those paths are available.
+
+Real camera and snapshot actions store a redacted last result under the receiver. The `Last Camera Result` sensor and config entry diagnostics expose status, stage, requested stream type, final stream type, transport, fallback flags, size, and failure reason without storing stream URLs.
+
 Receiver/integration compatibility is also calculated from `/status` API and capability metadata. Current receivers should report `compatible`; older receivers without capability metadata are treated as `legacy` best-effort; receivers missing optional presentation, fallback, launcher, or remote settings support report `degraded`; receivers missing required API or display stream support report `incompatible`. These fields are exposed on the status sensor attributes and in diagnostics.
 
 When a receiver lacks media text footer support, Home Assistant drops optional title/message footer fields from camera and snapshot commands instead of failing the whole action. This keeps older receivers useful while still surfacing the missing feature in diagnostics.

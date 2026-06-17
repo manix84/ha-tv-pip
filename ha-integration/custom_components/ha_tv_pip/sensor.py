@@ -6,7 +6,9 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from .client import ReceiverClientError, ReceiverStatus, async_get_receiver_status
+from .const import DOMAIN
 from .entity import ReceiverEntity
+from .services import CAMERA_LAST_RESULT_KEY
 
 if TYPE_CHECKING:
 
@@ -33,6 +35,7 @@ async def async_setup_entry(hass: Any, entry: Any, async_add_entities: Any) -> N
             ReceiverStreamTypeSensor(entry),
             ReceiverLastErrorSensor(entry),
             ReceiverVersionSensor(entry),
+            ReceiverLastCameraResultSensor(hass, entry),
         ]
     )
 
@@ -121,6 +124,33 @@ class ReceiverVersionSensor(ReceiverPollingSensor):
 
     def _native_value(self, status: ReceiverStatus) -> str:
         return status.version or "unknown"
+
+
+class ReceiverLastCameraResultSensor(ReceiverEntity, SensorEntity):
+    """Last camera command result stored by the Home Assistant integration."""
+
+    def __init__(self, hass: Any, entry: Any) -> None:
+        super().__init__(entry, key="last_camera_result", name="Last Camera Result")
+        self.hass = hass
+        self._attr_native_value: str = "none"
+        self._attr_extra_state_attributes: dict[str, Any] = {}
+
+    async def async_update(self) -> None:
+        """Refresh the last stored camera action result."""
+
+        result = (
+            getattr(self.hass, "data", {})
+            .get(DOMAIN, {})
+            .get(CAMERA_LAST_RESULT_KEY, {})
+            .get(self.entry.entry_id, {})
+        )
+        if not isinstance(result, dict) or not result:
+            self._attr_native_value = "none"
+            self._attr_extra_state_attributes = {}
+            return
+
+        self._attr_native_value = str(result.get("status", "unknown"))
+        self._attr_extra_state_attributes = dict(result)
 
 
 def _status_attributes(status: ReceiverStatus) -> dict[str, Any]:

@@ -94,6 +94,7 @@ Each paired receiver creates:
 
 - Status sensor with playback state, receiver diagnostics, and parsed receiver capability metadata.
 - Focused sensors for active display mode, active stream type, last receiver error, and receiver app version.
+- Last Camera Result sensor with the latest redacted camera/snapshot command outcome.
 - Connected binary sensor based on the local `/status` endpoint.
 - Remote connected binary sensor for outbound remote receiver mode.
 
@@ -171,6 +172,10 @@ data:
 ```
 
 The compatibility test checks whether Home Assistant can resolve HLS, MJPEG, and snapshot URLs for the selected camera and receiver. It stores a non-sensitive last result in diagnostics, including available stream types and the recommended stream type. It does not store or expose camera URLs in the compatibility result.
+
+The result also includes `recommendation_reason`, which explains why the integration recommends `auto`, `mjpeg_first`, `hls`, `mjpeg`, or `snapshot`. For example, a receiver that supports playable fallback may prefer `auto`, while a receiver without playable fallback can recommend `mjpeg_first` when both HLS and MJPEG are available.
+
+After a real camera or snapshot action runs, the receiver device's `Last Camera Result` sensor shows whether the latest command was accepted or failed. Its attributes include the requested stream strategy, final stream type, transport, fallback usage, popup size, and failure reason where available. URLs are not stored.
 
 ```yaml
 service: ha_tv_pip.set_camera_defaults

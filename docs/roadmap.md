@@ -816,6 +816,8 @@ Completed:
 - ✅ Non-sensitive last compatibility result in Home Assistant diagnostics.
 - ✅ Receiver/integration compatibility summary for compatible, degraded, legacy, and incompatible states.
 - ✅ Graceful media-footer downgrade when receiver capabilities are missing optional presentation support.
+- ✅ Last camera command result sensor and redacted diagnostics for accepted/failed camera and snapshot actions.
+- ✅ Recommendation reasons for camera compatibility tests so users know why `auto`, `mjpeg_first`, HLS, MJPEG, or snapshot was suggested.
 
 Still future:
 

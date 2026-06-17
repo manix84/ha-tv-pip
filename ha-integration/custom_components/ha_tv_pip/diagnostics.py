@@ -6,7 +6,7 @@ from typing import Any
 
 from .client import ReceiverClientError, async_get_receiver_status
 from .const import CONF_HOST, CONF_PORT, CONF_TOKEN, DOMAIN
-from .services import CAMERA_COMPATIBILITY_KEY
+from .services import CAMERA_COMPATIBILITY_KEY, CAMERA_LAST_RESULT_KEY
 
 REDACTED = "**REDACTED**"
 REDACTED_KEYS = {
@@ -32,6 +32,12 @@ async def async_get_config_entry_diagnostics(hass: Any, entry: Any) -> dict[str,
             getattr(hass, "data", {})
             .get(DOMAIN, {})
             .get(CAMERA_COMPATIBILITY_KEY, {})
+            .get(entry.entry_id, {})
+        ),
+        "camera_last_result": _redact(
+            getattr(hass, "data", {})
+            .get(DOMAIN, {})
+            .get(CAMERA_LAST_RESULT_KEY, {})
             .get(entry.entry_id, {})
         ),
         "receiver_status": None,

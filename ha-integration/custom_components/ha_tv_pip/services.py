@@ -78,6 +78,7 @@ ATTR_TITLE_COLOR = "title_color"
 ATTR_TITLE_SIZE = "title_size"
 ATTR_WIDTH = "width"
 CAMERA_COMPATIBILITY_KEY = "camera_compatibility"
+CAMERA_LAST_RESULT_KEY = "camera_last_result"
 CAMERA_DOMAIN = "camera"
 COLOR_PATTERN = re.compile(r"^#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$")
 DEFAULT_NOTIFICATION_BACKGROUND_COLOR = "#B30F0E0E"
@@ -465,14 +466,46 @@ async def async_handle_show_camera(hass: Any, call: Any) -> None:
     prefer_external = remote.is_connected(receiver.device_id)
     capabilities = await _async_receiver_capabilities(receiver)
     request = _degrade_camera_request_for_capabilities(request, capabilities)
-    _validate_camera_capabilities(request, capabilities)
-    command = await _async_show_camera_command(
-        hass,
-        request,
-        title=title,
-        prefer_external=prefer_external,
-        capabilities=capabilities,
-    )
+    try:
+        _validate_camera_capabilities(request, capabilities)
+    except ServiceValidationError as error:
+        _store_camera_action_result(
+            hass,
+            receiver,
+            _camera_action_result(
+                request,
+                receiver=receiver,
+                status="failed",
+                stage="capability_check",
+                reason=error.code,
+                detail=error.detail,
+                transport="remote" if prefer_external else "local",
+            ),
+        )
+        raise
+    try:
+        command = await _async_show_camera_command(
+            hass,
+            request,
+            title=title,
+            prefer_external=prefer_external,
+            capabilities=capabilities,
+        )
+    except ServiceValidationError as error:
+        _store_camera_action_result(
+            hass,
+            receiver,
+            _camera_action_result(
+                request,
+                receiver=receiver,
+                status="failed",
+                stage="command_resolution",
+                reason=error.code,
+                detail=error.detail,
+                transport="remote" if prefer_external else "local",
+            ),
+        )
+        raise
     _LOGGER.info(
         "Sending camera %s to receiver %s using %s transport and %s stream",
         request.camera_entity,
@@ -483,6 +516,18 @@ async def async_handle_show_camera(hass: Any, call: Any) -> None:
 
     try:
         if await remote.async_send_show(device_id=receiver.device_id, command=command):
+            _store_camera_action_result(
+                hass,
+                receiver,
+                _camera_action_result(
+                    request,
+                    receiver=receiver,
+                    status="accepted",
+                    stage="receiver_command",
+                    transport="remote",
+                    command=command,
+                ),
+            )
             return
         await async_show_camera(
             receiver.host,
@@ -490,7 +535,33 @@ async def async_handle_show_camera(hass: Any, call: Any) -> None:
             token=receiver.token,
             command=command,
         )
+        _store_camera_action_result(
+            hass,
+            receiver,
+            _camera_action_result(
+                request,
+                receiver=receiver,
+                status="accepted",
+                stage="receiver_command",
+                transport="local",
+                command=command,
+            ),
+        )
     except ReceiverClientError as error:
+        _store_camera_action_result(
+            hass,
+            receiver,
+            _camera_action_result(
+                request,
+                receiver=receiver,
+                status="failed",
+                stage="receiver_command",
+                reason="receiver_command_failed",
+                detail=str(error),
+                transport="remote" if prefer_external else "local",
+                command=command,
+            ),
+        )
         _LOGGER.error("Unable to send camera stream to %s: %s", receiver.name, error)
         raise ServiceValidationError("receiver_command_failed", str(error)) from error
 
@@ -506,12 +577,44 @@ async def async_handle_show_snapshot(hass: Any, call: Any) -> None:
     prefer_external = remote.is_connected(receiver.device_id)
     capabilities = await _async_receiver_capabilities(receiver)
     request = _degrade_camera_request_for_capabilities(request, capabilities)
-    _validate_stream_capability(capabilities, STREAM_TYPE_SNAPSHOT)
-    snapshot_url = _camera_snapshot_url(
-        hass,
-        request.camera_entity,
-        prefer_external=prefer_external,
-    )
+    try:
+        _validate_stream_capability(capabilities, STREAM_TYPE_SNAPSHOT)
+    except ServiceValidationError as error:
+        _store_camera_action_result(
+            hass,
+            receiver,
+            _camera_action_result(
+                request,
+                receiver=receiver,
+                status="failed",
+                stage="capability_check",
+                reason=error.code,
+                detail=error.detail,
+                transport="remote" if prefer_external else "local",
+            ),
+        )
+        raise
+    try:
+        snapshot_url = _camera_snapshot_url(
+            hass,
+            request.camera_entity,
+            prefer_external=prefer_external,
+        )
+    except ServiceValidationError as error:
+        _store_camera_action_result(
+            hass,
+            receiver,
+            _camera_action_result(
+                request,
+                receiver=receiver,
+                status="failed",
+                stage="command_resolution",
+                reason=error.code,
+                detail=error.detail,
+                transport="remote" if prefer_external else "local",
+            ),
+        )
+        raise
     title = request.title or _camera_title(hass, request.camera_entity)
     _LOGGER.info(
         "Sending snapshot %s to receiver %s using %s transport",
@@ -530,6 +633,18 @@ async def async_handle_show_snapshot(hass: Any, call: Any) -> None:
             **_presentation_payload(request),
         )
         if await remote.async_send_show(device_id=receiver.device_id, command=command):
+            _store_camera_action_result(
+                hass,
+                receiver,
+                _camera_action_result(
+                    request,
+                    receiver=receiver,
+                    status="accepted",
+                    stage="receiver_command",
+                    transport="remote",
+                    command=command,
+                ),
+            )
             return
         await async_show_camera(
             receiver.host,
@@ -537,7 +652,33 @@ async def async_handle_show_snapshot(hass: Any, call: Any) -> None:
             token=receiver.token,
             command=command,
         )
+        _store_camera_action_result(
+            hass,
+            receiver,
+            _camera_action_result(
+                request,
+                receiver=receiver,
+                status="accepted",
+                stage="receiver_command",
+                transport="local",
+                command=command,
+            ),
+        )
     except ReceiverClientError as error:
+        _store_camera_action_result(
+            hass,
+            receiver,
+            _camera_action_result(
+                request,
+                receiver=receiver,
+                status="failed",
+                stage="receiver_command",
+                reason="receiver_command_failed",
+                detail=str(error),
+                transport="remote" if prefer_external else "local",
+                command=command,
+            ),
+        )
         _LOGGER.error("Unable to send camera snapshot to %s: %s", receiver.name, error)
         raise ServiceValidationError("receiver_command_failed", str(error)) from error
 
@@ -1067,7 +1208,10 @@ async def _async_camera_compatibility_report(
             capabilities,
         ),
     ]
-    recommended = _recommended_stream_type(results)
+    recommended, recommendation_reason = _recommended_stream_type(
+        results,
+        capabilities,
+    )
     return {
         "camera_entity": request.camera_entity,
         "stream_camera_entity": stream_entity,
@@ -1076,6 +1220,7 @@ async def _async_camera_compatibility_report(
         "receiver_device_id": receiver.device_id,
         "preferred_stream_type": request.stream_type,
         "recommended_stream_type": recommended,
+        "recommendation_reason": recommendation_reason,
         "results": results,
     }
 
@@ -1107,17 +1252,26 @@ async def _async_stream_probe(
     }
 
 
-def _recommended_stream_type(results: list[dict[str, Any]]) -> str | None:
-    priority = (STREAM_TYPE_HLS, STREAM_TYPE_MJPEG, STREAM_TYPE_SNAPSHOT)
+def _recommended_stream_type(
+    results: list[dict[str, Any]],
+    capabilities: ReceiverCapabilities | None,
+) -> tuple[str | None, str]:
     available = {
         str(result["stream_type"])
         for result in results
         if bool(result.get("available", False))
     }
-    return next(
-        (stream_type for stream_type in priority if stream_type in available),
-        None,
-    )
+    if STREAM_TYPE_HLS in available and STREAM_TYPE_MJPEG in available:
+        if _supports_playable_fallback(capabilities):
+            return STREAM_TYPE_AUTO, "hls_available_with_mjpeg_playable_fallback"
+        return STREAM_TYPE_MJPEG_FIRST, "mjpeg_first_reduces_receiver_decoder_risk"
+    if STREAM_TYPE_HLS in available:
+        return STREAM_TYPE_HLS, "hls_available"
+    if STREAM_TYPE_MJPEG in available:
+        return STREAM_TYPE_MJPEG, "mjpeg_available"
+    if STREAM_TYPE_SNAPSHOT in available:
+        return STREAM_TYPE_SNAPSHOT, "snapshot_available"
+    return None, "no_compatible_stream_available"
 
 
 def _store_camera_compatibility(
@@ -1130,6 +1284,64 @@ def _store_camera_compatibility(
     compatibility = data.setdefault(CAMERA_COMPATIBILITY_KEY, {})
     receiver_results = compatibility.setdefault(receiver.entry_id, {})
     receiver_results[camera_entity] = result
+
+
+def _camera_action_result(
+    request: ShowCameraRequest,
+    *,
+    receiver: ReceiverEntry,
+    status: str,
+    stage: str,
+    transport: str,
+    command: ShowCameraCommand | None = None,
+    reason: str | None = None,
+    detail: str | None = None,
+) -> dict[str, Any]:
+    """Build a redacted last camera action result for entity state/diagnostics."""
+
+    result: dict[str, Any] = {
+        "camera_entity": request.camera_entity,
+        "stream_camera_entity": request.stream_camera_entity or request.camera_entity,
+        "snapshot_camera_entity": request.snapshot_camera_entity
+        or request.camera_entity,
+        "receiver": receiver.name,
+        "receiver_device_id": receiver.device_id,
+        "requested_stream_type": request.stream_type,
+        "snapshot_fallback": request.snapshot_fallback,
+        "status": status,
+        "stage": stage,
+        "transport": transport,
+    }
+    if command is not None:
+        result.update(
+            {
+                "final_stream_type": command.stream_type,
+                "has_preview": command.preview_url is not None,
+                "has_playable_fallback": command.fallback_url is not None,
+                "playable_fallback_stream_type": command.fallback_stream_type,
+                "position": command.position,
+                "width": command.width,
+                "height": command.height,
+                "has_notification_text": (
+                    command.show_notification or command.message is not None
+                ),
+            }
+        )
+    if reason is not None:
+        result["reason"] = reason
+    if detail is not None:
+        result["detail"] = detail
+    return {key: value for key, value in result.items() if value is not None}
+
+
+def _store_camera_action_result(
+    hass: Any,
+    receiver: ReceiverEntry,
+    result: dict[str, Any],
+) -> None:
+    data = hass.data.setdefault(DOMAIN, {})
+    action_results = data.setdefault(CAMERA_LAST_RESULT_KEY, {})
+    action_results[receiver.entry_id] = result
 
 
 def _service_response_kwargs() -> dict[str, Any]:

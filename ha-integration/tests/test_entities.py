@@ -25,7 +25,9 @@ from custom_components.ha_tv_pip.const import (
     CONF_REMOTE_ACCESS_TOKEN,
     CONF_REMOTE_HOME_ASSISTANT_URL,
     CONF_TOKEN,
+    DOMAIN,
 )
+from custom_components.ha_tv_pip.services import CAMERA_LAST_RESULT_KEY
 
 
 @dataclass
@@ -127,6 +129,7 @@ def test_sensor_setup_adds_status_sensor() -> None:
         "device-1_stream_type",
         "device-1_last_error",
         "device-1_receiver_version",
+        "device-1_last_camera_result",
     ]
     assert [entity._attr_translation_key for entity in added] == [
         "status",
@@ -134,6 +137,7 @@ def test_sensor_setup_adds_status_sensor() -> None:
         "stream_type",
         "last_error",
         "receiver_version",
+        "last_camera_result",
     ]
 
 
@@ -262,6 +266,34 @@ def test_focused_status_sensors_update_from_receiver(monkeypatch) -> None:  # ty
     assert stream_type._attr_native_value == "hls"
     assert last_error._attr_native_value == "none"
     assert version._attr_native_value == "0.24.0"
+
+
+def test_last_camera_result_sensor_reads_stored_result() -> None:
+    class FakeHass:
+        data = {
+            DOMAIN: {
+                CAMERA_LAST_RESULT_KEY: {
+                    "entry-1": {
+                        "camera_entity": "camera.front_door",
+                        "final_stream_type": "mjpeg",
+                        "status": "accepted",
+                        "transport": "local",
+                    }
+                }
+            }
+        }
+
+    entity = sensor.ReceiverLastCameraResultSensor(FakeHass(), _entry())
+
+    asyncio.run(entity.async_update())
+
+    assert entity._attr_native_value == "accepted"
+    assert entity._attr_extra_state_attributes == {
+        "camera_entity": "camera.front_door",
+        "final_stream_type": "mjpeg",
+        "status": "accepted",
+        "transport": "local",
+    }
 
 
 def test_connected_sensor_handles_unavailable_receiver(monkeypatch) -> None:  # type: ignore[no-untyped-def]
