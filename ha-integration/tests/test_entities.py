@@ -18,6 +18,7 @@ from custom_components.ha_tv_pip.client import (
     ReceiverStatus,
 )
 from custom_components.ha_tv_pip.const import (
+    CONF_CAMERA_DEFAULTS,
     CONF_DEVICE_ID,
     CONF_HOST,
     CONF_NAME,
@@ -546,11 +547,29 @@ def test_diagnostics_redacts_token_and_url(monkeypatch) -> None:  # type: ignore
 
     monkeypatch.setattr(diagnostics, "async_get_receiver_status", fake_status)
 
-    result = asyncio.run(
-        diagnostics.async_get_config_entry_diagnostics(None, _entry())
-    )
+    entry = _entry()
+    entry.options = {
+        CONF_CAMERA_DEFAULTS: {
+            "camera.front_door": {
+                "stream_type": "mjpeg_first",
+                "snapshot_fallback": True,
+                "width": 720,
+                "height": 405,
+            }
+        }
+    }
+
+    result = asyncio.run(diagnostics.async_get_config_entry_diagnostics(None, entry))
 
     assert result["entry"][CONF_TOKEN] == diagnostics.REDACTED
+    assert result["camera_defaults"] == {
+        "camera.front_door": {
+            "stream_type": "mjpeg_first",
+            "snapshot_fallback": True,
+            "width": 720,
+            "height": 405,
+        }
+    }
     assert result["receiver_status"]["url"] == diagnostics.REDACTED
     assert result["receiver_status"]["fallbackUrl"] == diagnostics.REDACTED
     assert result["receiver_status"]["playback"]["url"] == diagnostics.REDACTED

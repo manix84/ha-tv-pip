@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.21.1 - Camera Defaults Diagnostics 🩺
+
+- Added stored per-camera defaults to Home Assistant diagnostics so calibration and saved stream strategy state are easier to inspect 🩺
+- Documented the full camera calibration loop: calibrate without saving, inspect recommended defaults, save defaults, and use `show_camera` without repeating values 🧭
+- Added tests for camera defaults diagnostics visibility 🧪
+
 ## 1.21.0 - Camera Calibration Action 🧭
 
 - Added `ha_tv_pip.calibrate_camera` as a friendly action for testing a camera/receiver pair and optionally saving the recommended per-camera defaults 🧭

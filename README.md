@@ -56,6 +56,8 @@ The receiver device also exposes a `Last Camera Compatibility` sensor so the lat
 
 For a simpler setup flow, `ha_tv_pip.calibrate_camera` tests the camera, returns a friendly summary, and can save the recommended per-camera defaults in one action with `save: true`.
 
+Stored per-camera defaults are included in Home Assistant diagnostics, making calibration state easier to review when troubleshooting.
+
 ## Monorepo Layout 🧱
 
 ```txt

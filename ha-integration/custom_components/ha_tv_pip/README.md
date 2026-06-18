@@ -160,6 +160,50 @@ Use `0` for duration, width, or height to keep the built-in service defaults. Ex
 
 Per-camera defaults can be stored with `ha_tv_pip.set_camera_defaults`. They apply before receiver-level defaults, which is useful when one camera needs `mjpeg_first`, a substream entity, a different snapshot entity, or a different popup size. Use `ha_tv_pip.clear_camera_defaults` to remove stored defaults for a camera.
 
+Stored per-camera defaults are included in config entry diagnostics so setup issues can be reviewed without exposing stream URLs.
+
+## Camera Defaults Workflow ⚙️
+
+Run calibration without saving first:
+
+```yaml
+service: ha_tv_pip.calibrate_camera
+target:
+  device_id: living_room_tv
+data:
+  camera_entity: camera.front_door
+  width: 720
+  height: 405
+  snapshot_fallback: true
+  save: false
+```
+
+Inspect `summary`, `recommendation_reason`, and `recommended_defaults` in the action response.
+
+Save the recommendation when it looks right:
+
+```yaml
+service: ha_tv_pip.calibrate_camera
+target:
+  device_id: living_room_tv
+data:
+  camera_entity: camera.front_door
+  width: 720
+  height: 405
+  snapshot_fallback: true
+  save: true
+```
+
+Use the camera from automations without repeating those defaults:
+
+```yaml
+service: ha_tv_pip.show_camera
+target:
+  device_id: living_room_tv
+data:
+  camera_entity: camera.front_door
+```
+
 ## Camera Compatibility Test 🧭
 
 For the normal setup workflow, use `ha_tv_pip.calibrate_camera`:
