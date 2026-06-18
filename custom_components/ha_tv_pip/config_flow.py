@@ -40,6 +40,15 @@ from .remote_setup import (
     suggested_remote_home_assistant_url,
 )
 
+ha_selector: Any | None
+try:
+    ha_selector = __import__(
+        "homeassistant.helpers.selector",
+        fromlist=["SelectSelector"],
+    )
+except (ImportError, ModuleNotFoundError):
+    ha_selector = None
+
 _LOGGER = logging.getLogger(__name__)
 PAIRING_CLIENT_ID = "home-assistant"
 PAIRING_CLIENT_NAME = "Home Assistant"
@@ -397,7 +406,7 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
                     vol.Optional(
                         CONF_DEFAULT_STREAM_TYPE,
                         default=current_stream_type,
-                    ): vol.Any(*STREAM_TYPES),
+                    ): _select_dropdown(STREAM_TYPES),
                     vol.Optional(
                         CONF_DEFAULT_DURATION_SECONDS,
                         default=current_duration,
@@ -405,7 +414,7 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
                     vol.Optional(
                         CONF_DEFAULT_POSITION,
                         default=current_position,
-                    ): vol.Any(*NOTIFICATION_POSITIONS),
+                    ): _select_dropdown(NOTIFICATION_POSITIONS),
                     vol.Optional(
                         CONF_DEFAULT_SNAPSHOT_FALLBACK,
                         default=current_snapshot_fallback,
@@ -433,6 +442,19 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
             },
             errors=errors,
         )
+
+
+def _select_dropdown(options: tuple[str, ...]) -> Any:
+    """Return a Home Assistant serializable dropdown selector for options flows."""
+
+    if ha_selector is None:
+        return vol.Any(*options)
+    return ha_selector.SelectSelector(
+        ha_selector.SelectSelectorConfig(
+            options=list(options),
+            mode=ha_selector.SelectSelectorMode.DROPDOWN,
+        )
+    )
 
 
 def _optional_default_int(

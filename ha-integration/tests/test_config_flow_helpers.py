@@ -59,6 +59,7 @@ from custom_components.ha_tv_pip.config_flow import (  # noqa: E402
     _manual_port,
     _receiver_from_user_input,
     _receiver_from_zeroconf,
+    _select_dropdown,
     async_get_options_flow,
 )
 from custom_components.ha_tv_pip.discovery import ReceiverDiscovery
@@ -191,6 +192,10 @@ def test_options_flow_init_step_tolerates_missing_hass() -> None:
     assert result["type"] == "form"
     assert result["step_id"] == "init"
     assert result["description_placeholders"] == {"suggested_url": "not configured"}
+
+
+def test_select_dropdown_uses_test_fallback_without_home_assistant_selector() -> None:
+    assert _select_dropdown(("auto", "hls")) == ("auto", "hls")
 
 
 def test_options_flow_stores_receiver_defaults_and_remote_setup(

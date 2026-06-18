@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.27.9 - Options Flow Dropdown Fix 🧩
+
+- Fixed a Home Assistant options-flow 500 error caused by raw `vol.Any(...)` dropdown schemas that the frontend serializer could not convert 🛠️
+- Replaced the receiver defaults stream strategy and popup position fields with Home Assistant `SelectSelector` dropdowns ✅
+- Added test coverage for the dropdown helper while keeping the lightweight local test stubs working 🧪
+
 ## 1.27.8 - Options Flow Startup Guard 🧩
 
 - Hardened the Home Assistant options flow so it can render even if Home Assistant has not attached the runtime `hass` object before the first options step loads 🛡️
