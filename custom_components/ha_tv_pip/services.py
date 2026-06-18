@@ -30,6 +30,7 @@ from .const import (
     CONF_PORT,
     CONF_TOKEN,
     DOMAIN,
+    NOTIFICATION_POSITIONS,
     SERVICE_CALIBRATE_CAMERA,
     SERVICE_CLEAR_CAMERA_DEFAULTS,
     SERVICE_SET_CAMERA_DEFAULTS,
@@ -37,6 +38,13 @@ from .const import (
     SERVICE_SHOW_NOTIFICATION,
     SERVICE_SHOW_SNAPSHOT,
     SERVICE_TEST_CAMERA_STREAM,
+    STREAM_TYPE_AUTO,
+    STREAM_TYPE_HLS,
+    STREAM_TYPE_MJPEG,
+    STREAM_TYPE_MJPEG_FIRST,
+    STREAM_TYPE_NOTIFICATION,
+    STREAM_TYPE_SNAPSHOT,
+    STREAM_TYPES,
 )
 from .remote import remote_registry
 from .restreaming import restreaming_provider_metadata
@@ -92,20 +100,6 @@ DEFAULT_NOTIFICATION_BACKGROUND_COLOR = "#B30F0E0E"
 DEFAULT_NOTIFICATION_MESSAGE_COLOR = "#fbf5f5"
 DEFAULT_NOTIFICATION_TITLE = "Home Assistant"
 DEFAULT_NOTIFICATION_TITLE_COLOR = "#50BFF2"
-NOTIFICATION_POSITIONS = ("top_right", "top_left", "bottom_right", "bottom_left")
-STREAM_TYPE_AUTO = "auto"
-STREAM_TYPE_HLS = "hls"
-STREAM_TYPE_MJPEG = "mjpeg"
-STREAM_TYPE_MJPEG_FIRST = "mjpeg_first"
-STREAM_TYPE_NOTIFICATION = "notification"
-STREAM_TYPE_SNAPSHOT = "snapshot"
-STREAM_TYPES = (
-    STREAM_TYPE_AUTO,
-    STREAM_TYPE_HLS,
-    STREAM_TYPE_MJPEG,
-    STREAM_TYPE_MJPEG_FIRST,
-    STREAM_TYPE_SNAPSHOT,
-)
 ERROR_MESSAGES = {
     "camera_not_found": "Camera entity was not found.",
     "camera_stream_unavailable": (

@@ -30,16 +30,14 @@ from .const import (
     CONF_VERSION,
     DEFAULT_PORT,
     DOMAIN,
+    NOTIFICATION_POSITIONS,
+    STREAM_TYPE_AUTO,
+    STREAM_TYPES,
 )
 from .discovery import ReceiverDiscovery, parse_discovery_properties
 from .remote_setup import (
     async_sync_remote_setup_values,
     suggested_remote_home_assistant_url,
-)
-from .services import (
-    NOTIFICATION_POSITIONS,
-    STREAM_TYPE_AUTO,
-    STREAM_TYPES,
 )
 
 _LOGGER = logging.getLogger(__name__)

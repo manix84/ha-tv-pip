@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.27.6 - Config Flow Load Hardening 🧩
+
+- Moved shared stream and popup position constants into the lightweight integration constants module so the config/options flow no longer imports the full service implementation while loading 🛠️
+- Kept the HACS zip layout from `1.27.5`, with integration files at the archive root for direct HACS extraction 📦
+- Verified Home Assistant integration linting, type checking, and tests after the config-flow cleanup ✅
+
 ## 1.27.5 - HACS Zip Install Fix 🧩
 
 - Fixed the stable HACS release zip layout so HACS installs files directly into `config/custom_components/ha_tv_pip/` instead of creating a nested `custom_components/ha_tv_pip/` folder 📦
