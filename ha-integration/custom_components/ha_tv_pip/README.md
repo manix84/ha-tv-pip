@@ -180,6 +180,8 @@ The compatibility test checks whether Home Assistant can resolve HLS, MJPEG, and
 
 The result also includes `recommendation_reason`, which explains why the integration recommends `auto`, `mjpeg_first`, `hls`, `mjpeg`, or `snapshot`. For example, a receiver that supports playable fallback may prefer `auto`, while a receiver without playable fallback can recommend `mjpeg_first` when both HLS and MJPEG are available.
 
+The response includes `recommended_defaults`, which previews the exact per-camera defaults that would be stored. Inspect that payload first if you want to verify the recommendation before saving it.
+
 Set `save_recommendation: true` to save the recommended stream strategy as per-camera defaults. Any explicit test fields, such as width, height, duration, position, snapshot fallback, stream camera entity, or snapshot camera entity, are saved with it. If no compatible stream is found, no defaults are saved.
 
 After a compatibility test runs, the receiver device's `Last Camera Compatibility` sensor shows the latest recommended stream type. Its attributes include the tested camera, recommendation reason, stream availability results, and timestamp.

@@ -1497,6 +1497,7 @@ def test_camera_stream_test_stores_non_sensitive_compatibility_report(
         result["recommendation_reason"]
         == "mjpeg_first_reduces_receiver_decoder_risk"
     )
+    assert result["recommended_defaults"] == {ATTR_STREAM_TYPE: "mjpeg_first"}
     assert result["tested_at"]
     assert result["results"] == [
         {"stream_type": "hls", "available": True},
@@ -1567,6 +1568,7 @@ def test_camera_stream_test_recommends_auto_with_playable_fallback(
     )
 
     assert result["recommended_stream_type"] == "auto"
+    assert result["recommended_defaults"] == {ATTR_STREAM_TYPE: "auto"}
     assert (
         result["recommendation_reason"]
         == "hls_available_with_mjpeg_playable_fallback"
@@ -1639,6 +1641,12 @@ def test_camera_stream_test_can_save_recommendation_as_defaults(
     )
 
     assert result["recommended_stream_type"] == "mjpeg_first"
+    assert result["recommended_defaults"] == {
+        ATTR_HEIGHT: 405,
+        ATTR_SNAPSHOT_FALLBACK: True,
+        ATTR_STREAM_TYPE: "mjpeg_first",
+        ATTR_WIDTH: 720,
+    }
     assert result["saved_as_defaults"] is True
     assert result["saved_defaults"] == {
         ATTR_HEIGHT: 405,

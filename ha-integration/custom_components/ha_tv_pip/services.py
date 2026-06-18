@@ -1194,18 +1194,28 @@ def _save_camera_recommendation_defaults(
     request: ShowCameraRequest,
     result: dict[str, Any],
 ) -> dict[str, Any]:
-    recommended = str(result.get("recommended_stream_type") or "").strip()
-    if recommended not in STREAM_TYPES:
+    defaults = _recommended_camera_defaults_payload(request, result)
+    if not defaults:
         return {}
-
     entry = _entry_for_receiver(hass, receiver.entry_id)
-    defaults = _camera_defaults_payload(request)
-    defaults[ATTR_STREAM_TYPE] = recommended
     options = dict(getattr(entry, "options", {}) or {})
     camera_defaults = dict(options.get(CONF_CAMERA_DEFAULTS, {}) or {})
     camera_defaults[request.camera_entity] = defaults
     options[CONF_CAMERA_DEFAULTS] = camera_defaults
     _update_entry_options(hass, entry, options)
+    return defaults
+
+
+def _recommended_camera_defaults_payload(
+    request: ShowCameraRequest,
+    result: dict[str, Any],
+) -> dict[str, Any]:
+    recommended = str(result.get("recommended_stream_type") or "").strip()
+    if recommended not in STREAM_TYPES:
+        return {}
+
+    defaults = _camera_defaults_payload(request)
+    defaults[ATTR_STREAM_TYPE] = recommended
     return defaults
 
 
@@ -1252,7 +1262,7 @@ async def _async_camera_compatibility_report(
         results,
         capabilities,
     )
-    return {
+    result: dict[str, Any] = {
         "camera_entity": request.camera_entity,
         "stream_camera_entity": stream_entity,
         "snapshot_camera_entity": snapshot_entity,
@@ -1263,6 +1273,15 @@ async def _async_camera_compatibility_report(
         "recommended_stream_type": recommended,
         "recommendation_reason": recommendation_reason,
         "results": results,
+    }
+    result["recommended_defaults"] = _recommended_camera_defaults_payload(
+        request,
+        result,
+    )
+    return {
+        key: value
+        for key, value in result.items()
+        if value is not None and value != {}
     }
 
 

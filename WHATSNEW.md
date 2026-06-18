@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.20.1 - Recommended Defaults Preview 👀
+
+- Added `recommended_defaults` to `ha_tv_pip.test_camera_stream` responses so users can see exactly what would be saved before enabling `save_recommendation` 👀
+- Reused the same defaults builder for preview and save paths so compatibility recommendations cannot drift from saved per-camera defaults ⚙️
+- Added tests and documentation for the recommendation preview workflow 🧪
+
 ## 1.20.0 - Compatibility Result Sensor 🩺
 
 - Added a `Last Camera Compatibility` receiver sensor so the latest camera test recommendation is visible on the Home Assistant device page 🧭

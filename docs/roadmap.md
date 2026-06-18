@@ -820,6 +820,7 @@ Completed:
 - ✅ Recommendation reasons for camera compatibility tests so users know why `auto`, `mjpeg_first`, HLS, MJPEG, or snapshot was suggested.
 - ✅ `save_recommendation` on `ha_tv_pip.test_camera_stream` so compatibility tests can write recommended per-camera defaults.
 - ✅ `Last Camera Compatibility` sensor for showing the latest stream test recommendation on the receiver device.
+- ✅ `recommended_defaults` preview in compatibility test responses before saving per-camera defaults.
 
 Still future:
 

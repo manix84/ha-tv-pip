@@ -50,6 +50,8 @@ Camera troubleshooting now includes a `Last Camera Result` receiver sensor and r
 
 `ha_tv_pip.test_camera_stream` can now save its recommended stream strategy as per-camera defaults with `save_recommendation: true`. Any explicit test fields, such as width, height, position, duration, snapshot fallback, or stream/snapshot entities, are saved with the recommendation so future automations can omit them.
 
+Compatibility test responses include `recommended_defaults`, so users can inspect exactly what would be saved before enabling `save_recommendation`.
+
 The receiver device also exposes a `Last Camera Compatibility` sensor so the latest compatibility test recommendation is visible without opening diagnostics.
 
 ## Monorepo Layout 🧱
