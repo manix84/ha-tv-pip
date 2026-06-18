@@ -105,6 +105,9 @@
       "last_camera_compatibility": {
         "name": "Last Camera Compatibility"
       },
+      "restreaming_provider_status": {
+        "name": "Restreaming Provider Status"
+      },
       "receiver_version": {
         "name": "Receiver Version"
       },

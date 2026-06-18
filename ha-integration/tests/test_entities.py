@@ -135,6 +135,7 @@ def test_sensor_setup_adds_status_sensor() -> None:
         "device-1_receiver_version",
         "device-1_last_camera_compatibility",
         "device-1_last_camera_result",
+        "device-1_restreaming_provider_status",
     ]
     assert [entity._attr_translation_key for entity in added] == [
         "status",
@@ -144,6 +145,7 @@ def test_sensor_setup_adds_status_sensor() -> None:
         "receiver_version",
         "last_camera_compatibility",
         "last_camera_result",
+        "restreaming_provider_status",
     ]
 
 
@@ -252,6 +254,20 @@ def test_status_sensor_updates_from_receiver(monkeypatch) -> None:  # type: igno
         entity._attr_extra_state_attributes["supports_remote_receiver_settings"]
         is True
     )
+
+
+def test_restreaming_provider_status_sensor_reports_planned_state() -> None:
+    entity = sensor.ReceiverRestreamingProviderStatusSensor(_entry())
+
+    assert entity._attr_native_value == "planned"
+    assert entity._attr_extra_state_attributes == {
+        "enabled": False,
+        "status": "planned",
+        "configured_provider": None,
+        "active_provider": None,
+        "supported_providers": [],
+        "planned_providers": ["go2rtc", "webrtc", "transcoding"],
+    }
 
 
 def test_focused_status_sensors_update_from_receiver(monkeypatch) -> None:  # type: ignore[no-untyped-def]

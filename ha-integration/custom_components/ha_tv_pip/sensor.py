@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any
 from .client import ReceiverClientError, ReceiverStatus, async_get_receiver_status
 from .const import DOMAIN
 from .entity import ReceiverEntity
+from .restreaming import RESTREAMING_PROVIDER_STATUS, restreaming_provider_metadata
 from .services import CAMERA_COMPATIBILITY_KEY, CAMERA_LAST_RESULT_KEY
 
 if TYPE_CHECKING:
@@ -37,6 +38,7 @@ async def async_setup_entry(hass: Any, entry: Any, async_add_entities: Any) -> N
             ReceiverVersionSensor(entry),
             ReceiverLastCameraCompatibilitySensor(hass, entry),
             ReceiverLastCameraResultSensor(hass, entry),
+            ReceiverRestreamingProviderStatusSensor(entry),
         ]
     )
 
@@ -178,6 +180,19 @@ class ReceiverLastCameraCompatibilitySensor(ReceiverEntity, SensorEntity):
 
         self._attr_native_value = str(result.get("recommended_stream_type", "none"))
         self._attr_extra_state_attributes = result
+
+
+class ReceiverRestreamingProviderStatusSensor(ReceiverEntity, SensorEntity):
+    """Current restreaming provider availability for this integration."""
+
+    def __init__(self, entry: Any) -> None:
+        super().__init__(
+            entry,
+            key="restreaming_provider_status",
+            name="Restreaming Provider Status",
+        )
+        self._attr_native_value = RESTREAMING_PROVIDER_STATUS
+        self._attr_extra_state_attributes = restreaming_provider_metadata()
 
 
 def _latest_camera_compatibility_result(

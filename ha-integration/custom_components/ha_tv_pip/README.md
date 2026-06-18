@@ -96,6 +96,7 @@ Each paired receiver creates:
 - Focused sensors for active display mode, active stream type, last receiver error, and receiver app version.
 - Last Camera Compatibility sensor with the latest stream test recommendation.
 - Last Camera Result sensor with the latest redacted camera/snapshot command outcome.
+- Restreaming Provider Status sensor for planned, configured, and active provider visibility.
 - Connected binary sensor based on the local `/status` endpoint.
 - Remote connected binary sensor for outbound remote receiver mode.
 
@@ -300,6 +301,8 @@ If a receiver reports that a requested stream type, snapshot mode, notification 
 For cameras with multiple streams, use a TV-compatible H.264/HLS stream where possible, or try `stream_type: mjpeg` when HLS is unsupported on the receiver. Lower-resolution secondary streams are often more reliable for TV popups than high-resolution main streams. The receiver enables Media3 decoder fallback, but unsupported camera codecs still need a compatible camera profile, MJPEG fallback, go2rtc/WebRTC, or future transcoding support.
 
 Restreaming providers are not active yet. Diagnostics include a planned provider section so future support tooling can distinguish "not configured" from "not implemented". HLS, MJPEG, and snapshots remain the supported paths today.
+
+The receiver device also exposes a `Restreaming Provider Status` sensor. It reports `planned` today, with attributes for configured, active, supported, and planned providers. This is intentionally a visibility surface only; it does not enable go2rtc, WebRTC, or transcoding yet.
 
 ## Snapshot Service 🖼️
 

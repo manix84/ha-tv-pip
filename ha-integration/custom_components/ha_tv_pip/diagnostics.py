@@ -6,6 +6,7 @@ from typing import Any
 
 from .client import ReceiverClientError, async_get_receiver_status
 from .const import CONF_CAMERA_DEFAULTS, CONF_HOST, CONF_PORT, CONF_TOKEN, DOMAIN
+from .restreaming import restreaming_provider_metadata
 from .services import CAMERA_COMPATIBILITY_KEY, CAMERA_LAST_RESULT_KEY
 
 REDACTED = "**REDACTED**"
@@ -17,16 +18,6 @@ REDACTED_KEYS = {
     "token",
     "url",
 }
-
-RESTREAMING_PROVIDERS = {
-    "enabled": False,
-    "status": "planned",
-    "configured_provider": None,
-    "active_provider": None,
-    "supported_providers": [],
-    "planned_providers": ["go2rtc", "webrtc", "transcoding"],
-}
-
 
 async def async_get_config_entry_diagnostics(hass: Any, entry: Any) -> dict[str, Any]:
     """Return diagnostics for a HA TV PiP config entry."""
@@ -52,7 +43,7 @@ async def async_get_config_entry_diagnostics(hass: Any, entry: Any) -> dict[str,
             .get(CAMERA_LAST_RESULT_KEY, {})
             .get(entry.entry_id, {})
         ),
-        "restreaming_providers": dict(RESTREAMING_PROVIDERS),
+        "restreaming_providers": restreaming_provider_metadata(),
         "receiver_status": None,
         "receiver_error": None,
     }

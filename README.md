@@ -244,6 +244,7 @@ Available now:
 - Restreaming guidance when a camera needs a TV-safe source 🧵
 - Zeroconf discovery and TV-visible pairing 🔎
 - Receiver status, PiP controls, launcher controls, and diagnostics 🧰
+- Restreaming provider status visibility for planned go2rtc, WebRTC, and transcoding support 🩺
 - Optional remote receiver mode through the user's own Home Assistant external URL 🌍
 - HACS custom-repository installation using the stable release zip 🧩
 

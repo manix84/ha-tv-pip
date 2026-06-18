@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.24.0 - Restreaming Provider Status 🧵
+
+- Added a `Restreaming Provider Status` sensor to the Home Assistant receiver device so future go2rtc, WebRTC, and transcoding support is visible as planned but inactive 🩺
+- Centralized restreaming provider metadata so diagnostics and entities report the same provider state 🔧
+- Updated Home Assistant translations and tests for the new provider status sensor 🧪
+
 ## 1.23.0 - Receiver Diagnostics And Device Plans 📺
 
 - Added the Android receiver release version to the on-device diagnostics panel so support checks can confirm the installed app build quickly 🩺

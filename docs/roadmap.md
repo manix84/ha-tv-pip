@@ -832,6 +832,7 @@ Completed:
 - ✅ Stable `restreaming_next_step` and `restreaming_options` fields for action responses and sensor attributes.
 - ✅ Dedicated camera compatibility guide covering TV-safe streams, calibration, fallback setup, and future restreaming provider expectations.
 - ✅ Planned inactive restreaming provider diagnostics block so future support tools can report provider availability clearly.
+- ✅ `Restreaming Provider Status` sensor for showing planned/configured/active provider state directly on the receiver device.
 
 Still future:
 
