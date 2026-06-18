@@ -68,6 +68,9 @@
       "connected": {
         "name": "Verbunden"
       },
+      "camera_restreaming_recommended": {
+        "name": "Kamera-Restreaming empfohlen"
+      },
       "remote_connected": {
         "name": "Remote Connected"
       }

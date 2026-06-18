@@ -56,6 +56,8 @@ Compatibility test responses include `recommended_defaults`, so users can inspec
 
 The receiver device also exposes a `Last Camera Compatibility` sensor so the latest compatibility test recommendation is visible without opening diagnostics.
 
+When the latest compatibility result indicates that live video likely needs another TV-safe source, the receiver device's `Camera Restreaming Recommended` binary sensor turns on with the camera, recommendation, restreaming reason, and test timestamp in its attributes.
+
 For a simpler setup flow, `ha_tv_pip.calibrate_camera` tests the camera, returns a friendly summary, and can save the recommended per-camera defaults in one action with `save: true`.
 
 Stored per-camera defaults are included in Home Assistant diagnostics, making calibration state easier to review when troubleshooting.

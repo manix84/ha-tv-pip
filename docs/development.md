@@ -1141,6 +1141,8 @@ Set `save_recommendation: true` on `ha_tv_pip.test_camera_stream` to write the r
 
 The latest compatibility test is also exposed through the receiver's `Last Camera Compatibility` sensor. The sensor state is the recommended stream type and the attributes include the tested camera, recommendation reason, stream availability results, and timestamp.
 
+The receiver also exposes a `Camera Restreaming Recommended` binary sensor. It turns on when the latest compatibility result includes `restreaming_recommended: true`, with attributes for the camera entity, recommended stream type, recommendation reason, restreaming reason, and timestamp.
+
 Real camera and snapshot actions store a redacted last result under the receiver. The `Last Camera Result` sensor and config entry diagnostics expose status, stage, requested stream type, final stream type, transport, fallback flags, size, and failure reason without storing stream URLs.
 
 Receiver/integration compatibility is also calculated from `/status` API and capability metadata. Current receivers should report `compatible`; older receivers without capability metadata are treated as `legacy` best-effort; receivers missing optional presentation, fallback, launcher, or remote settings support report `degraded`; receivers missing required API or display stream support report `incompatible`. These fields are exposed on the status sensor attributes and in diagnostics.

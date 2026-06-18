@@ -253,6 +253,8 @@ Set `save_recommendation: true` to save the recommended stream strategy as per-c
 
 After a compatibility test runs, the receiver device's `Last Camera Compatibility` sensor shows the latest recommended stream type. Its attributes include the tested camera, recommendation reason, stream availability results, and timestamp.
 
+The receiver device also exposes a `Camera Restreaming Recommended` binary sensor. It turns on when the latest compatibility result says live video likely needs another TV-safe source, and its attributes include the camera entity, recommended stream type, recommendation reason, restreaming reason, and timestamp.
+
 After a real camera or snapshot action runs, the receiver device's `Last Camera Result` sensor shows whether the latest command was accepted or failed. Its attributes include the requested stream strategy, final stream type, transport, fallback usage, popup size, and failure reason where available. URLs are not stored.
 
 ```yaml

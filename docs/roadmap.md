@@ -824,6 +824,7 @@ Completed:
 - ✅ `ha_tv_pip.calibrate_camera` action for a user-friendly test, summary, and optional save workflow.
 - ✅ Stored per-camera defaults in config entry diagnostics.
 - ✅ Restreaming guidance in camera compatibility and calibration results for snapshot-only or unavailable live stream paths.
+- ✅ `Camera Restreaming Recommended` binary sensor for showing restreaming guidance directly on the receiver device.
 
 Still future:
 

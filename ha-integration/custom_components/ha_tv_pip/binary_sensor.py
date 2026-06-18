@@ -5,7 +5,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from .client import ReceiverClientError, async_get_receiver_status
+from .const import DOMAIN
 from .entity import ReceiverEntity
+from .services import CAMERA_COMPATIBILITY_KEY
 
 if TYPE_CHECKING:
 
@@ -29,6 +31,7 @@ async def async_setup_entry(hass: Any, entry: Any, async_add_entities: Any) -> N
         [
             ReceiverConnectedBinarySensor(entry),
             ReceiverRemoteConnectedBinarySensor(entry),
+            ReceiverCameraRestreamingRecommendedBinarySensor(hass, entry),
         ]
     )
 
@@ -88,3 +91,62 @@ class ReceiverRemoteConnectedBinarySensor(ReceiverPollingBinarySensor):
         attributes = super()._extra_attributes(status)
         attributes["remote_status"] = status.remote_status
         return attributes
+
+
+class ReceiverCameraRestreamingRecommendedBinarySensor(
+    ReceiverEntity,
+    BinarySensorEntity,
+):
+    """Reports whether the latest camera compatibility test recommends restreaming."""
+
+    def __init__(self, hass: Any, entry: Any) -> None:
+        super().__init__(
+            entry,
+            key="camera_restreaming_recommended",
+            name="Camera Restreaming Recommended",
+        )
+        self.hass = hass
+        self._attr_is_on = False
+        self._attr_extra_state_attributes: dict[str, Any] = {}
+
+    async def async_update(self) -> None:
+        """Read the latest stored camera compatibility result."""
+
+        result = _latest_camera_compatibility_result(self.hass, self.entry.entry_id)
+        self._attr_is_on = bool(result.get("restreaming_recommended", False))
+        self._attr_extra_state_attributes = {
+            key: value
+            for key, value in {
+                "camera_entity": result.get("camera_entity"),
+                "recommended_stream_type": result.get("recommended_stream_type"),
+                "recommendation_reason": result.get("recommendation_reason"),
+                "restreaming_reason": result.get("restreaming_reason"),
+                "tested_at": result.get("tested_at"),
+            }.items()
+            if value is not None
+        }
+
+
+def _latest_camera_compatibility_result(
+    hass: Any,
+    entry_id: str,
+) -> dict[str, Any]:
+    receiver_results = (
+        getattr(hass, "data", {})
+        .get(DOMAIN, {})
+        .get(CAMERA_COMPATIBILITY_KEY, {})
+        .get(entry_id, {})
+    )
+    if not isinstance(receiver_results, dict):
+        return {}
+
+    latest: dict[str, Any] | None = None
+    latest_at: str = ""
+    for result in receiver_results.values():
+        if not isinstance(result, dict):
+            continue
+        tested_at = str(result.get("tested_at", ""))
+        if latest is None or tested_at > latest_at:
+            latest = result
+            latest_at = tested_at
+    return dict(latest or {})

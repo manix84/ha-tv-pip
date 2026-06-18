@@ -155,10 +155,12 @@ def test_binary_sensor_setup_adds_connected_sensor() -> None:
     assert [entity._attr_unique_id for entity in added] == [
         "device-1_connected",
         "device-1_remote_connected",
+        "device-1_camera_restreaming_recommended",
     ]
     assert [entity._attr_translation_key for entity in added] == [
         "connected",
         "remote_connected",
+        "camera_restreaming_recommended",
     ]
 
 
@@ -351,6 +353,51 @@ def test_connected_sensor_handles_unavailable_receiver(monkeypatch) -> None:  # 
 
     assert entity._attr_is_on is False
     assert entity._attr_extra_state_attributes == {"last_error": "cannot_connect"}
+
+
+def test_camera_restreaming_binary_sensor_reads_latest_result() -> None:
+    class FakeHass:
+        data = {
+            DOMAIN: {
+                CAMERA_COMPATIBILITY_KEY: {
+                    "entry-1": {
+                        "camera.back_garden": {
+                            "camera_entity": "camera.back_garden",
+                            "recommended_stream_type": "hls",
+                            "recommendation_reason": "hls_available",
+                            "restreaming_recommended": False,
+                            "tested_at": "2026-06-18T10:00:00+00:00",
+                        },
+                        "camera.front_door": {
+                            "camera_entity": "camera.front_door",
+                            "recommended_stream_type": "snapshot",
+                            "recommendation_reason": "snapshot_available",
+                            "restreaming_recommended": True,
+                            "restreaming_reason": (
+                                "snapshot_only_live_stream_restreaming_recommended"
+                            ),
+                            "tested_at": "2026-06-18T10:05:00+00:00",
+                        },
+                    }
+                }
+            }
+        }
+
+    entity = binary_sensor.ReceiverCameraRestreamingRecommendedBinarySensor(
+        FakeHass(),
+        _entry(),
+    )
+
+    asyncio.run(entity.async_update())
+
+    assert entity._attr_is_on is True
+    assert entity._attr_extra_state_attributes == {
+        "camera_entity": "camera.front_door",
+        "recommended_stream_type": "snapshot",
+        "recommendation_reason": "snapshot_available",
+        "restreaming_reason": "snapshot_only_live_stream_restreaming_recommended",
+        "tested_at": "2026-06-18T10:05:00+00:00",
+    }
 
 
 def test_remote_connected_sensor_updates_from_receiver(monkeypatch) -> None:  # type: ignore[no-untyped-def]

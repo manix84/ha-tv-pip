@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.22.0 - Camera Restreaming Sensor 🧵
+
+- Added a `Camera Restreaming Recommended` binary sensor to the receiver device so snapshot-only or unavailable live stream paths are visible without opening diagnostics 🧭
+- Added restreaming attributes to the new sensor, including camera entity, recommendation reason, restreaming reason, and test timestamp 🔎
+- Updated translations, docs, and tests for the new visibility path 🧪
+
 ## 1.21.2 - Restreaming Guidance Groundwork 🧵
 
 - Added `restreaming_recommended` and `restreaming_reason` to camera compatibility and calibration results so snapshot-only or unavailable live paths point users toward a TV-safe restreamed source 🧭
