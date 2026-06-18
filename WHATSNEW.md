@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.24.2 - Compatibility Response Provider Hints 🧵
+
+- Added `restreaming_provider` metadata to camera compatibility and calibration responses when restreaming is recommended 🔎
+- Added compact provider status and next-step hints to calibration summaries so dashboards can show clearer guidance 🧭
+- Updated tests and docs for the expanded compatibility response shape 🧪
+
 ## 1.24.1 - Restreaming Guidance Metadata 🧵
 
 - Added current workaround paths and a documentation URL to restreaming provider metadata so diagnostics and sensors point users toward TV-safe stream fixes 🩺

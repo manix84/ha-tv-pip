@@ -1131,7 +1131,7 @@ Per-camera defaults are stored through `ha_tv_pip.set_camera_defaults` and remov
 
 `ha_tv_pip.calibrate_camera` wraps the compatibility test in a friendlier workflow. It returns a `summary` object with compatibility, recommended stream type, recommendation reason, whether defaults were saved, and a next-step hint. Use `save: true` to store the recommended stream strategy plus any explicit calibration fields as per-camera defaults.
 
-Calibration and compatibility responses also include `restreaming_recommended`, `restreaming_reason`, `restreaming_next_step`, and `restreaming_options`. These fields are populated when HLS and MJPEG are unavailable, or when the receiver/camera path is snapshot-only. Treat them as a signal to try a different camera entity, a lower-resolution profile, a TV-safe H.264/HLS or MJPEG substream, or, in the future, go2rtc, WebRTC, or transcoding support.
+Calibration and compatibility responses also include `restreaming_recommended`, `restreaming_reason`, `restreaming_next_step`, `restreaming_options`, and `restreaming_provider`. These fields are populated when HLS and MJPEG are unavailable, or when the receiver/camera path is snapshot-only. Treat them as a signal to try a different camera entity, a lower-resolution profile, a TV-safe H.264/HLS or MJPEG substream, or, in the future, go2rtc, WebRTC, or transcoding support.
 
 See [camera compatibility](camera-compatibility.md) for the current TV-safe stream workflow, calibration loop, snapshot fallback guidance, and planned restreaming provider model.
 
@@ -1139,7 +1139,7 @@ Stored per-camera defaults are exposed in config entry diagnostics. A recommende
 
 The compatibility test includes `recommended_stream_type` and `recommendation_reason`. `auto` is recommended when HLS is available and the receiver can carry an MJPEG playable fallback. `mjpeg_first` is recommended when HLS and MJPEG are available but playable fallback is not, because it reduces receiver decoder risk while still allowing HLS fallback. HLS, MJPEG, or snapshot are recommended when only those paths are available.
 
-`restreaming_reason` is intentionally separate from `recommended_stream_type`. A snapshot recommendation can still be valid for fast alerts, while `snapshot_only_live_stream_restreaming_recommended` explains that live video likely needs another source. `no_supported_stream_paths_restreaming_recommended` means Home Assistant could not resolve a supported HLS, MJPEG, or snapshot path for the selected camera/receiver pair. `restreaming_next_step` gives the broad next action, and `restreaming_options` lists stable option keys that can be translated or rendered by future UI helpers.
+`restreaming_reason` is intentionally separate from `recommended_stream_type`. A snapshot recommendation can still be valid for fast alerts, while `snapshot_only_live_stream_restreaming_recommended` explains that live video likely needs another source. `no_supported_stream_paths_restreaming_recommended` means Home Assistant could not resolve a supported HLS, MJPEG, or snapshot path for the selected camera/receiver pair. `restreaming_next_step` gives the broad next action, `restreaming_options` lists stable option keys that can be translated or rendered by future UI helpers, and `restreaming_provider` exposes current workaround paths plus planned provider families.
 
 The response also includes `recommended_defaults`, which previews the exact per-camera defaults that would be saved. This lets users inspect the recommendation before setting `save_recommendation: true`.
 

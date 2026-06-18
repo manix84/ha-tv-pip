@@ -1838,6 +1838,26 @@ def test_camera_stream_test_recommends_restreaming_for_snapshot_only(
         "try_go2rtc_or_webrtc_bridge",
         "wait_for_transcoding_support",
     ]
+    assert result["restreaming_provider"] == {
+        "enabled": False,
+        "status": "planned",
+        "configured_provider": None,
+        "active_provider": None,
+        "supported_providers": [],
+        "planned_providers": ["go2rtc", "webrtc", "transcoding"],
+        "recommended_current_paths": [
+            "use_stream_camera_entity",
+            "use_mjpeg_first",
+            "use_snapshot_fallback",
+            "use_camera_substream",
+            "save_per_camera_defaults",
+        ],
+        "next_step": "configure_tv_safe_live_stream_source",
+        "documentation_url": (
+            "https://github.com/manix84/ha-tv-pip/blob/main/"
+            "docs/camera-compatibility.md"
+        ),
+    }
     assert result["recommended_defaults"] == {ATTR_STREAM_TYPE: "snapshot"}
 
 
@@ -1911,10 +1931,34 @@ def test_calibrate_camera_flags_restreaming_when_no_paths_work(
             "try_go2rtc_or_webrtc_bridge",
             "wait_for_transcoding_support",
         ],
+        "restreaming_provider_status": "planned",
+        "restreaming_provider_next_step": (
+            "configure_tv_safe_live_stream_source"
+        ),
         "saved": False,
         "next_step": "try_different_camera_entity_or_stream_source",
     }
     assert result["restreaming_recommended"] is True
+    assert result["restreaming_provider"] == {
+        "enabled": False,
+        "status": "planned",
+        "configured_provider": None,
+        "active_provider": None,
+        "supported_providers": [],
+        "planned_providers": ["go2rtc", "webrtc", "transcoding"],
+        "recommended_current_paths": [
+            "use_stream_camera_entity",
+            "use_mjpeg_first",
+            "use_snapshot_fallback",
+            "use_camera_substream",
+            "save_per_camera_defaults",
+        ],
+        "next_step": "configure_tv_safe_live_stream_source",
+        "documentation_url": (
+            "https://github.com/manix84/ha-tv-pip/blob/main/"
+            "docs/camera-compatibility.md"
+        ),
+    }
     assert "recommended_defaults" not in result
 
 

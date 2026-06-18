@@ -53,7 +53,7 @@ data:
   save: false
 ```
 
-Review the returned `summary`, `recommended_stream_type`, `recommended_defaults`, `restreaming_recommended`, `restreaming_next_step`, and `restreaming_options`.
+Review the returned `summary`, `recommended_stream_type`, `recommended_defaults`, `restreaming_recommended`, `restreaming_next_step`, `restreaming_options`, and `restreaming_provider`.
 
 When the recommendation looks right, run the same action with `save: true`. The saved per-camera defaults can include stream type, stream camera entity, snapshot camera entity, snapshot fallback, duration, position, width, and height.
 

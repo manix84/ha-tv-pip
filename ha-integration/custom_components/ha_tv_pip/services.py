@@ -39,6 +39,7 @@ from .const import (
     SERVICE_TEST_CAMERA_STREAM,
 )
 from .remote import remote_registry
+from .restreaming import restreaming_provider_metadata
 
 if TYPE_CHECKING:
 
@@ -1283,7 +1284,8 @@ def _camera_calibration_summary(result: dict[str, Any]) -> dict[str, Any]:
     recommended = result.get("recommended_stream_type")
     saved = bool(result.get("saved_as_defaults", False))
     compatible = recommended is not None
-    return {
+    provider_metadata = result.get("restreaming_provider")
+    summary = {
         "compatible": compatible,
         "recommended_stream_type": recommended,
         "recommendation_reason": result.get("recommendation_reason"),
@@ -1296,6 +1298,12 @@ def _camera_calibration_summary(result: dict[str, Any]) -> dict[str, Any]:
         "saved": saved,
         "next_step": _camera_calibration_next_step(compatible, saved),
     }
+    if isinstance(provider_metadata, dict):
+        summary["restreaming_provider_status"] = provider_metadata.get("status")
+        summary["restreaming_provider_next_step"] = provider_metadata.get(
+            "next_step"
+        )
+    return summary
 
 
 def _camera_calibration_next_step(compatible: bool, saved: bool) -> str:
@@ -1353,6 +1361,11 @@ async def _async_camera_compatibility_report(
         results,
         recommended,
     )
+    restreaming_provider = (
+        restreaming_provider_metadata()
+        if bool(restreaming_guidance.get("restreaming_recommended", False))
+        else None
+    )
     result: dict[str, Any] = {
         "camera_entity": request.camera_entity,
         "stream_camera_entity": stream_entity,
@@ -1364,6 +1377,7 @@ async def _async_camera_compatibility_report(
         "recommended_stream_type": recommended,
         "recommendation_reason": recommendation_reason,
         **restreaming_guidance,
+        "restreaming_provider": restreaming_provider,
         "results": results,
     }
     result["recommended_defaults"] = _recommended_camera_defaults_payload(
