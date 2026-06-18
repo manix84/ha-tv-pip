@@ -1453,6 +1453,7 @@ async def _async_camera_compatibility_report(
         "preferred_stream_type": request.stream_type,
         "recommended_stream_type": recommended,
         "recommendation_reason": recommendation_reason,
+        "stream_source": _camera_stream_source(request),
         "restream_provider": request.restream_provider,
         **restreaming_guidance,
         "restreaming_provider": restreaming_provider,
@@ -1597,6 +1598,7 @@ def _camera_action_result(
         "receiver": receiver.name,
         "receiver_device_id": receiver.device_id,
         "requested_stream_type": request.stream_type,
+        "stream_source": _camera_stream_source(request),
         "snapshot_fallback": request.snapshot_fallback,
         "status": status,
         "stage": stage,
@@ -1624,6 +1626,18 @@ def _camera_action_result(
     if detail is not None:
         result["detail"] = detail
     return {key: value for key, value in result.items() if value is not None}
+
+
+def _camera_stream_source(request: ShowCameraRequest) -> str:
+    if request.restream_url is not None:
+        return "restream_url"
+    if request.stream_type == STREAM_TYPE_SNAPSHOT:
+        if request.snapshot_camera_entity:
+            return "snapshot_camera_entity"
+        return "camera_entity"
+    if request.stream_camera_entity:
+        return "stream_camera_entity"
+    return "camera_entity"
 
 
 def _store_camera_action_result(

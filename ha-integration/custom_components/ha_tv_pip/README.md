@@ -258,11 +258,11 @@ The response includes `recommended_defaults`, which previews the exact per-camer
 
 Set `save_recommendation: true` to save the recommended stream strategy as per-camera defaults. Any explicit test fields, such as width, height, duration, position, snapshot fallback, stream camera entity, or snapshot camera entity, are saved with it. If no compatible stream is found, no defaults are saved.
 
-After a compatibility test runs, the receiver device's `Last Camera Compatibility` sensor shows the latest recommended stream type. Its attributes include the tested camera, recommendation reason, stream availability results, and timestamp.
+After a compatibility test runs, the receiver device's `Last Camera Compatibility` sensor shows the latest recommended stream type. Its attributes include the tested camera, recommendation reason, stream availability results, source classification, and timestamp.
 
 The receiver device also exposes a `Camera Restreaming Recommended` binary sensor. It turns on when the latest compatibility result says live video likely needs another TV-safe source, and its attributes include the camera entity, recommended stream type, recommendation reason, restreaming reason, next step, suggested options, current workaround paths, planned provider families, documentation URL, and timestamp.
 
-After a real camera or snapshot action runs, the receiver device's `Last Camera Result` sensor shows whether the latest command was accepted or failed. Its attributes include the requested stream strategy, final stream type, transport, fallback usage, popup size, and failure reason where available. URLs are not stored.
+After a real camera or snapshot action runs, the receiver device's `Last Camera Result` sensor shows whether the latest command was accepted or failed. Its attributes include the requested stream strategy, final stream type, source classification, transport, fallback usage, popup size, and failure reason where available. URLs are not stored.
 
 ```yaml
 service: ha_tv_pip.set_camera_defaults

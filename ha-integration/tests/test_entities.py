@@ -314,6 +314,7 @@ def test_last_camera_result_sensor_reads_stored_result() -> None:
                         "camera_entity": "camera.front_door",
                         "final_stream_type": "mjpeg",
                         "status": "accepted",
+                        "stream_source": "camera_entity",
                         "transport": "local",
                     }
                 }
@@ -329,6 +330,7 @@ def test_last_camera_result_sensor_reads_stored_result() -> None:
         "camera_entity": "camera.front_door",
         "final_stream_type": "mjpeg",
         "status": "accepted",
+        "stream_source": "camera_entity",
         "transport": "local",
     }
 
@@ -351,6 +353,7 @@ def test_last_camera_compatibility_sensor_reads_latest_result() -> None:
                             "recommendation_reason": (
                                 "mjpeg_first_reduces_receiver_decoder_risk"
                             ),
+                            "stream_source": "stream_camera_entity",
                             "tested_at": "2026-06-18T10:05:00+00:00",
                         },
                     }
@@ -367,6 +370,7 @@ def test_last_camera_compatibility_sensor_reads_latest_result() -> None:
         "camera_entity": "camera.front_door",
         "recommended_stream_type": "mjpeg_first",
         "recommendation_reason": "mjpeg_first_reduces_receiver_decoder_risk",
+        "stream_source": "stream_camera_entity",
         "tested_at": "2026-06-18T10:05:00+00:00",
     }
 

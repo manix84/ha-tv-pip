@@ -1609,6 +1609,7 @@ def test_camera_stream_test_stores_non_sensitive_compatibility_report(
     )
     assert result["restreaming_recommended"] is False
     assert "restreaming_provider" not in result
+    assert result["stream_source"] == "camera_entity"
     assert result["recommended_defaults"] == {ATTR_STREAM_TYPE: "mjpeg_first"}
     assert result["tested_at"]
     assert result["results"] == [
@@ -1757,6 +1758,7 @@ def test_camera_stream_test_can_use_restream_url(
     assert result["recommendation_reason"] == "hls_available"
     assert result["has_restream_url"] is True
     assert result["restream_provider"] == "go2rtc"
+    assert result["stream_source"] == "restream_url"
     assert "homeassistant.local:1984" not in str(
         {
             key: value
@@ -2252,6 +2254,7 @@ def test_show_camera_service_stores_last_camera_result(
         "receiver": "Nursery TV",
         "receiver_device_id": "device-1",
         "requested_stream_type": "mjpeg",
+        "stream_source": "camera_entity",
         "snapshot_fallback": True,
         "status": "accepted",
         "stage": "receiver_command",
