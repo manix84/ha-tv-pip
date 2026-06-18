@@ -1,4 +1,4 @@
-name: Android TV App Quality 📺
+name: Android App Quality Check 📺
 
 on:
   push:

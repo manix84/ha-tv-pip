@@ -1,4 +1,4 @@
-name: Website Quality 🌐
+name: Website Quality Check 🌐
 
 on:
   push:
