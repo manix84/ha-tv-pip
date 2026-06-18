@@ -62,6 +62,8 @@ Until HA TV PiP is accepted as a default HACS repository:
 
 The HACS release zip contains `custom_components/ha_tv_pip/` at the archive root. It does not include the monorepo path `ha-integration/custom_components/ha_tv_pip/`.
 
+For beta updates, update the HACS integration, restart Home Assistant, then install the matching Android receiver APK from the same GitHub Release. The receiver and integration can gracefully degrade around some missing optional features, but matching versions are the recommended support path.
+
 ## Setup 🤝
 
 After installation and Home Assistant restart:

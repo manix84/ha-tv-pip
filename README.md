@@ -225,6 +225,13 @@ Published GitHub Releases are treated as immutable. If a release for the current
 
 Play Store deployment is not implemented yet. Release-prep notes for listing copy, privacy wording, screenshots, signing, and release notes live in `docs/play-store.md`.
 
+Beta install/update validation for `1.27.0` confirmed:
+
+- Local debug APK build produces `ha-tv-pip-android-debug-v1.27.0.apk`.
+- Local unsigned release APK build produces `ha-tv-pip-android-release-v1.27.0.apk`.
+- Integration packaging produces both `ha-tv-pip-integration-v1.27.0.zip` and `ha-tv-pip-integration.zip`.
+- The HACS zip contains `custom_components/ha_tv_pip/` at the archive root.
+
 ## HACS Installation 🧩
 
 Until HA TV PiP is accepted as a default HACS repository, add it as a custom repository:
@@ -236,6 +243,8 @@ Until HA TV PiP is accepted as a default HACS repository, add it as a custom rep
 5. Install HA TV PiP.
 6. Restart Home Assistant.
 7. Add the integration from Settings > Devices & services, preferably using the discovered receiver card.
+
+To update a beta install, install the newer integration release in HACS, restart Home Assistant, then update or sideload the matching Android receiver APK on each TV. Matching receiver and integration versions make diagnostics and compatibility checks easier to interpret.
 
 ## Beta Readiness 🧪
 

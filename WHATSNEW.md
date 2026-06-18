@@ -1,6 +1,6 @@
 # What's New ✨
 
-## Unreleased - Public Beta Support Hardening 🧪
+## 1.27.0 - Public Beta Support Hardening 🧪
 
 - Added a dedicated troubleshooting guide for discovery, pairing, popup display, stream compatibility, launcher recovery, remote receiver mode, and support data collection 🩺
 - Replaced the loose bug report Markdown template with a structured GitHub issue form that asks for receiver version, integration version, Home Assistant version, TV model, camera platform, stream strategy, service YAML, and redacted diagnostics 🐛

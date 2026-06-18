@@ -714,6 +714,33 @@ Documentation work in Stage 12 included:
 
 Stage 12 finished with GitHub Release `v0.48.0` from `main` after local checks, builds, packaging, website build, and docs were clean.
 
+## Current Beta Install/Update Validation
+
+The `1.27.0` beta install/update path was locally validated with:
+
+```sh
+npm run version:check
+npm run android:assemble:debug
+npm run android:assemble:release
+npm run package:integration
+```
+
+Validated outputs:
+
+- `dist/ha-tv-pip-android-debug-v1.27.0.apk`
+- `dist/ha-tv-pip-android-release-v1.27.0.apk`
+- `dist/ha-tv-pip-integration-v1.27.0.zip`
+- `dist/ha-tv-pip-integration.zip`
+
+The integration zips were checked to confirm they contain `custom_components/ha_tv_pip/` at the archive root and do not include monorepo wrapper paths such as `ha-integration/`, `android-tv-app/`, `docs/`, `dist/`, `.git/`, or `node_modules/`.
+
+Recommended beta update order:
+
+1. Update the Home Assistant integration through HACS.
+2. Restart Home Assistant.
+3. Install the matching Android receiver APK on each TV.
+4. Confirm receiver status and compatibility sensors show matching receiver/integration versions where available.
+
 ---
 
 ### Home Assistant Development
