@@ -1498,6 +1498,7 @@ def test_camera_stream_test_stores_non_sensitive_compatibility_report(
         result["recommendation_reason"]
         == "mjpeg_first_reduces_receiver_decoder_risk"
     )
+    assert result["restreaming_recommended"] is False
     assert result["recommended_defaults"] == {ATTR_STREAM_TYPE: "mjpeg_first"}
     assert result["tested_at"]
     assert result["results"] == [
@@ -1569,6 +1570,7 @@ def test_camera_stream_test_recommends_auto_with_playable_fallback(
     )
 
     assert result["recommended_stream_type"] == "auto"
+    assert result["restreaming_recommended"] is False
     assert result["recommended_defaults"] == {ATTR_STREAM_TYPE: "auto"}
     assert (
         result["recommendation_reason"]
@@ -1736,6 +1738,8 @@ def test_calibrate_camera_can_save_recommendation_with_summary(
         "compatible": True,
         "recommended_stream_type": "mjpeg_first",
         "recommendation_reason": "mjpeg_first_reduces_receiver_decoder_risk",
+        "restreaming_recommended": False,
+        "restreaming_reason": None,
         "saved": True,
         "next_step": "use_show_camera_without_repeating_defaults",
     }
@@ -1756,6 +1760,144 @@ def test_calibrate_camera_can_save_recommendation_with_summary(
             }
         }
     }
+
+
+def test_camera_stream_test_recommends_restreaming_for_snapshot_only(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from custom_components.ha_tv_pip import services
+
+    class FakeRemoteRegistry:
+        def is_connected(self, device_id: str) -> bool:
+            return False
+
+    monkeypatch.setattr(services, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(
+        services,
+        "_async_receiver_capabilities",
+        lambda receiver: asyncio.sleep(
+            0,
+            result=_capabilities(stream_types=("snapshot",)),
+        ),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.components.camera",
+        FakeCameraModule(None),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.exceptions",
+        FakeExceptionsModule("homeassistant.exceptions"),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.helpers.network",
+        FakeNetworkModule("homeassistant.helpers.network"),
+    )
+
+    entry = FakeEntry(
+        entry_id="entry-1",
+        data={
+            CONF_DEVICE_ID: "device-1",
+            CONF_NAME: "Nursery TV",
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "token",
+        },
+    )
+    hass = FakeHass(
+        entries=[entry],
+        states={"camera.front_door": FakeState({"access_token": "snapshot-token"})},
+    )
+
+    result = asyncio.run(
+        services.async_handle_test_camera_stream(
+            hass,
+            FakeCall(
+                data={ATTR_CAMERA_ENTITY: "camera.front_door"},
+                target={ATTR_DEVICE_ID: "device-1"},
+            ),
+        )
+    )
+
+    assert result["recommended_stream_type"] == "snapshot"
+    assert result["recommendation_reason"] == "snapshot_available"
+    assert result["restreaming_recommended"] is True
+    assert (
+        result["restreaming_reason"]
+        == "snapshot_only_live_stream_restreaming_recommended"
+    )
+    assert result["recommended_defaults"] == {ATTR_STREAM_TYPE: "snapshot"}
+
+
+def test_calibrate_camera_flags_restreaming_when_no_paths_work(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from custom_components.ha_tv_pip import services
+
+    class FakeRemoteRegistry:
+        def is_connected(self, device_id: str) -> bool:
+            return False
+
+    monkeypatch.setattr(services, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(
+        services,
+        "_async_receiver_capabilities",
+        lambda receiver: asyncio.sleep(0, result=_capabilities()),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.components.camera",
+        FakeCameraModule(None),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.exceptions",
+        FakeExceptionsModule("homeassistant.exceptions"),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.helpers.network",
+        FakeNetworkModule("homeassistant.helpers.network"),
+    )
+
+    entry = FakeEntry(
+        entry_id="entry-1",
+        data={
+            CONF_DEVICE_ID: "device-1",
+            CONF_NAME: "Nursery TV",
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "token",
+        },
+    )
+    hass = FakeHass(
+        entries=[entry],
+        states={"camera.front_door": FakeState({})},
+    )
+
+    result = asyncio.run(
+        services.async_handle_calibrate_camera(
+            hass,
+            FakeCall(
+                data={ATTR_CAMERA_ENTITY: "camera.front_door"},
+                target={ATTR_DEVICE_ID: "device-1"},
+            ),
+        )
+    )
+
+    assert result["summary"] == {
+        "compatible": False,
+        "recommended_stream_type": None,
+        "recommendation_reason": "no_compatible_stream_available",
+        "restreaming_recommended": True,
+        "restreaming_reason": "no_supported_stream_paths_restreaming_recommended",
+        "saved": False,
+        "next_step": "try_different_camera_entity_or_stream_source",
+    }
+    assert result["restreaming_recommended"] is True
+    assert "recommended_defaults" not in result
 
 
 def test_show_camera_service_stores_last_camera_result(

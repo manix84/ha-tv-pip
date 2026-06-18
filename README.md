@@ -44,6 +44,8 @@ Post-1.0 compatibility polish now includes receiver-level Home Assistant default
 
 The current compatibility pass adds Home Assistant-side camera stream testing and per-camera defaults. Users can test HLS, MJPEG, and snapshot availability for a camera/receiver pair, then store camera-specific stream, fallback, position, duration, width, and height defaults so automations stay simpler.
 
+Compatibility tests now flag when a camera likely needs a TV-safe restreamed source. If HLS and MJPEG are unavailable, or the receiver can only use snapshots, results include `restreaming_recommended` and `restreaming_reason` so users know to try another camera entity, a lower-resolution profile, go2rtc, WebRTC, or future transcoding support.
+
 Receiver/integration compatibility checks now compare receiver API and capability metadata with the Home Assistant integration. Older receivers without capability metadata are treated as legacy best-effort, degraded receivers expose missing optional features in diagnostics, and camera popups drop optional title/message footer fields when the receiver cannot render them.
 
 Camera troubleshooting now includes a `Last Camera Result` receiver sensor and redacted diagnostics for the latest camera or snapshot command. The result records the requested stream strategy, final stream type sent to the receiver, transport path, fallback usage, popup size, status, and failure reason where available without storing camera URLs.
@@ -238,6 +240,7 @@ Available now:
 - Home Assistant service: `ha_tv_pip.show_notification` 🔔
 - Home Assistant HLS stream resolution with snapshot fallback 🎬
 - Camera compatibility testing and per-camera stream defaults 🧭
+- Restreaming guidance when a camera needs a TV-safe source 🧵
 - Zeroconf discovery and TV-visible pairing 🔎
 - Receiver status, PiP controls, launcher controls, and diagnostics 🧰
 - Optional remote receiver mode through the user's own Home Assistant external URL 🌍

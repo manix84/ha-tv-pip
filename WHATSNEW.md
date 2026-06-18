@@ -1,5 +1,12 @@
 # What's New ✨
 
+## 1.21.2 - Restreaming Guidance Groundwork 🧵
+
+- Added `restreaming_recommended` and `restreaming_reason` to camera compatibility and calibration results so snapshot-only or unavailable live paths point users toward a TV-safe restreamed source 🧭
+- Updated calibration summaries to include restreaming guidance without adding unsupported WebRTC or transcoding command types yet 📺
+- Documented the future WebRTC, go2rtc, and transcoding path while keeping current support focused on HLS, MJPEG, and snapshots 📝
+- Added tests for snapshot-only and no-compatible-stream camera compatibility results 🧪
+
 ## 1.21.1 - Camera Defaults Diagnostics 🩺
 
 - Added stored per-camera defaults to Home Assistant diagnostics so calibration and saved stream strategy state are easier to inspect 🩺

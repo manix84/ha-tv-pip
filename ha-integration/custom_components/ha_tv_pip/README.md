@@ -178,7 +178,7 @@ data:
   save: false
 ```
 
-Inspect `summary`, `recommendation_reason`, and `recommended_defaults` in the action response.
+Inspect `summary`, `recommendation_reason`, `restreaming_recommended`, `restreaming_reason`, and `recommended_defaults` in the action response.
 
 Save the recommendation when it looks right:
 
@@ -223,6 +223,8 @@ data:
 
 Calibration tests HLS, MJPEG, and snapshot availability, returns a summary with the recommended stream strategy and next step, and can save the recommendation as per-camera defaults.
 
+If live HLS/MJPEG paths are unavailable, the response includes `restreaming_recommended: true` and a `restreaming_reason`. This means the current camera entity is likely snapshot-only for HA TV PiP, or needs a TV-safe source such as another camera entity, a lower-resolution profile, go2rtc, WebRTC, or future transcoding support.
+
 For lower-level troubleshooting, use `ha_tv_pip.test_camera_stream`:
 
 ```yaml
@@ -242,6 +244,8 @@ data:
 The compatibility test checks whether Home Assistant can resolve HLS, MJPEG, and snapshot URLs for the selected camera and receiver. It stores a non-sensitive last result in diagnostics, including available stream types and the recommended stream type. It does not store or expose camera URLs in the compatibility result.
 
 The result also includes `recommendation_reason`, which explains why the integration recommends `auto`, `mjpeg_first`, `hls`, `mjpeg`, or `snapshot`. For example, a receiver that supports playable fallback may prefer `auto`, while a receiver without playable fallback can recommend `mjpeg_first` when both HLS and MJPEG are available.
+
+`restreaming_recommended` is separate from `recommended_stream_type`. A `snapshot` recommendation can be useful for fast alerts, while `snapshot_only_live_stream_restreaming_recommended` explains that a live popup probably needs a different stream source. `no_supported_stream_paths_restreaming_recommended` means Home Assistant could not resolve any supported HLS, MJPEG, or snapshot path for the selected camera/receiver pair.
 
 The response includes `recommended_defaults`, which previews the exact per-camera defaults that would be stored. Inspect that payload first if you want to verify the recommendation before saving it.
 
@@ -289,7 +293,7 @@ The service defaults to the receiver's preferred stream strategy, or `stream_typ
 `stream_camera_entity` is optional and defaults to `camera_entity`; set it when a lower-resolution, H.264, or MJPEG camera entity is more reliable for live playback on Android TV. When `snapshot_fallback` is enabled, the integration also sends a snapshot preview so the receiver can show a still image while the video stream loads. `snapshot_camera_entity` is optional and defaults to `camera_entity`; set it when a separate camera entity provides a better still image or substream preview.
 `title`, `message`, and the styling fields are optional; when either `title` or `message` is present, the receiver renders the text below the camera or snapshot inside the same rounded glass popup. Width and height can be used by themselves to resize the media popup without showing a text footer.
 If a receiver reports that a requested stream type, snapshot mode, notification mode, or media text footer is unsupported, Home Assistant stops before sending the command and returns a clear service error. Older receivers that do not report capabilities keep the previous best-effort behaviour.
-For cameras with multiple streams, use a TV-compatible H.264/HLS stream where possible, or try `stream_type: mjpeg` when HLS is unsupported on the receiver. Lower-resolution secondary streams are often more reliable for TV popups than high-resolution main streams. The receiver enables Media3 decoder fallback, but unsupported camera codecs still need a compatible camera profile, MJPEG fallback, or future transcoding support.
+For cameras with multiple streams, use a TV-compatible H.264/HLS stream where possible, or try `stream_type: mjpeg` when HLS is unsupported on the receiver. Lower-resolution secondary streams are often more reliable for TV popups than high-resolution main streams. The receiver enables Media3 decoder fallback, but unsupported camera codecs still need a compatible camera profile, MJPEG fallback, go2rtc/WebRTC, or future transcoding support.
 
 ## Snapshot Service 🖼️
 

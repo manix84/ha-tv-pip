@@ -1287,6 +1287,10 @@ def _camera_calibration_summary(result: dict[str, Any]) -> dict[str, Any]:
         "compatible": compatible,
         "recommended_stream_type": recommended,
         "recommendation_reason": result.get("recommendation_reason"),
+        "restreaming_recommended": bool(
+            result.get("restreaming_recommended", False)
+        ),
+        "restreaming_reason": result.get("restreaming_reason"),
         "saved": saved,
         "next_step": _camera_calibration_next_step(compatible, saved),
     }
@@ -1343,6 +1347,10 @@ async def _async_camera_compatibility_report(
         results,
         capabilities,
     )
+    restreaming_recommended, restreaming_reason = _restreaming_recommendation(
+        results,
+        recommended,
+    )
     result: dict[str, Any] = {
         "camera_entity": request.camera_entity,
         "stream_camera_entity": stream_entity,
@@ -1353,6 +1361,8 @@ async def _async_camera_compatibility_report(
         "preferred_stream_type": request.stream_type,
         "recommended_stream_type": recommended,
         "recommendation_reason": recommendation_reason,
+        "restreaming_recommended": restreaming_recommended,
+        "restreaming_reason": restreaming_reason,
         "results": results,
     }
     result["recommended_defaults"] = _recommended_camera_defaults_payload(
@@ -1413,6 +1423,25 @@ def _recommended_stream_type(
     if STREAM_TYPE_SNAPSHOT in available:
         return STREAM_TYPE_SNAPSHOT, "snapshot_available"
     return None, "no_compatible_stream_available"
+
+
+def _restreaming_recommendation(
+    results: list[dict[str, Any]],
+    recommended_stream_type: str | None,
+) -> tuple[bool, str | None]:
+    """Return guidance for cameras that likely need a restreamed TV-safe source."""
+
+    available = {
+        str(result["stream_type"])
+        for result in results
+        if bool(result.get("available", False))
+    }
+    has_live_stream = bool({STREAM_TYPE_HLS, STREAM_TYPE_MJPEG} & available)
+    if has_live_stream:
+        return False, None
+    if recommended_stream_type == STREAM_TYPE_SNAPSHOT:
+        return True, "snapshot_only_live_stream_restreaming_recommended"
+    return True, "no_supported_stream_paths_restreaming_recommended"
 
 
 def _store_camera_compatibility(
