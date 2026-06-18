@@ -107,6 +107,9 @@
       },
       "stream_type": {
         "name": "Active Stream Type"
+      },
+      "last_camera_compatibility": {
+        "name": "Last Camera Compatibility"
       }
     },
     "switch": {

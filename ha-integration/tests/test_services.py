@@ -1497,6 +1497,7 @@ def test_camera_stream_test_stores_non_sensitive_compatibility_report(
         result["recommendation_reason"]
         == "mjpeg_first_reduces_receiver_decoder_risk"
     )
+    assert result["tested_at"]
     assert result["results"] == [
         {"stream_type": "hls", "available": True},
         {"stream_type": "mjpeg", "available": True},

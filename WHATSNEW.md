@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.20.0 - Compatibility Result Sensor 🩺
+
+- Added a `Last Camera Compatibility` receiver sensor so the latest camera test recommendation is visible on the Home Assistant device page 🧭
+- Added timestamps to camera compatibility reports so the integration can identify the most recent test result reliably 🕒
+- Updated tests, translations, docs, and website copy for the new compatibility visibility path 🧪
+
 ## 1.19.0 - Save Camera Recommendations ⚙️
 
 - Added `save_recommendation` to `ha_tv_pip.test_camera_stream` so a successful compatibility test can store the recommended stream strategy as a per-camera default 🧭

@@ -1129,6 +1129,8 @@ The compatibility test includes `recommended_stream_type` and `recommendation_re
 
 Set `save_recommendation: true` on `ha_tv_pip.test_camera_stream` to write the recommended stream strategy into per-camera defaults. Explicit test fields are saved alongside the recommendation, so a calibration action can set `mjpeg_first`, snapshot fallback, dimensions, position, duration, and alternate stream/snapshot entities in one pass. If the test cannot recommend a compatible stream type, no defaults are written.
 
+The latest compatibility test is also exposed through the receiver's `Last Camera Compatibility` sensor. The sensor state is the recommended stream type and the attributes include the tested camera, recommendation reason, stream availability results, and timestamp.
+
 Real camera and snapshot actions store a redacted last result under the receiver. The `Last Camera Result` sensor and config entry diagnostics expose status, stage, requested stream type, final stream type, transport, fallback flags, size, and failure reason without storing stream URLs.
 
 Receiver/integration compatibility is also calculated from `/status` API and capability metadata. Current receivers should report `compatible`; older receivers without capability metadata are treated as `legacy` best-effort; receivers missing optional presentation, fallback, launcher, or remote settings support report `degraded`; receivers missing required API or display stream support report `incompatible`. These fields are exposed on the status sensor attributes and in diagnostics.

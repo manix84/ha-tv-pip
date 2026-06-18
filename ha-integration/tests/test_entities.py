@@ -27,7 +27,10 @@ from custom_components.ha_tv_pip.const import (
     CONF_TOKEN,
     DOMAIN,
 )
-from custom_components.ha_tv_pip.services import CAMERA_LAST_RESULT_KEY
+from custom_components.ha_tv_pip.services import (
+    CAMERA_COMPATIBILITY_KEY,
+    CAMERA_LAST_RESULT_KEY,
+)
 
 
 @dataclass
@@ -129,6 +132,7 @@ def test_sensor_setup_adds_status_sensor() -> None:
         "device-1_stream_type",
         "device-1_last_error",
         "device-1_receiver_version",
+        "device-1_last_camera_compatibility",
         "device-1_last_camera_result",
     ]
     assert [entity._attr_translation_key for entity in added] == [
@@ -137,6 +141,7 @@ def test_sensor_setup_adds_status_sensor() -> None:
         "stream_type",
         "last_error",
         "receiver_version",
+        "last_camera_compatibility",
         "last_camera_result",
     ]
 
@@ -293,6 +298,44 @@ def test_last_camera_result_sensor_reads_stored_result() -> None:
         "final_stream_type": "mjpeg",
         "status": "accepted",
         "transport": "local",
+    }
+
+
+def test_last_camera_compatibility_sensor_reads_latest_result() -> None:
+    class FakeHass:
+        data = {
+            DOMAIN: {
+                CAMERA_COMPATIBILITY_KEY: {
+                    "entry-1": {
+                        "camera.back_garden": {
+                            "camera_entity": "camera.back_garden",
+                            "recommended_stream_type": "hls",
+                            "recommendation_reason": "hls_available",
+                            "tested_at": "2026-06-18T10:00:00+00:00",
+                        },
+                        "camera.front_door": {
+                            "camera_entity": "camera.front_door",
+                            "recommended_stream_type": "mjpeg_first",
+                            "recommendation_reason": (
+                                "mjpeg_first_reduces_receiver_decoder_risk"
+                            ),
+                            "tested_at": "2026-06-18T10:05:00+00:00",
+                        },
+                    }
+                }
+            }
+        }
+
+    entity = sensor.ReceiverLastCameraCompatibilitySensor(FakeHass(), _entry())
+
+    asyncio.run(entity.async_update())
+
+    assert entity._attr_native_value == "mjpeg_first"
+    assert entity._attr_extra_state_attributes == {
+        "camera_entity": "camera.front_door",
+        "recommended_stream_type": "mjpeg_first",
+        "recommendation_reason": "mjpeg_first_reduces_receiver_decoder_risk",
+        "tested_at": "2026-06-18T10:05:00+00:00",
     }
 
 

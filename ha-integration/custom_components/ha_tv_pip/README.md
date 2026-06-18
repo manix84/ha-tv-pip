@@ -94,6 +94,7 @@ Each paired receiver creates:
 
 - Status sensor with playback state, receiver diagnostics, and parsed receiver capability metadata.
 - Focused sensors for active display mode, active stream type, last receiver error, and receiver app version.
+- Last Camera Compatibility sensor with the latest stream test recommendation.
 - Last Camera Result sensor with the latest redacted camera/snapshot command outcome.
 - Connected binary sensor based on the local `/status` endpoint.
 - Remote connected binary sensor for outbound remote receiver mode.
@@ -180,6 +181,8 @@ The compatibility test checks whether Home Assistant can resolve HLS, MJPEG, and
 The result also includes `recommendation_reason`, which explains why the integration recommends `auto`, `mjpeg_first`, `hls`, `mjpeg`, or `snapshot`. For example, a receiver that supports playable fallback may prefer `auto`, while a receiver without playable fallback can recommend `mjpeg_first` when both HLS and MJPEG are available.
 
 Set `save_recommendation: true` to save the recommended stream strategy as per-camera defaults. Any explicit test fields, such as width, height, duration, position, snapshot fallback, stream camera entity, or snapshot camera entity, are saved with it. If no compatible stream is found, no defaults are saved.
+
+After a compatibility test runs, the receiver device's `Last Camera Compatibility` sensor shows the latest recommended stream type. Its attributes include the tested camera, recommendation reason, stream availability results, and timestamp.
 
 After a real camera or snapshot action runs, the receiver device's `Last Camera Result` sensor shows whether the latest command was accepted or failed. Its attributes include the requested stream strategy, final stream type, transport, fallback usage, popup size, and failure reason where available. URLs are not stored.
 

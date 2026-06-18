@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import re
 from dataclasses import dataclass, replace
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 from urllib.parse import quote, urlencode, urljoin, urlparse
 
@@ -1257,6 +1258,7 @@ async def _async_camera_compatibility_report(
         "snapshot_camera_entity": snapshot_entity,
         "receiver": receiver.name,
         "receiver_device_id": receiver.device_id,
+        "tested_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "preferred_stream_type": request.stream_type,
         "recommended_stream_type": recommended,
         "recommendation_reason": recommendation_reason,

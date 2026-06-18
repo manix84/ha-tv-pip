@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 from .client import ReceiverClientError, ReceiverStatus, async_get_receiver_status
 from .const import DOMAIN
 from .entity import ReceiverEntity
-from .services import CAMERA_LAST_RESULT_KEY
+from .services import CAMERA_COMPATIBILITY_KEY, CAMERA_LAST_RESULT_KEY
 
 if TYPE_CHECKING:
 
@@ -35,6 +35,7 @@ async def async_setup_entry(hass: Any, entry: Any, async_add_entities: Any) -> N
             ReceiverStreamTypeSensor(entry),
             ReceiverLastErrorSensor(entry),
             ReceiverVersionSensor(entry),
+            ReceiverLastCameraCompatibilitySensor(hass, entry),
             ReceiverLastCameraResultSensor(hass, entry),
         ]
     )
@@ -151,6 +152,60 @@ class ReceiverLastCameraResultSensor(ReceiverEntity, SensorEntity):
 
         self._attr_native_value = str(result.get("status", "unknown"))
         self._attr_extra_state_attributes = dict(result)
+
+
+class ReceiverLastCameraCompatibilitySensor(ReceiverEntity, SensorEntity):
+    """Latest camera compatibility test result stored by the integration."""
+
+    def __init__(self, hass: Any, entry: Any) -> None:
+        super().__init__(
+            entry,
+            key="last_camera_compatibility",
+            name="Last Camera Compatibility",
+        )
+        self.hass = hass
+        self._attr_native_value: str = "none"
+        self._attr_extra_state_attributes: dict[str, Any] = {}
+
+    async def async_update(self) -> None:
+        """Refresh the last stored camera compatibility result."""
+
+        result = _latest_camera_compatibility_result(self.hass, self.entry.entry_id)
+        if not result:
+            self._attr_native_value = "none"
+            self._attr_extra_state_attributes = {}
+            return
+
+        self._attr_native_value = str(result.get("recommended_stream_type", "none"))
+        self._attr_extra_state_attributes = result
+
+
+def _latest_camera_compatibility_result(
+    hass: Any,
+    entry_id: str,
+) -> dict[str, Any]:
+    receiver_results = (
+        getattr(hass, "data", {})
+        .get(DOMAIN, {})
+        .get(CAMERA_COMPATIBILITY_KEY, {})
+        .get(entry_id, {})
+    )
+    if not isinstance(receiver_results, dict):
+        return {}
+
+    results: list[dict[str, Any]] = []
+    for result in receiver_results.values():
+        if isinstance(result, dict):
+            results.append(dict(result))
+
+    if not results:
+        return {}
+
+    latest = results[0]
+    for result in results[1:]:
+        if str(result.get("tested_at", "")) > str(latest.get("tested_at", "")):
+            latest = result
+    return latest
 
 
 def _status_attributes(status: ReceiverStatus) -> dict[str, Any]:
