@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.27.4 - HACS README And Icon Compatibility 🧩
+
+- Moved the install-first APK, integration, and pairing flow into the packaged Home Assistant integration README as well as the root README 📺
+- Added root `icon.png` and `logo.png` compatibility aliases alongside the HACS `brand/` assets 🎨
+- Documented the HACS presentation asset paths so future packaging changes do not accidentally remove them 📝
+
 ## 1.27.3 - HACS Store Presentation Refresh 🧩
 
 - Added root `brand/icon.png` and `brand/logo.png` assets so HACS can pick up repository-level presentation artwork 🎨

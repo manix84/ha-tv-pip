@@ -43,6 +43,7 @@ Official Home Assistant integration readiness
 - Zip internal path is `custom_components/ha_tv_pip/`.
 - Integration `manifest.json` includes required HACS-facing metadata.
 - Root `brand/` directory includes HACS-facing `icon.png` and `logo.png`.
+- Root `icon.png` and `logo.png` compatibility aliases exist for older/simple HACS presentation paths.
 - Installed integration `custom_components/ha_tv_pip/brand/` includes Home Assistant-facing icon and logo assets.
 - Root README starts with HACS install guidance because HACS renders the repository README for the store page.
 

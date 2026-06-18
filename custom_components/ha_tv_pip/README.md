@@ -6,6 +6,51 @@ HA TV PiP lets Home Assistant show camera streams, snapshots, and styled notific
 
 Install the Android TV receiver app on each TV, then install this Home Assistant integration to discover, pair, and control those receivers from automations.
 
+## Install HA TV PiP 🚀
+
+You need both parts:
+
+1. Android TV receiver app installed on each Android TV / Google TV device.
+2. Home Assistant custom integration installed through HACS.
+
+### 1. Install the Android TV App 📺
+
+1. Open the latest [GitHub Release](https://github.com/manix84/ha-tv-pip/releases).
+2. Download the matching Android APK for your release version.
+3. For current beta installs, use `ha-tv-pip-android-debug-vX.Y.Z.apk` unless a signed release APK is provided.
+4. Sideload the APK onto the Android TV / Google TV receiver.
+5. Open HA TV PiP on the TV once and confirm the receiver dashboard shows the local endpoint as running.
+
+The Android app is not on the Play Store yet. Play Store distribution, signed release artifacts, and listing assets are planned.
+
+### 2. Install the Home Assistant Integration 🏠
+
+Until HA TV PiP is accepted as a default HACS repository:
+
+1. In Home Assistant, open HACS.
+2. Open Custom repositories.
+3. Add `https://github.com/manix84/ha-tv-pip`.
+4. Select category `Integration`.
+5. Install HA TV PiP.
+6. Restart Home Assistant.
+
+The HACS release zip contains `custom_components/ha_tv_pip/` at the archive root, matching the repository source layout.
+
+### 3. Pair the Receiver 🔐
+
+1. Open Settings > Devices & services.
+2. Wait for the discovered HA TV PiP receiver card.
+3. Select Add.
+4. Confirm the receiver.
+5. Enter the six-digit pairing code shown on the TV.
+6. Finish setup and assign the receiver to an area if desired.
+
+Discovery is the preferred setup path. Manual setup is available as a fallback if Home Assistant and the TV are on the same network but discovery is blocked.
+
+If the receiver was previously paired with another Home Assistant instance, open the TV app and use Reset Pairing before pairing again.
+
+For beta updates, update the HACS integration, restart Home Assistant, then install the matching Android receiver APK from the same GitHub Release. The receiver and integration can gracefully degrade around some missing optional features, but matching versions are the recommended support path.
+
 Current beta features:
 
 - Local network discovery with Zeroconf / mDNS 🔎
@@ -30,54 +75,6 @@ Before reporting a setup or playback issue:
 Common setup, discovery, pairing, stream compatibility, launcher recovery, and remote receiver checks are documented in the project troubleshooting guide:
 
 <https://github.com/manix84/ha-tv-pip/blob/main/docs/troubleshooting.md>
-
-## Before You Install 📺
-
-You need both parts:
-
-1. Android TV receiver app installed on the Android TV / Google TV device.
-2. Home Assistant custom integration installed through HACS.
-
-Recommended order:
-
-1. Download the latest Android APK from the GitHub Release assets.
-2. Install the APK on your Android TV / Google TV device.
-3. Open the receiver app once and confirm it is running on your network.
-4. Install this integration through HACS.
-5. Use the discovered receiver card in Home Assistant to pair the TV.
-
-When the app is available from the Play Store, use the Play Store install first and then add the Home Assistant integration.
-
-## HACS Installation 🧩
-
-Until HA TV PiP is accepted as a default HACS repository:
-
-1. In Home Assistant, open HACS.
-2. Open Custom repositories.
-3. Add `https://github.com/manix84/ha-tv-pip`.
-4. Select category `Integration`.
-5. Install HA TV PiP.
-6. Restart Home Assistant.
-7. Add the integration from Settings > Devices & services.
-
-The HACS release zip contains `custom_components/ha_tv_pip/` at the archive root, matching the repository source layout.
-
-For beta updates, update the HACS integration, restart Home Assistant, then install the matching Android receiver APK from the same GitHub Release. The receiver and integration can gracefully degrade around some missing optional features, but matching versions are the recommended support path.
-
-## Setup 🤝
-
-After installation and Home Assistant restart:
-
-1. Open Settings > Devices & services.
-2. Wait for the discovered HA TV PiP receiver card.
-3. Select Add.
-4. Confirm the receiver.
-5. Enter the six-digit pairing code shown on the TV.
-6. Finish setup and assign the receiver to an area if desired.
-
-Discovery is the preferred setup path. Manual setup is available as a fallback if Home Assistant and the TV are on the same network but discovery is blocked.
-
-If the receiver was previously paired with another Home Assistant instance, open the TV app and use Reset Pairing before pairing again.
 
 ## Brand Images 🎨
 

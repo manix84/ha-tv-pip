@@ -651,7 +651,7 @@ HACS expects custom integration repositories to provide a root `hacs.json` and i
 
 HACS renders the repository-root `README.md` for the store page, so the root README starts with user install guidance: Android APK first, Home Assistant integration second, and pairing third. Development and monorepo details are kept lower in the README. Integration-specific operational notes still live in `custom_components/ha_tv_pip/README.md`.
 
-HACS also expects repository brand assets. The repo keeps presentation assets in root `brand/` for HACS and installed integration assets in `custom_components/ha_tv_pip/brand/` for Home Assistant.
+HACS also expects repository brand assets. The repo keeps presentation assets in root `brand/` for HACS, root `icon.png` / `logo.png` compatibility aliases for older/simple presentation paths, and installed integration assets in `custom_components/ha_tv_pip/brand/` for Home Assistant.
 
 The repo therefore uses root `hacs.json` with:
 
