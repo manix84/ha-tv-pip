@@ -83,6 +83,7 @@
     <string name="pairing_dialog_instruction">Enter this code in Home Assistant to finish pairing.</string>
     <string name="pairing_dialog_expiry">This code expires after a few minutes. You can hide this popup and keep pairing from the dashboard.</string>
 
+    <string name="diagnostics_release_version">Release version</string>
     <string name="diagnostics_endpoint">Endpoint</string>
     <string name="diagnostics_local_control">Local control</string>
     <string name="diagnostics_local_control_value">State: %1$s | Uptime: %2$ds | Requests: %3$d</string>

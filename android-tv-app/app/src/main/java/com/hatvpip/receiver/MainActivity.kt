@@ -1307,6 +1307,7 @@ private fun DiagnosticsPanel(
             stringResource(R.string.status_stopped_lower)
         }
 
+        DiagnosticRow(label = stringResource(R.string.diagnostics_release_version), value = BuildConfig.VERSION_NAME)
         DiagnosticRow(label = stringResource(R.string.diagnostics_endpoint), value = endpointInfo.displayAddress)
         DiagnosticRow(
             label = stringResource(R.string.diagnostics_local_control),

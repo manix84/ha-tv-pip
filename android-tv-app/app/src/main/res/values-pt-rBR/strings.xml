@@ -72,6 +72,7 @@
     <string name="pairing_dialog_requested_by">Solicitado por: %1$s</string>
     <string name="pairing_dialog_instruction">Digite este código no Home Assistant para concluir o pareamento.</string>
     <string name="pairing_dialog_expiry">Este código expira após alguns minutos. Você pode ocultar este popup e continuar o pareamento pelo painel.</string>
+    <string name="diagnostics_release_version">Versão da release</string>
     <string name="diagnostics_endpoint">Endpoint</string>
     <string name="diagnostics_local_control">Controle local</string>
     <string name="diagnostics_local_control_value">Estado: %1$s | Tempo ativo: %2$ds | Requisições: %3$d</string>

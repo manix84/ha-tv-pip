@@ -16,6 +16,24 @@ This repository is a monorepo that contains the receiver app, Home Assistant int
 
 ## Current Phase 🚦
 
+Post-1.0 compatibility polish is active. Current work focuses on camera stream compatibility, easier troubleshooting, per-camera defaults, and clearer diagnostics across the Android TV receiver and Home Assistant integration.
+
+The latest receiver/integration flow includes:
+
+- Receiver-level Home Assistant defaults for preferred stream strategy, duration, popup position, snapshot fallback, width, and height.
+- Per-camera defaults through `ha_tv_pip.calibrate_camera`, `ha_tv_pip.test_camera_stream`, `ha_tv_pip.set_camera_defaults`, and `ha_tv_pip.clear_camera_defaults`.
+- Compatibility tests that check HLS, MJPEG, and snapshot availability for a camera/receiver pair.
+- `recommended_defaults` previews so users can inspect exactly what would be saved before applying defaults.
+- `restreaming_recommended`, `restreaming_reason`, `restreaming_next_step`, and `restreaming_options` fields when a camera likely needs a TV-safe restreamed source.
+- `Last Camera Compatibility`, `Camera Restreaming Recommended`, and `Last Camera Result` entities on the receiver device.
+- Receiver/integration compatibility checks for current, degraded, legacy, and incompatible receiver states.
+- Redacted diagnostics for camera results, per-camera defaults, receiver status, compatibility, and planned restreaming provider support.
+
+See [camera compatibility](docs/camera-compatibility.md) for the current HLS/MJPEG/snapshot workflow, what a TV-safe stream source means, and how future restreaming providers are expected to fit in.
+
+<details>
+<summary>Completed phase history ✅</summary>
+
 Phase 1 is complete in `0.4.0`. The Android TV MVP proves that an Android TV app can play a public HLS test stream and show it outside the full-screen app using native Picture-in-Picture where Android TV exposes it, or a no-ADB overlay fallback where native PiP is unavailable.
 
 Phase 2 is complete in `0.6.0`. The Android TV app now includes a local HTTP control endpoint for developer testing, including status, show, close, API metadata, and clear error responses.
@@ -40,29 +58,7 @@ Stage 11 is complete in `0.45.0`. HA TV PiP now supports styled text-only notifi
 
 Stage 12 is complete in `0.48.0`. The beta release hardening pass validated full quality checks, release packaging, Android debug and release APK builds, HACS zip layout, website build output, public install docs, Stage 11 examples, and the first GitHub release-candidate workflow.
 
-Post-1.0 compatibility polish now includes receiver-level Home Assistant defaults for preferred stream strategy, duration, popup position, snapshot fallback, width, and height. Individual automations can still override any of those values per action.
-
-The current compatibility pass adds Home Assistant-side camera stream testing and per-camera defaults. Users can test HLS, MJPEG, and snapshot availability for a camera/receiver pair, then store camera-specific stream, fallback, position, duration, width, and height defaults so automations stay simpler.
-
-Compatibility tests now flag when a camera likely needs a TV-safe restreamed source. If HLS and MJPEG are unavailable, or the receiver can only use snapshots, results include `restreaming_recommended`, `restreaming_reason`, `restreaming_next_step`, and `restreaming_options` so users know to try another camera entity, a lower-resolution profile, go2rtc, WebRTC, or future transcoding support.
-
-See [camera compatibility](docs/camera-compatibility.md) for the current HLS/MJPEG/snapshot workflow, what a TV-safe stream source means, and how future restreaming providers are expected to fit in.
-
-Receiver/integration compatibility checks now compare receiver API and capability metadata with the Home Assistant integration. Older receivers without capability metadata are treated as legacy best-effort, degraded receivers expose missing optional features in diagnostics, and camera popups drop optional title/message footer fields when the receiver cannot render them.
-
-Camera troubleshooting now includes a `Last Camera Result` receiver sensor and redacted diagnostics for the latest camera or snapshot command. The result records the requested stream strategy, final stream type sent to the receiver, transport path, fallback usage, popup size, status, and failure reason where available without storing camera URLs.
-
-`ha_tv_pip.test_camera_stream` can now save its recommended stream strategy as per-camera defaults with `save_recommendation: true`. Any explicit test fields, such as width, height, position, duration, snapshot fallback, or stream/snapshot entities, are saved with the recommendation so future automations can omit them.
-
-Compatibility test responses include `recommended_defaults`, so users can inspect exactly what would be saved before enabling `save_recommendation`.
-
-The receiver device also exposes a `Last Camera Compatibility` sensor so the latest compatibility test recommendation is visible without opening diagnostics.
-
-When the latest compatibility result indicates that live video likely needs another TV-safe source, the receiver device's `Camera Restreaming Recommended` binary sensor turns on with the camera, recommendation, restreaming reason, next step, suggested options, and test timestamp in its attributes.
-
-For a simpler setup flow, `ha_tv_pip.calibrate_camera` tests the camera, returns a friendly summary, and can save the recommended per-camera defaults in one action with `save: true`.
-
-Stored per-camera defaults are included in Home Assistant diagnostics, making calibration state easier to review when troubleshooting.
+</details>
 
 ## Monorepo Layout 🧱
 
@@ -253,9 +249,20 @@ Available now:
 
 Future roadmap:
 
-- Better camera stream compatibility, including future WebRTC and/or transcoding work 🧵
-- Default HACS repository inclusion 🧩
-- Long-term official Home Assistant integration track 🏠
-- Play Store distribution for the Android TV app 📺
-- Fire TV / Vega OS receiver support 🔥
-- Exploratory Apple TV support 🍎
+- Better camera stream compatibility through stream profile selection, lower-resolution defaults, go2rtc helpers, WebRTC support, and optional transcoding paths 🧵
+- Richer restreaming provider diagnostics so users can understand whether a camera needs a TV-safe source and which provider path is available 🩺
+- More notification styling options inspired by existing TV popup tools, including title/message styling, media sizing, and corner placement polish 🔔
+- Default HACS repository inclusion so HA TV PiP can be installed without adding a custom repository 🧩
+- Long-term official Home Assistant integration track, including config-flow polish, repairs, diagnostics, translations, tests, and architecture review readiness 🏠
+- Play Store distribution for the Android TV app, including signing, listing materials, screenshots, privacy wording, and tester guidance 📺
+- Receiver management improvements, including hiding the launcher icon safely while keeping receiver control available after TV restarts 🕹️
+- Fire TV / Vega OS receiver support so HA TV PiP is not limited to Android TV and Google TV devices 🔥
+- Exploratory Apple TV support, likely as a separate receiver design because tvOS has different background, PiP, and distribution constraints 🍎
+- Broader localization beyond Tier 1 languages, with native-speaker review before wide public release 🌍
+
+Device support plan:
+
+- ✅ Primary: Android TV and Google TV are the current supported receiver targets 📺
+- ⏭️ Next likely: Fire TV and Vega OS, because they are closest to the Android receiver model 🔥
+- 🔬 Research: Samsung Tizen, LG webOS, Roku, and Apple TV / tvOS, because each may need a separate receiver design around its own app, PiP, overlay, local-network, and background-execution rules 🔬
+- 👀 Watchlist: VIDAA, TiVo OS / Xperi TV OS, and operator TV platforms, to revisit if a clear distribution path and useful receiver capability model emerges 👀

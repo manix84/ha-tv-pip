@@ -72,6 +72,7 @@
     <string name="pairing_dialog_requested_by">Aangevraagd door: %1$s</string>
     <string name="pairing_dialog_instruction">Voer deze code in Home Assistant in om het koppelen te voltooien.</string>
     <string name="pairing_dialog_expiry">Deze code verloopt na enkele minuten. Je kunt deze popup verbergen en verder koppelen via het dashboard.</string>
+    <string name="diagnostics_release_version">Releaseversie</string>
     <string name="diagnostics_endpoint">Endpoint</string>
     <string name="diagnostics_local_control">Lokale bediening</string>
     <string name="diagnostics_local_control_value">Status: %1$s | Uptime: %2$ds | Verzoeken: %3$d</string>

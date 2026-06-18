@@ -72,6 +72,7 @@
     <string name="pairing_dialog_requested_by">Richiesto da: %1$s</string>
     <string name="pairing_dialog_instruction">Inserisci questo codice in Home Assistant per completare l’associazione.</string>
     <string name="pairing_dialog_expiry">Questo codice scade dopo pochi minuti. Puoi nascondere questo popup e continuare l’associazione dal dashboard.</string>
+    <string name="diagnostics_release_version">Versione release</string>
     <string name="diagnostics_endpoint">Endpoint</string>
     <string name="diagnostics_local_control">Controllo locale</string>
     <string name="diagnostics_local_control_value">Stato: %1$s | Attivo da: %2$ds | Richieste: %3$d</string>

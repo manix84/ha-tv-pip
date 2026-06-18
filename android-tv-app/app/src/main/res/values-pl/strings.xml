@@ -72,6 +72,7 @@
     <string name="pairing_dialog_requested_by">Żądanie od: %1$s</string>
     <string name="pairing_dialog_instruction">Wpisz ten kod w Home Assistant, aby zakończyć parowanie.</string>
     <string name="pairing_dialog_expiry">Ten kod wygaśnie po kilku minutach. Możesz ukryć ten popup i kontynuować parowanie z poziomu panelu.</string>
+    <string name="diagnostics_release_version">Wersja wydania</string>
     <string name="diagnostics_endpoint">Endpoint</string>
     <string name="diagnostics_local_control">Sterowanie lokalne</string>
     <string name="diagnostics_local_control_value">Stan: %1$s | Czas działania: %2$ds | Żądania: %3$d</string>

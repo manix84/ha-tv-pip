@@ -72,6 +72,7 @@
     <string name="pairing_dialog_requested_by">Angefordert von: %1$s</string>
     <string name="pairing_dialog_instruction">Gib diesen Code in Home Assistant ein, um die Kopplung abzuschließen.</string>
     <string name="pairing_dialog_expiry">Dieser Code läuft nach einigen Minuten ab. Du kannst dieses Popup ausblenden und die Kopplung im Dashboard fortsetzen.</string>
+    <string name="diagnostics_release_version">Release-Version</string>
     <string name="diagnostics_endpoint">Endpunkt</string>
     <string name="diagnostics_local_control">Lokale Steuerung</string>
     <string name="diagnostics_local_control_value">Status: %1$s | Laufzeit: %2$ds | Anfragen: %3$d</string>

@@ -1,5 +1,12 @@
 # What's New ✨
 
+## 1.23.0 - Receiver Diagnostics And Device Plans 📺
+
+- Added the Android receiver release version to the on-device diagnostics panel so support checks can confirm the installed app build quickly 🩺
+- Added translated diagnostics labels for the release version across the current Android Tier 1 language resources 🌍
+- Reworked the root README current phase section so completed history is collapsed and current compatibility work is easier to scan 📚
+- Expanded README and roadmap device support plans with progress markers for supported, next-likely, research, and watchlist TV platforms ✅
+
 ## 1.22.2 - Camera Compatibility Guide 🧵
 
 - Added a dedicated camera compatibility guide covering TV-safe streams, calibration, snapshot fallback, and future restreaming provider expectations 📹

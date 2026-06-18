@@ -784,7 +784,11 @@ Provide a static project landing page suitable for GitHub Pages.
 These should not block the MVP.
 
 - Fire TV / Vega OS receiver app.
+- Samsung Tizen receiver research.
+- LG webOS receiver research.
+- Roku receiver research.
 - Exploratory Apple TV / tvOS receiver app.
+- VIDAA and operator TV platform watchlist.
 - Multiple camera layouts.
 - Cycling camera feeds.
 - Doorbell-specific mode.
@@ -839,7 +843,16 @@ Still future:
 
 HA TV PiP should avoid assuming Android TV and Google TV are the only possible receiver platforms.
 
-Fire TV and Vega OS are the most natural next platform family because they are closer to the Android receiver model and may be able to share protocol concepts, pairing flow, and Home Assistant integration behavior.
+Platform priority:
+
+- ✅ Primary: Android TV and Google TV are the current supported receiver app targets.
+- ⏭️ Next likely: Fire TV and Vega OS are the most natural next platform family because they are closer to the Android receiver model and may be able to share protocol concepts, pairing flow, and Home Assistant integration behavior.
+- 🔬 Research: Samsung Tizen, LG webOS, Roku, and Apple TV / tvOS should be investigated before committing to implementation. These platforms may need separate receiver designs because background execution, local network APIs, overlays, PiP behavior, and app distribution are platform-specific.
+- 👀 Watchlist: VIDAA, TiVo OS / Xperi TV OS, and operator TV platforms should be tracked but should not take early engineering time unless a clear distribution path and receiver capability model emerges.
+
+Samsung Tizen and LG webOS are valuable because Samsung and LG TVs have broad smart TV reach. They are unlikely to share the Kotlin Android receiver implementation directly, so they should be treated as separate web/native TV receiver projects that reuse the Home Assistant protocol where possible.
+
+Roku is valuable, especially in the US, but it should be treated as a research track. Roku uses its own BrightScript / SceneGraph app model, and HA TV PiP needs proof that Roku can support a useful local receiver, popup, or notification behaviour before it becomes a committed target.
 
 Apple TV support is desirable but exploratory. tvOS has different constraints around background execution, Picture-in-Picture behavior, app distribution, and local-network control, so it may require a separate receiver design rather than a direct port.
 
