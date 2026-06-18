@@ -833,6 +833,7 @@ Completed:
 - ✅ Dedicated camera compatibility guide covering TV-safe streams, calibration, fallback setup, and future restreaming provider expectations.
 - ✅ Planned inactive restreaming provider diagnostics block so future support tools can report provider availability clearly.
 - ✅ `Restreaming Provider Status` sensor for showing planned/configured/active provider state directly on the receiver device.
+- ✅ Restreaming provider metadata in compatibility and calibration responses, including current workaround paths, planned provider families, and documentation URL.
 
 Still future:
 

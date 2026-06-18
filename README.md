@@ -246,13 +246,13 @@ Available now:
 - Zeroconf discovery and TV-visible pairing 🔎
 - Receiver status, PiP controls, launcher controls, and diagnostics 🧰
 - Restreaming provider status visibility for planned go2rtc, WebRTC, and transcoding support 🩺
+- Restreaming provider metadata in compatibility responses so dashboards and support notes can show current workaround paths 🔎
 - Optional remote receiver mode through the user's own Home Assistant external URL 🌍
 - HACS custom-repository installation using the stable release zip 🧩
 
 Future roadmap:
 
 - Better camera stream compatibility through stream profile selection, lower-resolution defaults, go2rtc helpers, WebRTC support, and optional transcoding paths 🧵
-- Richer restreaming provider diagnostics so users can understand whether a camera needs a TV-safe source and which provider path is available 🩺
 - More notification styling options inspired by existing TV popup tools, including title/message styling, media sizing, and corner placement polish 🔔
 - Default HACS repository inclusion so HA TV PiP can be installed without adding a custom repository 🧩
 - Long-term official Home Assistant integration track, including config-flow polish, repairs, diagnostics, translations, tests, and architecture review readiness 🏠
