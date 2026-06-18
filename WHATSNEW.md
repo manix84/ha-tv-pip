@@ -1,10 +1,14 @@
 # What's New ✨
 
+## 1.26.0 - Camera Stream Source Visibility 🔎
+
+- Added `stream_source` metadata to compatibility and last-result surfaces so users can see whether a popup used the main camera, alternate stream entity, snapshot entity, or manual restream URL 🔎
+- Updated Home Assistant integration docs and tests for the new source classification metadata 🧪
+
 ## 1.25.0 - Restream URL Compatibility Bridge 🧵
 
 - Added optional `restream_url` and `restream_provider` fields for camera actions, calibration, compatibility tests, and per-camera defaults so users can point a camera at a TV-safe go2rtc or similar stream today 📹
 - Added direct restream URL command handling with snapshot preview support, while keeping normal Home Assistant camera entities as the default path 🎬
-- Added `stream_source` metadata to compatibility and last-result surfaces so users can see whether a popup used the main camera, alternate stream entity, snapshot entity, or manual restream URL 🔎
 - Redacted saved restream URLs from diagnostics and covered request parsing, defaults, command generation, compatibility reports, and diagnostics with tests 🧪
 
 ## 1.24.2 - Compatibility Response Provider Hints 🧵
