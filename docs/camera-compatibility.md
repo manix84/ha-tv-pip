@@ -57,6 +57,22 @@ Review the returned `summary`, `recommended_stream_type`, `recommended_defaults`
 
 When the recommendation looks right, run the same action with `save: true`. The saved per-camera defaults can include stream type, stream camera entity, snapshot camera entity, snapshot fallback, duration, position, width, and height.
 
+If you already expose a TV-safe restream through go2rtc or another tool, save it as the camera's live source:
+
+```yaml
+service: ha_tv_pip.set_camera_defaults
+target:
+  device_id: living_room_tv
+data:
+  camera_entity: camera.front_door
+  restream_provider: go2rtc
+  restream_url: http://homeassistant.local:1984/api/stream.m3u8?src=front_door
+  stream_type: hls
+  snapshot_fallback: true
+```
+
+The receiver still uses `camera_entity` for titles and snapshot previews, but live video comes from the saved restream URL. Saved restream URLs are redacted from diagnostics.
+
 Future automations can then stay small:
 
 ```yaml
@@ -81,11 +97,12 @@ When this happens, try these before changing automations everywhere:
 - Use `snapshot_camera_entity` with a faster still-image entity.
 - Try `stream_type: mjpeg` or `stream_type: mjpeg_first` if the camera exposes MJPEG.
 - Use the camera's H.264 substream or compatibility profile when available.
+- Use `restream_url` with a known TV-safe HLS or MJPEG URL from go2rtc or another local restreaming tool.
 - Save working settings as per-camera defaults.
 
 ## Future Provider Model 🚧
 
-Restreaming providers are not implemented yet. Diagnostics expose a planned inactive provider block so support tools and future UI can report that provider support is intentionally unavailable rather than silently missing.
+Automatic restreaming providers are not implemented yet. Manual `restream_url` support is available for users who already expose a TV-safe HLS or MJPEG URL. Diagnostics still expose a planned inactive provider block so support tools and future UI can report that automatic provider support is intentionally unavailable rather than silently missing.
 
 The provider status metadata also includes today's recommended paths:
 
@@ -93,11 +110,12 @@ The provider status metadata also includes today's recommended paths:
 - `use_mjpeg_first`: prefer MJPEG first when a camera exposes both HLS and MJPEG.
 - `use_snapshot_fallback`: show a still image while live video loads or when live video fails.
 - `use_camera_substream`: choose a lower-resolution or H.264 compatibility profile.
+- `use_restream_url`: point the camera default at a known TV-safe HLS or MJPEG restream URL.
 - `save_per_camera_defaults`: store the working values once a camera has been calibrated.
 
 Planned provider families:
 
-- `go2rtc`: future helper path for turning camera sources into TV-safe streams.
+- `go2rtc`: manual `restream_url` support works today; automatic setup helpers remain future work.
 - `webrtc`: future low-latency path where the receiver and platform constraints allow it.
 - `transcoding`: future path for converting unsupported camera formats into receiver-compatible video.
 

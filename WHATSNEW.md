@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.25.0 - Restream URL Compatibility Bridge 🧵
+
+- Added optional `restream_url` and `restream_provider` fields for camera actions, calibration, compatibility tests, and per-camera defaults so users can point a camera at a TV-safe go2rtc or similar stream today 📹
+- Added direct restream URL command handling with snapshot preview support, while keeping normal Home Assistant camera entities as the default path 🎬
+- Redacted saved restream URLs from diagnostics and covered request parsing, defaults, command generation, compatibility reports, and diagnostics with tests 🧪
+
 ## 1.24.2 - Compatibility Response Provider Hints 🧵
 
 - Added `restreaming_provider` metadata to camera compatibility and calibration responses when restreaming is recommended 🔎

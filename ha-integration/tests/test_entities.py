@@ -272,6 +272,7 @@ def test_restreaming_provider_status_sensor_reports_planned_state() -> None:
             "use_mjpeg_first",
             "use_snapshot_fallback",
             "use_camera_substream",
+            "use_restream_url",
             "save_per_camera_defaults",
         ],
         "next_step": "configure_tv_safe_live_stream_source",
@@ -444,6 +445,7 @@ def test_camera_restreaming_binary_sensor_reads_latest_result() -> None:
             "use_mjpeg_first",
             "use_snapshot_fallback",
             "use_camera_substream",
+            "use_restream_url",
             "save_per_camera_defaults",
         ],
         "restreaming_documentation_url": (
@@ -653,6 +655,11 @@ def test_diagnostics_redacts_token_and_url(monkeypatch) -> None:  # type: ignore
         CONF_CAMERA_DEFAULTS: {
             "camera.front_door": {
                 "stream_type": "mjpeg_first",
+                "restream_provider": "go2rtc",
+                "restream_url": (
+                    "http://homeassistant.local:1984/api/stream.m3u8"
+                    "?src=front_door"
+                ),
                 "snapshot_fallback": True,
                 "width": 720,
                 "height": 405,
@@ -666,6 +673,8 @@ def test_diagnostics_redacts_token_and_url(monkeypatch) -> None:  # type: ignore
     assert result["camera_defaults"] == {
         "camera.front_door": {
             "stream_type": "mjpeg_first",
+            "restream_provider": "go2rtc",
+            "restream_url": diagnostics.REDACTED,
             "snapshot_fallback": True,
             "width": 720,
             "height": 405,
@@ -683,6 +692,7 @@ def test_diagnostics_redacts_token_and_url(monkeypatch) -> None:  # type: ignore
             "use_mjpeg_first",
             "use_snapshot_fallback",
             "use_camera_substream",
+            "use_restream_url",
             "save_per_camera_defaults",
         ],
         "next_step": "configure_tv_safe_live_stream_source",

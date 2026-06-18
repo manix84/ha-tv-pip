@@ -23,6 +23,8 @@ SERVICE_EXAMPLES: dict[str, set[str]] = {
         "background_color",
         "width",
         "height",
+        "restream_provider",
+        "restream_url",
     },
     "show_snapshot": {
         "duration_seconds",
@@ -56,6 +58,8 @@ SERVICE_EXAMPLES: dict[str, set[str]] = {
         "save_recommendation",
         "stream_type",
         "snapshot_fallback",
+        "restream_provider",
+        "restream_url",
     },
     "calibrate_camera": {
         "duration_seconds",
@@ -65,6 +69,8 @@ SERVICE_EXAMPLES: dict[str, set[str]] = {
         "stream_type",
         "width",
         "height",
+        "restream_provider",
+        "restream_url",
     },
     "set_camera_defaults": {
         "stream_type",
@@ -73,6 +79,8 @@ SERVICE_EXAMPLES: dict[str, set[str]] = {
         "snapshot_fallback",
         "width",
         "height",
+        "restream_provider",
+        "restream_url",
     },
     "clear_camera_defaults": set(),
 }

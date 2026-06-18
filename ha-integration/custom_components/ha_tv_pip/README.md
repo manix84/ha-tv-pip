@@ -226,6 +226,8 @@ Calibration tests HLS, MJPEG, and snapshot availability, returns a summary with 
 
 If live HLS/MJPEG paths are unavailable, the response includes `restreaming_recommended: true`, `restreaming_reason`, `restreaming_next_step`, and `restreaming_options`. This means the current camera entity is likely snapshot-only for HA TV PiP, or needs a TV-safe source such as another camera entity, a lower-resolution profile, go2rtc, WebRTC, or future transcoding support.
 
+If you already expose a TV-safe stream through go2rtc or another local restreaming tool, set `restream_url` and `restream_provider` with `ha_tv_pip.set_camera_defaults`. The receiver will use that URL for live video while still using `camera_entity` for titles and snapshot previews. Saved restream URLs are redacted from diagnostics.
+
 For the full setup workflow, see the project camera compatibility guide: <https://github.com/manix84/ha-tv-pip/blob/main/docs/camera-compatibility.md>.
 
 For lower-level troubleshooting, use `ha_tv_pip.test_camera_stream`:
@@ -270,6 +272,8 @@ data:
   camera_entity: camera.front_door
   stream_type: mjpeg_first
   stream_camera_entity: camera.front_door_sub
+  restream_provider: go2rtc
+  restream_url: http://homeassistant.local:1984/api/stream.m3u8?src=front_door
   snapshot_fallback: true
   duration_seconds: 30
   position: top_right
@@ -297,12 +301,12 @@ data:
 
 The service defaults to the receiver's preferred stream strategy, or `stream_type: auto` when no receiver default is configured. Automatic mode checks the receiver's reported capabilities, resolves an HLS stream URL through Home Assistant's camera stream API when supported, and sends it to the paired receiver with the stored bearer token. If HLS is not supported or Home Assistant cannot produce an HLS stream in automatic mode, the integration tries Home Assistant's MJPEG camera proxy stream before falling back to a snapshot command. When HLS URL resolution succeeds and the receiver supports playable fallbacks, automatic mode also sends an optional MJPEG fallback URL so the Android overlay can switch streams if the receiver later rejects HLS playback. Advanced users can force `stream_type: hls`, force `stream_type: mjpeg`, prefer MJPEG with fallback using `stream_type: mjpeg_first`, or force `stream_type: snapshot`.
 `stream_type: mjpeg` uses Home Assistant's camera proxy stream endpoint and the receiver's overlay renderer. It is useful when a camera exposes an MJPEG stream that is more reliable on Android TV than its HLS profile. Use `stream_type: mjpeg_first` when MJPEG usually works best but HLS should still be tried before falling back to a snapshot.
-`stream_camera_entity` is optional and defaults to `camera_entity`; set it when a lower-resolution, H.264, or MJPEG camera entity is more reliable for live playback on Android TV. When `snapshot_fallback` is enabled, the integration also sends a snapshot preview so the receiver can show a still image while the video stream loads. `snapshot_camera_entity` is optional and defaults to `camera_entity`; set it when a separate camera entity provides a better still image or substream preview.
+`stream_camera_entity` is optional and defaults to `camera_entity`; set it when a lower-resolution, H.264, or MJPEG camera entity is more reliable for live playback on Android TV. `restream_url` is optional and takes precedence over Home Assistant camera stream resolution for live video; use it for a known TV-safe HLS or MJPEG URL from go2rtc or another local restreaming tool. When `snapshot_fallback` is enabled, the integration also sends a snapshot preview so the receiver can show a still image while the video stream loads. `snapshot_camera_entity` is optional and defaults to `camera_entity`; set it when a separate camera entity provides a better still image or substream preview.
 `title`, `message`, and the styling fields are optional; when either `title` or `message` is present, the receiver renders the text below the camera or snapshot inside the same rounded glass popup. Width and height can be used by themselves to resize the media popup without showing a text footer.
 If a receiver reports that a requested stream type, snapshot mode, notification mode, or media text footer is unsupported, Home Assistant stops before sending the command and returns a clear service error. Older receivers that do not report capabilities keep the previous best-effort behaviour.
 For cameras with multiple streams, use a TV-compatible H.264/HLS stream where possible, or try `stream_type: mjpeg` when HLS is unsupported on the receiver. Lower-resolution secondary streams are often more reliable for TV popups than high-resolution main streams. The receiver enables Media3 decoder fallback, but unsupported camera codecs still need a compatible camera profile, MJPEG fallback, go2rtc/WebRTC, or future transcoding support.
 
-Restreaming providers are not active yet. Diagnostics include a planned provider section so future support tooling can distinguish "not configured" from "not implemented". HLS, MJPEG, and snapshots remain the supported paths today.
+Automatic restreaming providers are not active yet. Manual `restream_url` support is available for users who already expose a TV-safe HLS or MJPEG source. Diagnostics include a planned provider section so future support tooling can distinguish "manual URL configured" from "automatic provider not implemented". HLS, MJPEG, and snapshots remain the supported receiver paths today.
 
 The receiver device also exposes a `Restreaming Provider Status` sensor. It reports `planned` today, with attributes for configured, active, supported, and planned providers. This is intentionally a visibility surface only; it does not enable go2rtc, WebRTC, or transcoding yet.
 

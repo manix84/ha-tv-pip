@@ -17,6 +17,20 @@ show_camera:
           domain: camera
       name: Stream camera entity
       description: Optional camera entity to use for the live stream. Use this when a lower-resolution, H.264, or MJPEG substream is more reliable on Android TV.
+    restream_url:
+      required: false
+      selector:
+        text:
+      name: Restream URL
+      description: Optional direct HLS or MJPEG URL from go2rtc or another restreaming tool. Saved URLs are redacted from diagnostics.
+      example: http://homeassistant.local:1984/api/stream.m3u8?src=front_door
+    restream_provider:
+      required: false
+      selector:
+        text:
+      name: Restream provider
+      description: Optional label for the restream source, such as go2rtc. This is used for diagnostics only.
+      example: go2rtc
     duration_seconds:
       selector:
         number:
@@ -396,6 +410,20 @@ test_camera_stream:
           domain: camera
       name: Stream camera entity
       description: Optional camera entity to use for live stream compatibility checks.
+    restream_url:
+      required: false
+      selector:
+        text:
+      name: Restream URL
+      description: Optional direct HLS or MJPEG URL from go2rtc or another restreaming tool to test against the receiver.
+      example: http://homeassistant.local:1984/api/stream.m3u8?src=front_door
+    restream_provider:
+      required: false
+      selector:
+        text:
+      name: Restream provider
+      description: Optional label for the restream source, such as go2rtc. This is used for diagnostics only.
+      example: go2rtc
     snapshot_camera_entity:
       required: false
       selector:
@@ -446,6 +474,20 @@ calibrate_camera:
           domain: camera
       name: Stream camera entity
       description: Optional camera entity to use for live stream compatibility checks and saved defaults.
+    restream_url:
+      required: false
+      selector:
+        text:
+      name: Restream URL
+      description: Optional direct HLS or MJPEG URL from go2rtc or another restreaming tool to calibrate against the receiver.
+      example: http://homeassistant.local:1984/api/stream.m3u8?src=front_door
+    restream_provider:
+      required: false
+      selector:
+        text:
+      name: Restream provider
+      description: Optional label for the restream source, such as go2rtc. This is used for diagnostics only.
+      example: go2rtc
     snapshot_camera_entity:
       required: false
       selector:
@@ -537,6 +579,20 @@ set_camera_defaults:
           domain: camera
       name: Stream camera entity
       description: Optional camera entity to use for the live stream.
+    restream_url:
+      required: false
+      selector:
+        text:
+      name: Restream URL
+      description: Optional direct HLS or MJPEG URL from go2rtc or another restreaming tool to use by default. Saved URLs are redacted from diagnostics.
+      example: http://homeassistant.local:1984/api/stream.m3u8?src=front_door
+    restream_provider:
+      required: false
+      selector:
+        text:
+      name: Restream provider
+      description: Optional label for the restream source, such as go2rtc. This is used for diagnostics only.
+      example: go2rtc
     snapshot_camera_entity:
       required: false
       selector:

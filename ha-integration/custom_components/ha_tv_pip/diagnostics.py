@@ -15,6 +15,8 @@ REDACTED_KEYS = {
     "fallbackUrl",
     "homeAssistantUrl",
     "previewUrl",
+    "restream_url",
+    "restreamUrl",
     "token",
     "url",
 }

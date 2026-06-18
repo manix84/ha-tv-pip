@@ -37,6 +37,8 @@ from custom_components.ha_tv_pip.services import (
     ATTR_MESSAGE_COLOR,
     ATTR_MESSAGE_SIZE,
     ATTR_POSITION,
+    ATTR_RESTREAM_PROVIDER,
+    ATTR_RESTREAM_URL,
     ATTR_SAVE,
     ATTR_SAVE_RECOMMENDATION,
     ATTR_SNAPSHOT_CAMERA_ENTITY,
@@ -192,7 +194,45 @@ def test_request_from_call_reads_target_and_defaults() -> None:
     assert request.enter_pip is True
     assert request.snapshot_camera_entity is None
     assert request.snapshot_fallback is True
+    assert request.restream_provider is None
+    assert request.restream_url is None
     assert request.stream_type == "auto"
+
+
+def test_request_from_call_accepts_restream_source() -> None:
+    request = _request_from_call(
+        FakeCall(
+            data={
+                ATTR_CAMERA_ENTITY: "camera.front_door",
+                ATTR_RESTREAM_PROVIDER: "go2rtc",
+                ATTR_RESTREAM_URL: (
+                    "http://homeassistant.local:1984/api/stream.m3u8"
+                    "?src=front_door"
+                ),
+            },
+            target={ATTR_DEVICE_ID: "device-1"},
+        )
+    )
+
+    assert request.restream_provider == "go2rtc"
+    assert request.restream_url == (
+        "http://homeassistant.local:1984/api/stream.m3u8?src=front_door"
+    )
+    assert request.restream_provider_explicit is True
+    assert request.restream_url_explicit is True
+
+
+def test_request_from_call_rejects_non_http_restream_url() -> None:
+    with pytest.raises(ServiceValidationError, match="Restream URL"):
+        _request_from_call(
+            FakeCall(
+                data={
+                    ATTR_CAMERA_ENTITY: "camera.front_door",
+                    ATTR_RESTREAM_URL: "rtsp://camera.local/stream",
+                },
+                target={ATTR_DEVICE_ID: "device-1"},
+            )
+        )
 
 
 def test_request_from_call_accepts_ha_target_device_id_from_data() -> None:
@@ -676,6 +716,54 @@ def test_show_camera_command_can_use_separate_stream_camera_entity(
         "http://10.0.0.2:8123/api/camera_proxy_stream/camera.front_door_sub"
         "?token=sub-token"
     )
+
+
+def test_show_camera_command_can_use_restream_url(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.helpers.network",
+        FakeNetworkModule("homeassistant.helpers.network"),
+    )
+    hass = FakeHass(
+        entries=[],
+        states={
+            "camera.front_door": FakeState(
+                {"friendly_name": "Front Door", "access_token": "main-token"}
+            ),
+        },
+    )
+
+    command = asyncio.run(
+        _async_show_camera_command(
+            hass,
+            _request_from_call(
+                FakeCall(
+                    data={
+                        ATTR_CAMERA_ENTITY: "camera.front_door",
+                        ATTR_RESTREAM_PROVIDER: "go2rtc",
+                        ATTR_RESTREAM_URL: (
+                            "http://homeassistant.local:1984/api/stream.m3u8"
+                            "?src=front_door"
+                        ),
+                    }
+                )
+            ),
+            title="Front Door",
+            capabilities=_capabilities(),
+        )
+    )
+
+    assert command.stream_type == "hls"
+    assert command.url == (
+        "http://homeassistant.local:1984/api/stream.m3u8?src=front_door"
+    )
+    assert command.preview_url == (
+        "http://10.0.0.2:8123/api/camera_proxy/camera.front_door"
+        "?token=main-token"
+    )
+    assert command.fallback_url is None
 
 
 def test_show_camera_command_enables_notification_footer_for_custom_title(
@@ -1260,6 +1348,11 @@ def test_set_camera_defaults_persists_per_camera_options() -> None:
                     ATTR_DURATION_SECONDS: 25,
                     ATTR_HEIGHT: 405,
                     ATTR_POSITION: "bottom_right",
+                    ATTR_RESTREAM_PROVIDER: "go2rtc",
+                    ATTR_RESTREAM_URL: (
+                        "http://homeassistant.local:1984/api/stream.m3u8"
+                        "?src=front_door"
+                    ),
                     ATTR_SNAPSHOT_CAMERA_ENTITY: "camera.front_door_sub",
                     ATTR_SNAPSHOT_FALLBACK: True,
                     ATTR_STREAM_CAMERA_ENTITY: "camera.front_door_sub",
@@ -1278,6 +1371,11 @@ def test_set_camera_defaults_persists_per_camera_options() -> None:
                 ATTR_DURATION_SECONDS: 25,
                 ATTR_HEIGHT: 405,
                 ATTR_POSITION: "bottom_right",
+                ATTR_RESTREAM_PROVIDER: "go2rtc",
+                ATTR_RESTREAM_URL: (
+                    "http://homeassistant.local:1984/api/stream.m3u8"
+                    "?src=front_door"
+                ),
                 ATTR_SNAPSHOT_CAMERA_ENTITY: "camera.front_door_sub",
                 ATTR_SNAPSHOT_FALLBACK: True,
                 ATTR_STREAM_CAMERA_ENTITY: "camera.front_door_sub",
@@ -1320,6 +1418,8 @@ def test_show_camera_service_applies_per_camera_defaults_before_receiver_default
                 "duration_seconds": request.duration_seconds,
                 "height": request.height,
                 "position": request.position,
+                "restream_provider": request.restream_provider,
+                "restream_url": request.restream_url,
                 "snapshot_camera_entity": request.snapshot_camera_entity,
                 "snapshot_fallback": request.snapshot_fallback,
                 "stream_camera_entity": request.stream_camera_entity,
@@ -1361,6 +1461,11 @@ def test_show_camera_service_applies_per_camera_defaults_before_receiver_default
                     ATTR_DURATION_SECONDS: 25,
                     ATTR_HEIGHT: 405,
                     ATTR_POSITION: "bottom_right",
+                    ATTR_RESTREAM_PROVIDER: "go2rtc",
+                    ATTR_RESTREAM_URL: (
+                        "http://homeassistant.local:1984/api/stream.m3u8"
+                        "?src=front_door"
+                    ),
                     ATTR_SNAPSHOT_CAMERA_ENTITY: "camera.front_door_snapshot",
                     ATTR_SNAPSHOT_FALLBACK: False,
                     ATTR_STREAM_CAMERA_ENTITY: "camera.front_door_sub",
@@ -1393,6 +1498,10 @@ def test_show_camera_service_applies_per_camera_defaults_before_receiver_default
         "duration_seconds": 25,
         "height": 405,
         "position": "bottom_right",
+        "restream_provider": "go2rtc",
+        "restream_url": (
+            "http://homeassistant.local:1984/api/stream.m3u8?src=front_door"
+        ),
         "snapshot_camera_entity": "camera.front_door_snapshot",
         "snapshot_fallback": False,
         "stream_camera_entity": "camera.front_door_sub",
@@ -1578,6 +1687,95 @@ def test_camera_stream_test_recommends_auto_with_playable_fallback(
         result["recommendation_reason"]
         == "hls_available_with_mjpeg_playable_fallback"
     )
+
+
+def test_camera_stream_test_can_use_restream_url(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from custom_components.ha_tv_pip import services
+
+    class FakeRemoteRegistry:
+        def is_connected(self, device_id: str) -> bool:
+            return False
+
+    monkeypatch.setattr(services, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(
+        services,
+        "_async_receiver_capabilities",
+        lambda receiver: asyncio.sleep(0, result=_capabilities()),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.components.camera",
+        FakeCameraModule(None),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.exceptions",
+        FakeExceptionsModule("homeassistant.exceptions"),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "homeassistant.helpers.network",
+        FakeNetworkModule("homeassistant.helpers.network"),
+    )
+
+    entry = FakeEntry(
+        entry_id="entry-1",
+        data={
+            CONF_DEVICE_ID: "device-1",
+            CONF_NAME: "Nursery TV",
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "token",
+        },
+    )
+    hass = FakeHass(
+        entries=[entry],
+        states={"camera.front_door": FakeState({"access_token": "snapshot-token"})},
+    )
+
+    result = asyncio.run(
+        services.async_handle_test_camera_stream(
+            hass,
+            FakeCall(
+                data={
+                    ATTR_CAMERA_ENTITY: "camera.front_door",
+                    ATTR_RESTREAM_PROVIDER: "go2rtc",
+                    ATTR_RESTREAM_URL: (
+                        "http://homeassistant.local:1984/api/stream.m3u8"
+                        "?src=front_door"
+                    ),
+                    ATTR_SAVE_RECOMMENDATION: True,
+                },
+                target={ATTR_DEVICE_ID: "device-1"},
+            ),
+        )
+    )
+
+    assert result["recommended_stream_type"] == "hls"
+    assert result["recommendation_reason"] == "hls_available"
+    assert result["has_restream_url"] is True
+    assert result["restream_provider"] == "go2rtc"
+    assert "homeassistant.local:1984" not in str(
+        {
+            key: value
+            for key, value in result.items()
+            if key not in {"recommended_defaults", "saved_defaults"}
+        }
+    )
+    assert result["results"] == [
+        {"stream_type": "hls", "available": True, "source": "restream_url"},
+        {"stream_type": "mjpeg", "available": False},
+        {"stream_type": "snapshot", "available": True},
+    ]
+    assert result["saved_defaults"] == {
+        ATTR_RESTREAM_PROVIDER: "go2rtc",
+        ATTR_RESTREAM_URL: (
+            "http://homeassistant.local:1984/api/stream.m3u8?src=front_door"
+        ),
+        ATTR_STREAM_TYPE: "hls",
+    }
 
 
 def test_camera_stream_test_can_save_recommendation_as_defaults(
@@ -1853,6 +2051,7 @@ def test_camera_stream_test_recommends_restreaming_for_snapshot_only(
             "use_mjpeg_first",
             "use_snapshot_fallback",
             "use_camera_substream",
+            "use_restream_url",
             "save_per_camera_defaults",
         ],
         "next_step": "configure_tv_safe_live_stream_source",
@@ -1954,6 +2153,7 @@ def test_calibrate_camera_flags_restreaming_when_no_paths_work(
             "use_mjpeg_first",
             "use_snapshot_fallback",
             "use_camera_substream",
+            "use_restream_url",
             "save_per_camera_defaults",
         ],
         "next_step": "configure_tv_safe_live_stream_source",

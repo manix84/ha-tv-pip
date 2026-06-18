@@ -834,12 +834,13 @@ Completed:
 - ✅ Planned inactive restreaming provider diagnostics block so future support tools can report provider availability clearly.
 - ✅ `Restreaming Provider Status` sensor for showing planned/configured/active provider state directly on the receiver device.
 - ✅ Restreaming provider metadata in compatibility and calibration responses, including current workaround paths, planned provider families, and documentation URL.
+- ✅ Manual `restream_url` and `restream_provider` support for per-camera defaults and direct TV-safe HLS/MJPEG sources such as go2rtc.
 
 Still future:
 
 - WebRTC low-latency mode.
 - Restreaming or transcoding for broad camera codec support.
-- Deeper camera-platform helpers such as go2rtc or Frigate-specific setup shortcuts.
+- Automatic camera-platform helpers such as go2rtc or Frigate-specific setup shortcuts.
 
 ## Additional TV Platforms
 

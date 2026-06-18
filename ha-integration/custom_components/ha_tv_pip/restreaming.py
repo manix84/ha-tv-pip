@@ -13,6 +13,7 @@ RESTREAMING_CURRENT_PATHS = [
     "use_mjpeg_first",
     "use_snapshot_fallback",
     "use_camera_substream",
+    "use_restream_url",
     "save_per_camera_defaults",
 ]
 RESTREAMING_PLANNED_PROVIDER_PATHS = [

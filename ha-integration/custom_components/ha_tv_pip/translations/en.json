@@ -147,6 +147,12 @@
         "stream_camera_entity": {
           "name": "Stream camera entity"
         },
+        "restream_url": {
+          "name": "Restream URL"
+        },
+        "restream_provider": {
+          "name": "Restream provider"
+        },
         "stream_type": {
           "name": "Stream type"
         },
@@ -279,6 +285,12 @@
         "stream_camera_entity": {
           "name": "Stream camera entity"
         },
+        "restream_url": {
+          "name": "Restream URL"
+        },
+        "restream_provider": {
+          "name": "Restream provider"
+        },
         "snapshot_camera_entity": {
           "name": "Snapshot fallback camera entity"
         },
@@ -302,6 +314,12 @@
         },
         "stream_camera_entity": {
           "name": "Stream camera entity"
+        },
+        "restream_url": {
+          "name": "Restream URL"
+        },
+        "restream_provider": {
+          "name": "Restream provider"
         },
         "snapshot_camera_entity": {
           "name": "Snapshot fallback camera entity"
@@ -344,6 +362,12 @@
         },
         "stream_camera_entity": {
           "name": "Stream camera entity"
+        },
+        "restream_url": {
+          "name": "Restream URL"
+        },
+        "restream_provider": {
+          "name": "Restream provider"
         },
         "snapshot_camera_entity": {
           "name": "Snapshot fallback camera entity"

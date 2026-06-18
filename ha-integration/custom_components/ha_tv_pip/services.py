@@ -76,6 +76,8 @@ ATTR_SNAPSHOT_CAMERA_ENTITY = "snapshot_camera_entity"
 ATTR_SNAPSHOT_FALLBACK = "snapshot_fallback"
 ATTR_SAVE = "save"
 ATTR_SAVE_RECOMMENDATION = "save_recommendation"
+ATTR_RESTREAM_PROVIDER = "restream_provider"
+ATTR_RESTREAM_URL = "restream_url"
 ATTR_STREAM_CAMERA_ENTITY = "stream_camera_entity"
 ATTR_STREAM_TYPE = "stream_type"
 ATTR_TITLE = "title"
@@ -124,6 +126,9 @@ ERROR_MESSAGES = {
     "invalid_position": (
         "Notification position must be top_right, top_left, bottom_right, "
         "or bottom_left."
+    ),
+    "invalid_restream_url": (
+        "Restream URL must be an absolute http or https URL."
     ),
     "invalid_stream_type": (
         "Stream type must be auto, hls, mjpeg, mjpeg_first, or snapshot."
@@ -194,6 +199,8 @@ class ShowCameraRequest:
     height: int | None
     snapshot_camera_entity: str | None
     snapshot_fallback: bool
+    restream_provider: str | None
+    restream_url: str | None
     stream_camera_entity: str | None
     stream_type: str
     title: str | None
@@ -202,6 +209,8 @@ class ShowCameraRequest:
     position_explicit: bool = False
     snapshot_camera_entity_explicit: bool = False
     snapshot_fallback_explicit: bool = False
+    restream_provider_explicit: bool = False
+    restream_url_explicit: bool = False
     stream_camera_entity_explicit: bool = False
     stream_type_explicit: bool = False
     width_explicit: bool = False
@@ -298,6 +307,8 @@ async def async_register_services(hass: Any) -> None:
             **base_schema,
             vol.Optional(ATTR_SNAPSHOT_CAMERA_ENTITY): cv.entity_id,
             vol.Optional(ATTR_SNAPSHOT_FALLBACK): bool,
+            vol.Optional(ATTR_RESTREAM_PROVIDER): str,
+            vol.Optional(ATTR_RESTREAM_URL): str,
             vol.Optional(ATTR_STREAM_CAMERA_ENTITY): cv.entity_id,
             vol.Optional(ATTR_STREAM_TYPE): vol.Any(*STREAM_TYPES),
             vol.Optional(ATTR_DURATION_SECONDS): vol.All(
@@ -311,6 +322,8 @@ async def async_register_services(hass: Any) -> None:
         vol.Required(ATTR_CAMERA_ENTITY): cv.entity_id,
         vol.Optional(ATTR_SNAPSHOT_CAMERA_ENTITY): cv.entity_id,
         vol.Optional(ATTR_SNAPSHOT_FALLBACK): bool,
+        vol.Optional(ATTR_RESTREAM_PROVIDER): str,
+        vol.Optional(ATTR_RESTREAM_URL): str,
         vol.Optional(ATTR_STREAM_CAMERA_ENTITY): cv.entity_id,
         vol.Optional(ATTR_STREAM_TYPE): vol.Any(*STREAM_TYPES),
         vol.Optional(ATTR_DURATION_SECONDS): vol.All(
@@ -927,6 +940,8 @@ def _request_from_call(call: Any) -> ShowCameraRequest:
         title=_optional_text(data.get(ATTR_TITLE)),
         snapshot_camera_entity=_optional_text(data.get(ATTR_SNAPSHOT_CAMERA_ENTITY)),
         snapshot_fallback=bool(data.get(ATTR_SNAPSHOT_FALLBACK, True)),
+        restream_provider=_optional_text(data.get(ATTR_RESTREAM_PROVIDER)),
+        restream_url=_validated_restream_url(data.get(ATTR_RESTREAM_URL)),
         stream_camera_entity=_optional_text(data.get(ATTR_STREAM_CAMERA_ENTITY)),
         stream_type=stream_type,
         device_ids=device_ids,
@@ -934,6 +949,8 @@ def _request_from_call(call: Any) -> ShowCameraRequest:
         position_explicit=ATTR_POSITION in data,
         snapshot_camera_entity_explicit=ATTR_SNAPSHOT_CAMERA_ENTITY in data,
         snapshot_fallback_explicit=ATTR_SNAPSHOT_FALLBACK in data,
+        restream_provider_explicit=ATTR_RESTREAM_PROVIDER in data,
+        restream_url_explicit=ATTR_RESTREAM_URL in data,
         stream_camera_entity_explicit=ATTR_STREAM_CAMERA_ENTITY in data,
         stream_type_explicit=ATTR_STREAM_TYPE in data,
         width_explicit=ATTR_WIDTH in data,
@@ -1115,6 +1132,20 @@ def _apply_camera_defaults(
         updates["stream_camera_entity"] = _optional_text(
             camera_defaults.get(ATTR_STREAM_CAMERA_ENTITY)
         )
+    if (
+        not request.restream_provider_explicit
+        and _optional_text(camera_defaults.get(ATTR_RESTREAM_PROVIDER)) is not None
+    ):
+        updates["restream_provider"] = _optional_text(
+            camera_defaults.get(ATTR_RESTREAM_PROVIDER)
+        )
+    if (
+        not request.restream_url_explicit
+        and _validated_restream_url(camera_defaults.get(ATTR_RESTREAM_URL)) is not None
+    ):
+        updates["restream_url"] = _validated_restream_url(
+            camera_defaults.get(ATTR_RESTREAM_URL)
+        )
     if not request.stream_type_explicit:
         camera_stream_type = str(camera_defaults.get(ATTR_STREAM_TYPE, "")).strip()
         if camera_stream_type in STREAM_TYPES:
@@ -1236,6 +1267,10 @@ def _camera_defaults_payload(request: ShowCameraRequest) -> dict[str, Any]:
         defaults[ATTR_SNAPSHOT_CAMERA_ENTITY] = request.snapshot_camera_entity
     if request.snapshot_fallback_explicit:
         defaults[ATTR_SNAPSHOT_FALLBACK] = request.snapshot_fallback
+    if request.restream_provider_explicit and request.restream_provider:
+        defaults[ATTR_RESTREAM_PROVIDER] = request.restream_provider
+    if request.restream_url_explicit and request.restream_url:
+        defaults[ATTR_RESTREAM_URL] = request.restream_url
     if request.stream_camera_entity_explicit and request.stream_camera_entity:
         defaults[ATTR_STREAM_CAMERA_ENTITY] = request.stream_camera_entity
     if request.stream_type_explicit:
@@ -1298,6 +1333,10 @@ def _camera_calibration_summary(result: dict[str, Any]) -> dict[str, Any]:
         "saved": saved,
         "next_step": _camera_calibration_next_step(compatible, saved),
     }
+    if bool(result.get("has_restream_url", False)):
+        summary["has_restream_url"] = True
+    if result.get("restream_provider") is not None:
+        summary["restream_provider"] = result.get("restream_provider")
     if isinstance(provider_metadata, dict):
         summary["restreaming_provider_status"] = provider_metadata.get("status")
         summary["restreaming_provider_next_step"] = provider_metadata.get(
@@ -1324,35 +1363,73 @@ async def _async_camera_compatibility_report(
 ) -> dict[str, Any]:
     stream_entity = request.stream_camera_entity or request.camera_entity
     snapshot_entity = request.snapshot_camera_entity or request.camera_entity
-    results = [
-        await _async_stream_probe(
-            STREAM_TYPE_HLS,
-            lambda: _async_camera_stream_url(
-                hass,
-                stream_entity,
-                prefer_external=prefer_external,
+    if request.restream_url is not None:
+        restream_type = _restream_url_stream_type(request)
+        supports_hls = _supports_stream(capabilities, STREAM_TYPE_HLS)
+        supports_mjpeg = _supports_stream(capabilities, STREAM_TYPE_MJPEG)
+        results = [
+            {
+                "stream_type": STREAM_TYPE_HLS,
+                "available": restream_type == STREAM_TYPE_HLS and supports_hls,
+                "reason": "receiver_capability_unavailable"
+                if restream_type == STREAM_TYPE_HLS and not supports_hls
+                else None,
+                "source": "restream_url" if restream_type == STREAM_TYPE_HLS else None,
+            },
+            {
+                "stream_type": STREAM_TYPE_MJPEG,
+                "available": restream_type == STREAM_TYPE_MJPEG and supports_mjpeg,
+                "reason": "receiver_capability_unavailable"
+                if restream_type == STREAM_TYPE_MJPEG and not supports_mjpeg
+                else None,
+                "source": "restream_url"
+                if restream_type == STREAM_TYPE_MJPEG
+                else None,
+            },
+            await _async_stream_probe(
+                STREAM_TYPE_SNAPSHOT,
+                lambda: _camera_snapshot_url(
+                    hass,
+                    snapshot_entity,
+                    prefer_external=prefer_external,
+                ),
+                capabilities,
             ),
-            capabilities,
-        ),
-        await _async_stream_probe(
-            STREAM_TYPE_MJPEG,
-            lambda: _camera_mjpeg_stream_url(
-                hass,
-                stream_entity,
-                prefer_external=prefer_external,
+        ]
+        results = [
+            {key: value for key, value in result.items() if value is not None}
+            for result in results
+        ]
+    else:
+        results = [
+            await _async_stream_probe(
+                STREAM_TYPE_HLS,
+                lambda: _async_camera_stream_url(
+                    hass,
+                    stream_entity,
+                    prefer_external=prefer_external,
+                ),
+                capabilities,
             ),
-            capabilities,
-        ),
-        await _async_stream_probe(
-            STREAM_TYPE_SNAPSHOT,
-            lambda: _camera_snapshot_url(
-                hass,
-                snapshot_entity,
-                prefer_external=prefer_external,
+            await _async_stream_probe(
+                STREAM_TYPE_MJPEG,
+                lambda: _camera_mjpeg_stream_url(
+                    hass,
+                    stream_entity,
+                    prefer_external=prefer_external,
+                ),
+                capabilities,
             ),
-            capabilities,
-        ),
-    ]
+            await _async_stream_probe(
+                STREAM_TYPE_SNAPSHOT,
+                lambda: _camera_snapshot_url(
+                    hass,
+                    snapshot_entity,
+                    prefer_external=prefer_external,
+                ),
+                capabilities,
+            ),
+        ]
     recommended, recommendation_reason = _recommended_stream_type(
         results,
         capabilities,
@@ -1376,10 +1453,13 @@ async def _async_camera_compatibility_report(
         "preferred_stream_type": request.stream_type,
         "recommended_stream_type": recommended,
         "recommendation_reason": recommendation_reason,
+        "restream_provider": request.restream_provider,
         **restreaming_guidance,
         "restreaming_provider": restreaming_provider,
         "results": results,
     }
+    if request.restream_url is not None:
+        result["has_restream_url"] = True
     result["recommended_defaults"] = _recommended_camera_defaults_payload(
         request,
         result,
@@ -1513,6 +1593,7 @@ def _camera_action_result(
         "stream_camera_entity": request.stream_camera_entity or request.camera_entity,
         "snapshot_camera_entity": request.snapshot_camera_entity
         or request.camera_entity,
+        "restream_provider": request.restream_provider,
         "receiver": receiver.name,
         "receiver_device_id": receiver.device_id,
         "requested_stream_type": request.stream_type,
@@ -1521,6 +1602,8 @@ def _camera_action_result(
         "stage": stage,
         "transport": transport,
     }
+    if request.restream_url is not None:
+        result["has_restream_url"] = True
     if command is not None:
         result.update(
             {
@@ -1637,6 +1720,19 @@ async def _async_show_camera_command(
         request,
         prefer_external=prefer_external,
     )
+    if request.restream_url is not None:
+        stream_type = _restream_url_stream_type(request)
+        _validate_stream_capability(capabilities, stream_type)
+        return ShowCameraCommand(
+            title=title,
+            url=request.restream_url,
+            duration_seconds=request.duration_seconds,
+            enter_pip=request.enter_pip,
+            stream_type=stream_type,
+            preview_url=preview_url,
+            **_presentation_payload(request),
+        )
+
     supports_mjpeg = _supports_stream(capabilities, STREAM_TYPE_MJPEG)
     supports_hls = _supports_stream(capabilities, STREAM_TYPE_HLS)
     supports_snapshot = _supports_stream(capabilities, STREAM_TYPE_SNAPSHOT)
@@ -1771,6 +1867,19 @@ def _mjpeg_show_camera_command(
         preview_url=preview_url,
         **_presentation_payload(request),
     )
+
+
+def _restream_url_stream_type(request: ShowCameraRequest) -> str:
+    if request.stream_type == STREAM_TYPE_MJPEG:
+        return STREAM_TYPE_MJPEG
+    if request.stream_type == STREAM_TYPE_HLS:
+        return STREAM_TYPE_HLS
+    if request.restream_url is None:
+        return STREAM_TYPE_HLS
+    path = urlparse(request.restream_url).path.lower()
+    if path.endswith(".mjpeg") or path.endswith(".mjpg") or "mjpeg" in path:
+        return STREAM_TYPE_MJPEG
+    return STREAM_TYPE_HLS
 
 
 def _snapshot_preview_url(
@@ -2064,6 +2173,16 @@ def _optional_text(value: Any) -> str | None:
         return None
     text = str(value).strip()
     return text or None
+
+
+def _validated_restream_url(value: Any) -> str | None:
+    url = _optional_text(value)
+    if url is None:
+        return None
+    parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise ServiceValidationError("invalid_restream_url")
+    return url
 
 
 def _validated_color(value: Any, default: str) -> str:

@@ -24,6 +24,7 @@ The latest receiver/integration flow includes:
 - Per-camera defaults through `ha_tv_pip.calibrate_camera`, `ha_tv_pip.test_camera_stream`, `ha_tv_pip.set_camera_defaults`, and `ha_tv_pip.clear_camera_defaults`.
 - Compatibility tests that check HLS, MJPEG, and snapshot availability for a camera/receiver pair.
 - `recommended_defaults` previews so users can inspect exactly what would be saved before applying defaults.
+- Optional `restream_url` and `restream_provider` per-camera defaults for users who already expose a TV-safe go2rtc or similar HLS/MJPEG stream.
 - `restreaming_recommended`, `restreaming_reason`, `restreaming_next_step`, and `restreaming_options` fields when a camera likely needs a TV-safe restreamed source.
 - `Last Camera Compatibility`, `Camera Restreaming Recommended`, and `Last Camera Result` entities on the receiver device.
 - Receiver/integration compatibility checks for current, degraded, legacy, and incompatible receiver states.
@@ -243,6 +244,7 @@ Available now:
 - Home Assistant HLS stream resolution with snapshot fallback 🎬
 - Camera compatibility testing and per-camera stream defaults 🧭
 - Restreaming guidance when a camera needs a TV-safe source 🧵
+- Manual restream URL defaults for go2rtc or similar TV-safe HLS/MJPEG sources 🎬
 - Zeroconf discovery and TV-visible pairing 🔎
 - Receiver status, PiP controls, launcher controls, and diagnostics 🧰
 - Restreaming provider status visibility for planned go2rtc, WebRTC, and transcoding support 🩺
@@ -252,7 +254,7 @@ Available now:
 
 Future roadmap:
 
-- Better camera stream compatibility through stream profile selection, lower-resolution defaults, go2rtc helpers, WebRTC support, and optional transcoding paths 🧵
+- Better camera stream compatibility through automatic stream profile selection, richer go2rtc helpers, WebRTC support, and optional transcoding paths 🧵
 - More notification styling options inspired by existing TV popup tools, including title/message styling, media sizing, and corner placement polish 🔔
 - Default HACS repository inclusion so HA TV PiP can be installed without adding a custom repository 🧩
 - Long-term official Home Assistant integration track, including config-flow polish, repairs, diagnostics, translations, tests, and architecture review readiness 🏠
