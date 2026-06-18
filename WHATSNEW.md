@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.21.0 - Camera Calibration Action 🧭
+
+- Added `ha_tv_pip.calibrate_camera` as a friendly action for testing a camera/receiver pair and optionally saving the recommended per-camera defaults 🧭
+- Added calibration summaries with compatibility status, recommendation reason, save state, and next-step guidance 🧩
+- Updated service metadata, translations, docs, website copy, and tests for the calibration workflow 🧪
+
 ## 1.20.1 - Recommended Defaults Preview 👀
 
 - Added `recommended_defaults` to `ha_tv_pip.test_camera_stream` responses so users can see exactly what would be saved before enabling `save_recommendation` 👀

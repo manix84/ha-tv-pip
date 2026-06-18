@@ -30,6 +30,7 @@ from .const import (
     CONF_PORT,
     CONF_TOKEN,
     DOMAIN,
+    SERVICE_CALIBRATE_CAMERA,
     SERVICE_CLEAR_CAMERA_DEFAULTS,
     SERVICE_SET_CAMERA_DEFAULTS,
     SERVICE_SHOW_CAMERA,
@@ -72,6 +73,7 @@ ATTR_MESSAGE_SIZE = "message_size"
 ATTR_POSITION = "position"
 ATTR_SNAPSHOT_CAMERA_ENTITY = "snapshot_camera_entity"
 ATTR_SNAPSHOT_FALLBACK = "snapshot_fallback"
+ATTR_SAVE = "save"
 ATTR_SAVE_RECOMMENDATION = "save_recommendation"
 ATTR_STREAM_CAMERA_ENTITY = "stream_camera_entity"
 ATTR_STREAM_TYPE = "stream_type"
@@ -331,6 +333,12 @@ async def async_register_services(hass: Any) -> None:
             vol.Optional(ATTR_SAVE_RECOMMENDATION, default=False): bool,
         }
     )
+    camera_calibration_schema = vol.Schema(
+        {
+            **camera_defaults_fields,
+            vol.Optional(ATTR_SAVE, default=False): bool,
+        }
+    )
     snapshot_schema = vol.Schema(
         {
             **base_schema,
@@ -394,6 +402,9 @@ async def async_register_services(hass: Any) -> None:
     async def handle_test_camera_stream(call: Any) -> dict[str, Any]:
         return await async_handle_test_camera_stream(hass, call)
 
+    async def handle_calibrate_camera(call: Any) -> dict[str, Any]:
+        return await async_handle_calibrate_camera(hass, call)
+
     async def handle_set_camera_defaults(call: Any) -> dict[str, Any]:
         return await async_handle_set_camera_defaults(hass, call)
 
@@ -432,6 +443,15 @@ async def async_register_services(hass: Any) -> None:
             SERVICE_TEST_CAMERA_STREAM,
             handle_test_camera_stream,
             schema=camera_test_schema,
+            **response_kwargs,
+        )
+
+    if not hass.services.has_service(DOMAIN, SERVICE_CALIBRATE_CAMERA):
+        hass.services.async_register(
+            DOMAIN,
+            SERVICE_CALIBRATE_CAMERA,
+            handle_calibrate_camera,
+            schema=camera_calibration_schema,
             **response_kwargs,
         )
 
@@ -740,6 +760,34 @@ async def async_handle_show_notification(hass: Any, call: Any) -> None:
 async def async_handle_test_camera_stream(hass: Any, call: Any) -> dict[str, Any]:
     """Resolve camera stream options and store a non-sensitive compatibility result."""
 
+    return await _async_handle_camera_compatibility_workflow(
+        hass,
+        call,
+        save_field=ATTR_SAVE_RECOMMENDATION,
+        include_summary=False,
+    )
+
+
+async def async_handle_calibrate_camera(hass: Any, call: Any) -> dict[str, Any]:
+    """Calibrate camera stream defaults for a receiver."""
+
+    return await _async_handle_camera_compatibility_workflow(
+        hass,
+        call,
+        save_field=ATTR_SAVE,
+        include_summary=True,
+    )
+
+
+async def _async_handle_camera_compatibility_workflow(
+    hass: Any,
+    call: Any,
+    *,
+    save_field: str,
+    include_summary: bool,
+) -> dict[str, Any]:
+    """Run a compatibility test and optionally save its recommended defaults."""
+
     request = _request_from_call(call)
     _validate_camera_entity(hass, request.camera_entity)
     if request.stream_camera_entity is not None:
@@ -759,7 +807,7 @@ async def async_handle_test_camera_stream(hass: Any, call: Any) -> dict[str, Any
         prefer_external=prefer_external,
         capabilities=capabilities,
     )
-    if bool(getattr(call, "data", {}).get(ATTR_SAVE_RECOMMENDATION, False)):
+    if bool(getattr(call, "data", {}).get(save_field, False)):
         saved_defaults = _save_camera_recommendation_defaults(
             hass,
             receiver,
@@ -770,6 +818,16 @@ async def async_handle_test_camera_stream(hass: Any, call: Any) -> dict[str, Any
             **result,
             "saved_as_defaults": bool(saved_defaults),
             "saved_defaults": saved_defaults,
+        }
+    elif include_summary:
+        result = {
+            **result,
+            "saved_as_defaults": False,
+        }
+    if include_summary:
+        result = {
+            **result,
+            "summary": _camera_calibration_summary(result),
         }
     _store_camera_compatibility(hass, receiver, request.camera_entity, result)
     return result
@@ -1217,6 +1275,29 @@ def _recommended_camera_defaults_payload(
     defaults = _camera_defaults_payload(request)
     defaults[ATTR_STREAM_TYPE] = recommended
     return defaults
+
+
+def _camera_calibration_summary(result: dict[str, Any]) -> dict[str, Any]:
+    """Build a concise user-facing calibration summary."""
+
+    recommended = result.get("recommended_stream_type")
+    saved = bool(result.get("saved_as_defaults", False))
+    compatible = recommended is not None
+    return {
+        "compatible": compatible,
+        "recommended_stream_type": recommended,
+        "recommendation_reason": result.get("recommendation_reason"),
+        "saved": saved,
+        "next_step": _camera_calibration_next_step(compatible, saved),
+    }
+
+
+def _camera_calibration_next_step(compatible: bool, saved: bool) -> str:
+    if not compatible:
+        return "try_different_camera_entity_or_stream_source"
+    if saved:
+        return "use_show_camera_without_repeating_defaults"
+    return "review_recommended_defaults_or_run_again_with_save"
 
 
 async def _async_camera_compatibility_report(

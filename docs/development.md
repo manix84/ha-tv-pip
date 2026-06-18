@@ -1125,6 +1125,8 @@ Per-camera defaults are stored through `ha_tv_pip.set_camera_defaults` and remov
 
 `ha_tv_pip.test_camera_stream` checks HLS, MJPEG, and snapshot URL availability for a camera/receiver pair. The test result is stored in config entry diagnostics without active stream URLs, so users can share compatibility data without exposing camera endpoints.
 
+`ha_tv_pip.calibrate_camera` wraps the compatibility test in a friendlier workflow. It returns a `summary` object with compatibility, recommended stream type, recommendation reason, whether defaults were saved, and a next-step hint. Use `save: true` to store the recommended stream strategy plus any explicit calibration fields as per-camera defaults.
+
 The compatibility test includes `recommended_stream_type` and `recommendation_reason`. `auto` is recommended when HLS is available and the receiver can carry an MJPEG playable fallback. `mjpeg_first` is recommended when HLS and MJPEG are available but playable fallback is not, because it reduces receiver decoder risk while still allowing HLS fallback. HLS, MJPEG, or snapshot are recommended when only those paths are available.
 
 The response also includes `recommended_defaults`, which previews the exact per-camera defaults that would be saved. This lets users inspect the recommendation before setting `save_recommendation: true`.

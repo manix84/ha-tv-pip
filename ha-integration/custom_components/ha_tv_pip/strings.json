@@ -287,6 +287,42 @@
         }
       }
     },
+    "calibrate_camera": {
+      "name": "Calibrate camera",
+      "description": "Test a camera against a paired receiver and optionally save the recommended per-camera defaults.",
+      "fields": {
+        "camera_entity": {
+          "name": "Camera entity"
+        },
+        "stream_camera_entity": {
+          "name": "Stream camera entity"
+        },
+        "snapshot_camera_entity": {
+          "name": "Snapshot fallback camera entity"
+        },
+        "stream_type": {
+          "name": "Preferred stream strategy"
+        },
+        "duration_seconds": {
+          "name": "Duration"
+        },
+        "position": {
+          "name": "Position"
+        },
+        "snapshot_fallback": {
+          "name": "Snapshot fallback"
+        },
+        "width": {
+          "name": "Width"
+        },
+        "height": {
+          "name": "Height"
+        },
+        "save": {
+          "name": "Save"
+        }
+      }
+    },
     "set_camera_defaults": {
       "name": "Set camera defaults",
       "description": "Store per-camera defaults for a paired receiver.",

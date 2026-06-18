@@ -821,6 +821,7 @@ Completed:
 - ✅ `save_recommendation` on `ha_tv_pip.test_camera_stream` so compatibility tests can write recommended per-camera defaults.
 - ✅ `Last Camera Compatibility` sensor for showing the latest stream test recommendation on the receiver device.
 - ✅ `recommended_defaults` preview in compatibility test responses before saving per-camera defaults.
+- ✅ `ha_tv_pip.calibrate_camera` action for a user-friendly test, summary, and optional save workflow.
 
 Still future:
 

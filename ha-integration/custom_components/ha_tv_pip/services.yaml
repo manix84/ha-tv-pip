@@ -427,6 +427,97 @@ test_camera_stream:
       name: Save recommendation
       description: Save the recommended stream strategy and any explicit test fields as per-camera defaults.
       example: false
+calibrate_camera:
+  target:
+    device:
+      integration: ha_tv_pip
+  fields:
+    camera_entity:
+      required: true
+      selector:
+        entity:
+          domain: camera
+      name: Camera entity
+      description: Camera entity to calibrate against the selected receiver.
+    stream_camera_entity:
+      required: false
+      selector:
+        entity:
+          domain: camera
+      name: Stream camera entity
+      description: Optional camera entity to use for live stream compatibility checks and saved defaults.
+    snapshot_camera_entity:
+      required: false
+      selector:
+        entity:
+          domain: camera
+      name: Snapshot fallback camera entity
+      description: Optional camera entity to use for snapshot compatibility checks and saved defaults.
+    stream_type:
+      selector:
+        select:
+          options:
+            - auto
+            - hls
+            - mjpeg
+            - mjpeg_first
+            - snapshot
+      name: Preferred stream strategy
+      description: Optional stream strategy to evaluate alongside the calibration result.
+      example: auto
+    duration_seconds:
+      selector:
+        number:
+          min: 1
+          max: 3600
+          mode: box
+          unit_of_measurement: seconds
+      name: Duration
+      description: Per-camera duration to save when save is enabled.
+      example: 30
+    position:
+      selector:
+        select:
+          options:
+            - top_right
+            - top_left
+            - bottom_right
+            - bottom_left
+      name: Position
+      description: Per-camera popup position to save when save is enabled.
+      example: top_right
+    snapshot_fallback:
+      selector:
+        boolean:
+      name: Snapshot fallback
+      description: Snapshot fallback preference to evaluate and save when save is enabled.
+      example: true
+    width:
+      selector:
+        number:
+          min: 240
+          max: 1600
+          mode: box
+          unit_of_measurement: px
+      name: Width
+      description: Per-camera popup width to save when save is enabled.
+      example: 720
+    height:
+      selector:
+        number:
+          min: 120
+          max: 900
+          mode: box
+          unit_of_measurement: px
+      name: Height
+      description: Per-camera popup height to save when save is enabled.
+      example: 405
+    save:
+      selector:
+        boolean:
+      name: Save
+      description: Save the recommended stream strategy and any explicit calibration fields as per-camera defaults.
+      example: true
 set_camera_defaults:
   target:
     device:

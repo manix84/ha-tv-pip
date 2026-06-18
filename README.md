@@ -54,6 +54,8 @@ Compatibility test responses include `recommended_defaults`, so users can inspec
 
 The receiver device also exposes a `Last Camera Compatibility` sensor so the latest compatibility test recommendation is visible without opening diagnostics.
 
+For a simpler setup flow, `ha_tv_pip.calibrate_camera` tests the camera, returns a friendly summary, and can save the recommended per-camera defaults in one action with `save: true`.
+
 ## Monorepo Layout 🧱
 
 ```txt

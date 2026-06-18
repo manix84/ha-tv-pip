@@ -162,6 +162,25 @@ Per-camera defaults can be stored with `ha_tv_pip.set_camera_defaults`. They app
 
 ## Camera Compatibility Test 🧭
 
+For the normal setup workflow, use `ha_tv_pip.calibrate_camera`:
+
+```yaml
+service: ha_tv_pip.calibrate_camera
+target:
+  device_id: living_room_tv
+data:
+  camera_entity: camera.front_door
+  stream_camera_entity: camera.front_door_sub
+  snapshot_fallback: true
+  width: 720
+  height: 405
+  save: true
+```
+
+Calibration tests HLS, MJPEG, and snapshot availability, returns a summary with the recommended stream strategy and next step, and can save the recommendation as per-camera defaults.
+
+For lower-level troubleshooting, use `ha_tv_pip.test_camera_stream`:
+
 ```yaml
 service: ha_tv_pip.test_camera_stream
 target:
