@@ -16,6 +16,22 @@ This repository is a monorepo that contains the receiver app, Home Assistant int
 - `docs/`: Architecture, roadmap, and development notes 📚
 - `examples/`: Example Home Assistant automations ⚙️
 
+## HACS Quick Start 🧩
+
+Installing from HACS? You need both the Android TV receiver app and the Home Assistant integration:
+
+1. Download the latest Android TV APK from [GitHub Releases](https://github.com/manix84/ha-tv-pip/releases).
+2. Sideload the APK on each Android TV or Google TV receiver.
+3. Open the receiver app once and confirm the local endpoint is running.
+4. In Home Assistant, open HACS > Custom repositories.
+5. Add `https://github.com/manix84/ha-tv-pip` as category `Integration`.
+6. Install HA TV PiP, restart Home Assistant, then add the discovered receiver from Settings > Devices & services.
+7. Enter the pairing code shown on the TV.
+
+The HACS package installs only `custom_components/ha_tv_pip/`. The rest of this repository is for the Android app, website, docs, release tooling, and future platform work.
+
+For integration-specific usage notes, see [`custom_components/ha_tv_pip/README.md`](custom_components/ha_tv_pip/README.md).
+
 ## Current Phase 🚦
 
 Post-1.0 compatibility polish is active. Current work focuses on camera stream compatibility, easier troubleshooting, per-camera defaults, and clearer diagnostics across the Android TV receiver and Home Assistant integration.
@@ -74,6 +90,8 @@ ha-tv-pip/
 │   └── ha_tv_pip/
 ├── ha-integration/
 │   └── tests and Python tooling
+├── brand/
+│   └── HACS repository presentation assets
 ├── website/
 │   └── Vite React promotional website
 ├── docs/

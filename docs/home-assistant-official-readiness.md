@@ -42,7 +42,9 @@ Official Home Assistant integration readiness
 - Release workflow uploads `ha-tv-pip-integration.zip`.
 - Zip internal path is `custom_components/ha_tv_pip/`.
 - Integration `manifest.json` includes required HACS-facing metadata.
-- Brand directory includes `icon.png`.
+- Root `brand/` directory includes HACS-facing `icon.png` and `logo.png`.
+- Installed integration `custom_components/ha_tv_pip/brand/` includes Home Assistant-facing icon and logo assets.
+- Root README starts with HACS install guidance because HACS renders the repository README for the store page.
 
 ## Official Integration Gaps ⏳
 
