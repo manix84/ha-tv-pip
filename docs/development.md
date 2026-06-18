@@ -649,7 +649,7 @@ ha-tv-pip-integration.zip
 
 HACS expects custom integration repositories to provide a root `hacs.json` and installable integration content under `custom_components/<domain>/`. HA TV PiP keeps the integration source at `custom_components/ha_tv_pip/` so the monorepo remains directly HACS-compliant without duplicated source folders.
 
-HACS renders the repository-root `README.md` for the store page, so the root README starts with a HACS-friendly quick start before the broader monorepo/project status. Integration-specific operational notes still live in `custom_components/ha_tv_pip/README.md`.
+HACS renders the repository-root `README.md` for the store page, so the root README starts with user install guidance: Android APK first, Home Assistant integration second, and pairing third. Development and monorepo details are kept lower in the README. Integration-specific operational notes still live in `custom_components/ha_tv_pip/README.md`.
 
 HACS also expects repository brand assets. The repo keeps presentation assets in root `brand/` for HACS and installed integration assets in `custom_components/ha_tv_pip/brand/` for Home Assistant.
 

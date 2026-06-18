@@ -8,27 +8,45 @@
 
 HA TV PiP is a local-first Home Assistant companion project for showing short-lived camera feeds on Android TV and Google TV devices using Android Picture-in-Picture or a local overlay fallback.
 
-This repository is a monorepo that contains the receiver app, Home Assistant integration, and promotional website:
+## Install HA TV PiP 🚀
 
-- `android-tv-app/`: Android TV Kotlin app 📱
-- `ha-integration/`: Home Assistant custom integration 🏠
-- `website/`: Vite promotional website 🌐
-- `docs/`: Architecture, roadmap, and development notes 📚
-- `examples/`: Example Home Assistant automations ⚙️
+HA TV PiP needs two installed parts:
 
-## HACS Quick Start 🧩
+1. The Android TV receiver app on each Android TV / Google TV device.
+2. The Home Assistant integration in your Home Assistant instance.
 
-Installing from HACS? You need both the Android TV receiver app and the Home Assistant integration:
+### 1. Install the Android TV App 📺
 
-1. Download the latest Android TV APK from [GitHub Releases](https://github.com/manix84/ha-tv-pip/releases).
-2. Sideload the APK on each Android TV or Google TV receiver.
-3. Open the receiver app once and confirm the local endpoint is running.
-4. In Home Assistant, open HACS > Custom repositories.
-5. Add `https://github.com/manix84/ha-tv-pip` as category `Integration`.
-6. Install HA TV PiP, restart Home Assistant, then add the discovered receiver from Settings > Devices & services.
-7. Enter the pairing code shown on the TV.
+1. Open the latest [GitHub Release](https://github.com/manix84/ha-tv-pip/releases).
+2. Download the matching Android APK for your release version.
+3. For current beta installs, use `ha-tv-pip-android-debug-vX.Y.Z.apk` unless a signed release APK is provided.
+4. Sideload the APK onto the Android TV / Google TV receiver.
+5. Open HA TV PiP on the TV once and confirm the receiver dashboard shows the local endpoint as running.
+
+The Android app is not on the Play Store yet. Play Store distribution, signed release artifacts, and listing assets are planned.
+
+### 2. Install the Home Assistant Integration 🏠
+
+Until HA TV PiP is accepted as a default HACS repository:
+
+1. Open Home Assistant.
+2. Go to HACS > Custom repositories.
+3. Add `https://github.com/manix84/ha-tv-pip`.
+4. Select category `Integration`.
+5. Install HA TV PiP.
+6. Restart Home Assistant.
 
 The HACS package installs only `custom_components/ha_tv_pip/`. The rest of this repository is for the Android app, website, docs, release tooling, and future platform work.
+
+### 3. Pair the Receiver 🔐
+
+1. In Home Assistant, open Settings > Devices & services.
+2. Use the discovered HA TV PiP receiver card where possible.
+3. Select Add.
+4. Enter the six-digit pairing code shown on the TV.
+5. Use the receiver device's Test PiP button to confirm control works.
+
+To update a beta install, install the newer integration release in HACS, restart Home Assistant, then update or sideload the matching Android receiver APK on each TV. Matching receiver and integration versions make diagnostics and compatibility checks easier to interpret.
 
 For integration-specific usage notes, see [`custom_components/ha_tv_pip/README.md`](custom_components/ha_tv_pip/README.md).
 
@@ -79,82 +97,6 @@ Stage 11 is complete in `0.45.0`. HA TV PiP now supports styled text-only notifi
 Stage 12 is complete in `0.48.0`. The beta release hardening pass validated full quality checks, release packaging, Android debug and release APK builds, HACS zip layout, website build output, public install docs, Stage 11 examples, and the first GitHub release-candidate workflow.
 
 </details>
-
-## Monorepo Layout 🧱
-
-```txt
-ha-tv-pip/
-├── android-tv-app/
-│   └── Android TV Kotlin app
-├── custom_components/
-│   └── ha_tv_pip/
-├── ha-integration/
-│   └── tests and Python tooling
-├── brand/
-│   └── HACS repository presentation assets
-├── website/
-│   └── Vite React promotional website
-├── docs/
-│   ├── architecture.md
-│   ├── roadmap.md
-│   ├── development.md
-│   ├── home-assistant-official-readiness.md
-│   ├── play-store.md
-│   ├── troubleshooting.md
-│   └── translations.md
-├── examples/
-│   └── home-assistant-automations/
-├── README.md
-├── LICENSE
-└── .gitignore
-```
-
-## Run the Android TV App 🚀
-
-1. Open `android-tv-app/` in Android Studio.
-2. Let Android Studio sync Gradle.
-3. Select an Android TV or Google TV device, or create an Android TV emulator.
-4. Run the `app` configuration.
-5. Select `Play Test Video`, then use `Enter PiP`, `Show Overlay`, or press Home to test the receiver display mode.
-
-From VSCode or a terminal with a configured JDK and Android SDK:
-
-```sh
-npm run install:all
-npm run android:assemble
-```
-
-Useful repo scripts:
-
-```sh
-npm run check
-npm run lint
-npm run typecheck
-npm run test
-npm run android:assemble
-npm run android:build:dry-run
-npm run android:bundle:release
-npm run android:lint
-npm run android:test
-npm run android:clean
-npm run ha:build:dry-run
-npm run ha:test
-npm run website:dev
-npm run website:build
-npm run website:build:dry-run
-npm run website:a11y
-npm run website:test
-```
-
-## Website 🌐
-
-The promotional website lives in `website/`. It is a static Vite + React + TypeScript site for GitHub Pages, project docs entry points, and future release / Play Store / HACS links.
-
-Run it locally:
-
-```sh
-npm run website:dev
-```
 
 ## Local Control MVP 🧪
 
@@ -252,20 +194,6 @@ Beta install/update validation for `1.27.0` confirmed:
 - Integration packaging produces both `ha-tv-pip-integration-v1.27.0.zip` and `ha-tv-pip-integration.zip`.
 - The HACS zip contains `custom_components/ha_tv_pip/` at the archive root, matching the repository source layout.
 
-## HACS Installation 🧩
-
-Until HA TV PiP is accepted as a default HACS repository, add it as a custom repository:
-
-1. Open Home Assistant.
-2. Go to HACS > Custom repositories.
-3. Add `https://github.com/manix84/ha-tv-pip`.
-4. Select category `Integration`.
-5. Install HA TV PiP.
-6. Restart Home Assistant.
-7. Add the integration from Settings > Devices & services, preferably using the discovered receiver card.
-
-To update a beta install, install the newer integration release in HACS, restart Home Assistant, then update or sideload the matching Android receiver APK on each TV. Matching receiver and integration versions make diagnostics and compatibility checks easier to interpret.
-
 ## Beta Readiness 🧪
 
 HA TV PiP is usable as beta software, but it should still be treated as a fast-moving local receiver project rather than a finished app-store product.
@@ -317,3 +245,91 @@ Device support plan:
 - ⏭️ Next likely: Fire TV and Vega OS, because they are closest to the Android receiver model 🔥
 - 🔬 Research: Samsung Tizen, LG webOS, Roku, and Apple TV / tvOS, because each may need a separate receiver design around its own app, PiP, overlay, local-network, and background-execution rules 🔬
 - 👀 Watchlist: VIDAA, TiVo OS / Xperi TV OS, and operator TV platforms, to revisit if a clear distribution path and useful receiver capability model emerges 👀
+
+## Development 🛠️
+
+This repository is a monorepo that contains the receiver app, Home Assistant integration, and promotional website:
+
+- `android-tv-app/`: Android TV Kotlin app 📱
+- `custom_components/ha_tv_pip/`: Home Assistant custom integration 🏠
+- `ha-integration/`: Integration tests and Python tooling 🧪
+- `brand/`: HACS repository presentation assets 🎨
+- `website/`: Vite promotional website 🌐
+- `docs/`: Architecture, roadmap, and development notes 📚
+- `examples/`: Example Home Assistant automations ⚙️
+
+### Monorepo Layout 🧱
+
+```txt
+ha-tv-pip/
+├── android-tv-app/
+│   └── Android TV Kotlin app
+├── custom_components/
+│   └── ha_tv_pip/
+├── ha-integration/
+│   └── tests and Python tooling
+├── brand/
+│   └── HACS repository presentation assets
+├── website/
+│   └── Vite React promotional website
+├── docs/
+│   ├── architecture.md
+│   ├── roadmap.md
+│   ├── development.md
+│   ├── home-assistant-official-readiness.md
+│   ├── play-store.md
+│   ├── troubleshooting.md
+│   └── translations.md
+├── examples/
+│   └── home-assistant-automations/
+├── README.md
+├── LICENSE
+└── .gitignore
+```
+
+### Run the Android TV App from Source 🚀
+
+1. Open `android-tv-app/` in Android Studio.
+2. Let Android Studio sync Gradle.
+3. Select an Android TV or Google TV device, or create an Android TV emulator.
+4. Run the `app` configuration.
+5. Select `Play Test Video`, then use `Enter PiP`, `Show Overlay`, or press Home to test the receiver display mode.
+
+From VSCode or a terminal with a configured JDK and Android SDK:
+
+```sh
+npm run install:all
+npm run android:assemble
+```
+
+### Website Development 🌐
+
+The promotional website lives in `website/`. It is a static Vite + React + TypeScript site for GitHub Pages, project docs entry points, and future release / Play Store / HACS links.
+
+Run it locally:
+
+```sh
+npm run website:dev
+```
+
+### Useful Repo Scripts 🧰
+
+```sh
+npm run check
+npm run lint
+npm run typecheck
+npm run test
+npm run android:assemble
+npm run android:build:dry-run
+npm run android:bundle:release
+npm run android:lint
+npm run android:test
+npm run android:clean
+npm run ha:build:dry-run
+npm run ha:test
+npm run website:dev
+npm run website:build
+npm run website:build:dry-run
+npm run website:a11y
+npm run website:test
+```
