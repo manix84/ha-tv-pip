@@ -456,7 +456,7 @@ android-tv-app/app/src/
 android-tv-app/src/
 android-tv-app/build.gradle.kts
 android-tv-app/settings.gradle.kts
-ha-integration/custom_components/ha_tv_pip/
+custom_components/ha_tv_pip/
 ```
 
 Example:
@@ -485,10 +485,10 @@ Explicit markers in staged diffs trigger MINOR:
 Likely contract files also trigger MINOR:
 
 ```txt
-ha-integration/custom_components/ha_tv_pip/services.yaml
-ha-integration/custom_components/ha_tv_pip/config_flow.py
-ha-integration/custom_components/ha_tv_pip/manifest.json
-ha-integration/custom_components/ha_tv_pip/const.py
+custom_components/ha_tv_pip/services.yaml
+custom_components/ha_tv_pip/config_flow.py
+custom_components/ha_tv_pip/manifest.json
+custom_components/ha_tv_pip/const.py
 android-tv-app/app/src/**/models/**
 android-tv-app/app/src/**/receiver/**
 android-tv-app/app/src/**/pairing/**
@@ -621,7 +621,7 @@ The zip preserves the Home Assistant install path:
 custom_components/ha_tv_pip/
 ```
 
-It does not include the monorepo wrapper path `ha-integration/custom_components/ha_tv_pip/`.
+It matches the repository source layout used by HACS.
 
 The versioned zip is the human-readable release asset. The stable `ha-tv-pip-integration.zip` file is the HACS release asset referenced by root `hacs.json`.
 
@@ -651,7 +651,7 @@ ha-tv-pip-integration.zip
 
 ## HACS Distribution
 
-HACS expects custom integration repositories to provide a root `hacs.json` and installable integration content under `custom_components/<domain>/`. Because HA TV PiP is a monorepo, the default branch layout is not directly installable by HACS.
+HACS expects custom integration repositories to provide a root `hacs.json` and installable integration content under `custom_components/<domain>/`. HA TV PiP keeps the integration source at `custom_components/ha_tv_pip/` so the monorepo remains directly HACS-compliant without duplicated source folders.
 
 The repo therefore uses root `hacs.json` with:
 
@@ -732,7 +732,7 @@ Validated outputs:
 - `dist/ha-tv-pip-integration-v1.27.0.zip`
 - `dist/ha-tv-pip-integration.zip`
 
-The integration zips were checked to confirm they contain `custom_components/ha_tv_pip/` at the archive root and do not include monorepo wrapper paths such as `ha-integration/`, `android-tv-app/`, `docs/`, `dist/`, `.git/`, or `node_modules/`.
+The integration zips were checked to confirm they contain `custom_components/ha_tv_pip/` at the archive root and do not include unrelated monorepo paths such as `ha-integration/`, `android-tv-app/`, `docs/`, `dist/`, `.git/`, or `node_modules/`.
 
 Recommended beta update order:
 
@@ -872,7 +872,7 @@ Implemented through Stage 6.
 The integration currently lives under:
 
 ```txt
-ha-integration/custom_components/ha_tv_pip/
+custom_components/ha_tv_pip/
 ```
 
 It supports Zeroconf discovery, TV-visible pairing, bearer-token receiver control, `ha_tv_pip.show_camera`, `ha_tv_pip.show_snapshot`, and optional entity-based snapshot previews while video streams load.

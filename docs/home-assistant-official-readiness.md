@@ -59,6 +59,31 @@ These need a deeper pass before an upstream Home Assistant proposal:
 - Prepare a migration plan from custom integration installs to official integration installs.
 - Confirm naming, domain, icon, and brand assets against Home Assistant project conventions.
 
+## HACS vs Official Integration Packaging 📦
+
+The current custom integration source lives at:
+
+```txt
+custom_components/ha_tv_pip/
+```
+
+That layout is intentionally HACS-friendly. If HA TV PiP moves toward official Home Assistant inclusion, the official integration will eventually need to live inside Home Assistant core's own integration tree rather than this repository's `custom_components/` tree.
+
+Before that transition, decide whether the project should maintain:
+
+- One shared source tree with a release/export process for HACS and an upstream contribution branch for Home Assistant core.
+- Two development folders when HACS-specific and official-core-specific requirements diverge too far.
+- Two release builds if HACS needs custom assets, migration helpers, or compatibility shims that would not belong in Home Assistant core.
+
+Likely differences to track:
+
+- HACS requires root `hacs.json`, GitHub release assets, and custom-repository install/update documentation.
+- Official Home Assistant core will require upstream repository layout, Home Assistant review standards, Hassfest validation, quality-scale expectations, core docs, and a migration story for existing HACS users.
+- HACS can move faster and carry beta compatibility helpers; official core should be more conservative about APIs, dependencies, and maintenance burden.
+- HACS and official builds may need different README/install wording, release notes, branding paths, and deprecation guidance.
+
+For now, keep one source tree and document any HACS-only behavior clearly. Revisit separate packaging or folders only when official-core preparation reveals concrete differences that cannot be handled cleanly by packaging.
+
 ## Non-Goals For Stage 10 🚧
 
 - Submitting to Home Assistant core.

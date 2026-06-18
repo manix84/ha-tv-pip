@@ -4,13 +4,11 @@ import asyncio
 from dataclasses import dataclass
 from typing import Any
 
-from custom_components.ha_tv_pip import (
-    binary_sensor,
-    button,
-    diagnostics,
-    sensor,
-    switch,
-)
+import custom_components.ha_tv_pip.binary_sensor as binary_sensor
+import custom_components.ha_tv_pip.button as button
+import custom_components.ha_tv_pip.diagnostics as diagnostics
+import custom_components.ha_tv_pip.sensor as sensor
+import custom_components.ha_tv_pip.switch as switch
 from custom_components.ha_tv_pip.client import (
     ReceiverCapabilities,
     ReceiverClientError,

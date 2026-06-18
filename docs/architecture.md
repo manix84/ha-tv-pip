@@ -138,8 +138,11 @@ ha-tv-pip/
 ├── android-tv-app/
 │   Android TV application
 │
-├── ha-integration/
+├── custom_components/
 │   Home Assistant custom integration
+│
+├── ha-integration/
+│   Home Assistant integration tests and tooling
 │
 ├── website/
 │   Promotional website and project landing page
@@ -156,6 +159,8 @@ ha-tv-pip/
 The repository is intentionally structured as a monorepo.
 
 All projects should share documentation and release planning while remaining independently deployable.
+
+The Home Assistant integration source lives at `custom_components/ha_tv_pip/`. The `ha-integration/` directory remains for integration-specific tests, Python tooling, and package scripts. This keeps the monorepo HACS-compliant without duplicating integration files.
 
 ---
 

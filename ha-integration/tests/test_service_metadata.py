@@ -1,7 +1,7 @@
 from pathlib import Path
 
 SERVICES_YAML = (
-    Path(__file__).parents[1]
+    Path(__file__).parents[2]
     / "custom_components"
     / "ha_tv_pip"
     / "services.yaml"

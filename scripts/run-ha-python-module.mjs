@@ -1,11 +1,12 @@
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
-import { join } from "node:path";
+import { delimiter, dirname, join } from "node:path";
 
 const isWindows = process.platform === "win32";
 const integrationDir = process.cwd().endsWith("ha-integration")
   ? process.cwd()
   : join(process.cwd(), "ha-integration");
+const repoRoot = dirname(integrationDir);
 const venvPython = join(integrationDir, ".venv", isWindows ? "Scripts/python.exe" : "bin/python");
 
 if (!existsSync(venvPython)) {
@@ -23,6 +24,11 @@ if (!moduleName) {
 
 const result = spawnSync(venvPython, ["-m", moduleName, ...moduleArgs], {
   cwd: integrationDir,
+  env: {
+    ...process.env,
+    MYPYPATH: [repoRoot, process.env.MYPYPATH].filter(Boolean).join(delimiter),
+    PYTHONPATH: [repoRoot, process.env.PYTHONPATH].filter(Boolean).join(delimiter),
+  },
   stdio: "inherit",
 });
 

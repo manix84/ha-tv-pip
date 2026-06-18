@@ -11,7 +11,7 @@ if (!version || typeof version !== "string") {
   throw new Error("Root package.json must contain a version string");
 }
 
-const sourceDir = resolve("ha-integration/custom_components/ha_tv_pip");
+const sourceDir = resolve("custom_components/ha_tv_pip");
 const distDir = resolve("dist");
 const outputPath = join(distDir, `ha-tv-pip-integration-v${version}.zip`);
 const hacsOutputPath = join(distDir, "ha-tv-pip-integration.zip");

@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.27.2 - HACS Custom Repository Compliance 🧩
+
+- Added a root `custom_components/ha_tv_pip/` mirror so HACS can validate the custom repository structure before installing release zip assets 🧩
+- Added `npm run hacs:sync` and `npm run hacs:check` to keep the HACS root mirror synchronized with the source integration 🛠️
+- Added HACS mirror checks to root quality checks, the Home Assistant quality workflow, and the release workflow ✅
+
 ## 1.27.0 - Public Beta Support Hardening 🧪
 
 - Added a dedicated troubleshooting guide for discovery, pairing, popup display, stream compatibility, launcher recovery, remote receiver mode, and support data collection 🩺

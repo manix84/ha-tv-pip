@@ -70,8 +70,10 @@ Stage 12 is complete in `0.48.0`. The beta release hardening pass validated full
 ha-tv-pip/
 ├── android-tv-app/
 │   └── Android TV Kotlin app
+├── custom_components/
+│   └── ha_tv_pip/
 ├── ha-integration/
-│   └── custom_components/ha_tv_pip/
+│   └── tests and Python tooling
 ├── website/
 │   └── Vite React promotional website
 ├── docs/
@@ -219,7 +221,7 @@ ha-tv-pip-integration-vX.Y.Z.zip
 ha-tv-pip-integration.zip
 ```
 
-The debug APK is for beta testing and easier sideloading. The release APK is currently unsigned and is the shape that will become the normal Android release artifact once signing is introduced. The stable `ha-tv-pip-integration.zip` asset is for HACS. That zip contains `custom_components/ha_tv_pip/` at its root so HACS-style installs do not include the monorepo wrapper path.
+The debug APK is for beta testing and easier sideloading. The release APK is currently unsigned and is the shape that will become the normal Android release artifact once signing is introduced. The stable `ha-tv-pip-integration.zip` asset is for HACS. That zip contains `custom_components/ha_tv_pip/` at its root, matching the repository source layout.
 
 Published GitHub Releases are treated as immutable. If a release for the current version already exists, bump the root `package.json` version before producing another release.
 
@@ -230,7 +232,7 @@ Beta install/update validation for `1.27.0` confirmed:
 - Local debug APK build produces `ha-tv-pip-android-debug-v1.27.0.apk`.
 - Local unsigned release APK build produces `ha-tv-pip-android-release-v1.27.0.apk`.
 - Integration packaging produces both `ha-tv-pip-integration-v1.27.0.zip` and `ha-tv-pip-integration.zip`.
-- The HACS zip contains `custom_components/ha_tv_pip/` at the archive root.
+- The HACS zip contains `custom_components/ha_tv_pip/` at the archive root, matching the repository source layout.
 
 ## HACS Installation 🧩
 

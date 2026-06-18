@@ -738,6 +738,8 @@ Longer term, HA TV PiP should work toward official Home Assistant integration re
 
 Official inclusion should not block the MVP, Stage 5 service work, or HACS distribution, but design decisions should avoid making an upstream contribution harder later.
 
+The official-readiness plan should explicitly track HACS-vs-core differences. If future Home Assistant core requirements diverge from HACS needs, evaluate whether to keep one shared source tree with packaging/export steps, produce separate release builds, or split development folders only when the differences become concrete.
+
 ---
 
 # Website Track: Promotional Site
