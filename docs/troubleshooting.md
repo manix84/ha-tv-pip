@@ -13,6 +13,8 @@ HA TV PiP is still in beta. The most useful support data is the Android receiver
 5. In Home Assistant, open the receiver device and check receiver status, compatibility, and last camera result sensors.
 6. Download config entry diagnostics before opening a bug report. Tokens and active stream URLs are redacted by the integration.
 
+For HACS installs, use `v1.27.9` or newer. Earlier public beta builds can install but fail when opening the integration Configuration screen.
+
 ## Discovery Card Does Not Appear 🔎
 
 - Confirm the TV and Home Assistant host are on the same LAN or VLAN.
@@ -27,6 +29,23 @@ HA TV PiP is still in beta. The most useful support data is the Android receiver
 - If the receiver is already paired with another Home Assistant instance, use `Reset Pairing` in the TV app before pairing again.
 - If the pairing code expires, restart pairing from Home Assistant.
 - Existing pairings cannot be replaced remotely. This prevents another LAN client from taking over a receiver.
+
+## Configuration Screen Shows 500 ⚙️
+
+If the integration Configuration cog opens a `500 Internal Server Error` dialog:
+
+1. Update HA TV PiP through HACS to `v1.27.9` or newer.
+2. Restart Home Assistant after the update.
+3. Confirm `/config/custom_components/ha_tv_pip/manifest.json` shows the expected version.
+4. If it still fails, search the raw Home Assistant log for `aiohttp.server`, `voluptuous_serialize`, and `ha_tv_pip`.
+
+The known beta failure before `v1.27.9` was:
+
+```txt
+ValueError: Unable to convert schema: Any('auto', 'hls', 'mjpeg', 'mjpeg_first', 'snapshot', msg=None)
+```
+
+That means Home Assistant could not serialize the old options dropdown schema for the frontend. `v1.27.9` replaced those fields with Home Assistant selector dropdowns.
 
 ## Popup Does Not Appear 📺
 

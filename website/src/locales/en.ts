@@ -75,6 +75,11 @@ export const en = {
           "Android TV devices can reject unsupported codecs or very high-resolution streams. HA TV PiP supports snapshot fallbacks, separate stream camera entities, manual restream URLs, automatic MJPEG fallback, MJPEG-first mode, receiver capability checks, and camera compatibility testing. If HLS/MJPEG are unavailable or only snapshots work, calibration results flag that a TV-safe restreamed source is likely needed. Start with a lower-resolution or MJPEG camera entity, or use a go2rtc HLS/MJPEG URL if you already have one. Automatic go2rtc helpers, WebRTC, and transcoding are planned future provider paths.",
       },
       {
+        question: "Why does the Home Assistant Configuration screen show a 500 error?",
+        answer:
+          "Use HA TV PiP v1.27.9 or newer. Earlier HACS beta builds used an options dropdown schema that Home Assistant could install but could not serialize for the frontend. Update through HACS, restart Home Assistant, and confirm the installed manifest version is v1.27.9 or newer.",
+      },
+      {
         question: "What should I include in a beta bug report?",
         answer:
           "Include the Android receiver version, Home Assistant integration version, Home Assistant version, TV model, camera platform, stream strategy, service YAML, and redacted config entry diagnostics. The troubleshooting guide lists the checks to run before opening an issue.",

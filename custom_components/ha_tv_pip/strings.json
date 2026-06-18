@@ -111,6 +111,9 @@
       "receiver_version": {
         "name": "Receiver Version"
       },
+      "receiver_compatibility": {
+        "name": "Receiver Compatibility"
+      },
       "status": {
         "name": "Status"
       },

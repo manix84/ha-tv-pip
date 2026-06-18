@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Any
 
 from .client import ReceiverClientError, async_get_receiver_status
@@ -20,6 +22,8 @@ REDACTED_KEYS = {
     "token",
     "url",
 }
+MIN_HACS_OPTIONS_FLOW_VERSION = "1.27.9"
+
 
 async def async_get_config_entry_diagnostics(hass: Any, entry: Any) -> dict[str, Any]:
     """Return diagnostics for a HA TV PiP config entry."""
@@ -30,6 +34,10 @@ async def async_get_config_entry_diagnostics(hass: Any, entry: Any) -> dict[str,
 
     diagnostics: dict[str, Any] = {
         "entry": data,
+        "integration": {
+            "version": _manifest_version(),
+            "minimum_hacs_options_flow_version": MIN_HACS_OPTIONS_FLOW_VERSION,
+        },
         "camera_defaults": _redact(
             dict(getattr(entry, "options", {}) or {}).get(CONF_CAMERA_DEFAULTS, {})
         ),
@@ -68,6 +76,16 @@ async def async_get_config_entry_diagnostics(hass: Any, entry: Any) -> dict[str,
         "warnings": list(status.compatibility.warnings),
     }
     return diagnostics
+
+
+def _manifest_version() -> str:
+    manifest_path = Path(__file__).with_name("manifest.json")
+    try:
+        with manifest_path.open(encoding="utf-8") as manifest_file:
+            manifest = json.load(manifest_file)
+    except (OSError, json.JSONDecodeError):
+        return "unknown"
+    return str(manifest.get("version", "unknown"))
 
 
 def _redact(value: Any) -> Any:

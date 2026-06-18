@@ -683,6 +683,8 @@ translations/
 
 For custom-repository installs, users should add `https://github.com/manix84/ha-tv-pip` in HACS as category `Integration`.
 
+Use `v1.27.9` or newer as the practical HACS beta baseline. Earlier HACS beta builds had a frontend serialization failure in the integration options flow because raw `vol.Any(...)` dropdown schemas cannot be converted by Home Assistant's config-flow API. The fixed options flow uses Home Assistant selector dropdowns for stream strategy and popup position.
+
 Default HACS repository inclusion is a separate later step. Before submitting to the HACS default repository list, confirm the public GitHub repository has a description, topics, passing HACS validation, passing Hassfest validation, and at least one full GitHub Release.
 
 ## Stage 12 Beta Release Hardening
@@ -713,6 +715,8 @@ Verify release packaging expectations:
 - Versioned integration zip internal path: `custom_components/ha_tv_pip/`.
 - Stable HACS zip internal path: integration files at archive root.
 - Root `package.json`, Android `versionName`, HA `manifest.json`, and project `package.json` files all match.
+- HACS install/update can open the receiver Configuration screen without a `500` error.
+- Receiver device exposes Status, Receiver Version, Receiver Compatibility, Last Camera Compatibility, Camera Restreaming Recommended, and Last Camera Result entities.
 
 Documentation work in Stage 12 included:
 

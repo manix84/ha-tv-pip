@@ -36,6 +36,8 @@ Until HA TV PiP is accepted as a default HACS repository:
 
 The HACS release zip contains the integration files at archive root because HACS extracts the release asset directly into `config/custom_components/ha_tv_pip/`.
 
+Use `v1.27.9` or newer for HACS installs. Earlier HACS beta builds can show `500 Internal Server Error` when opening the integration Configuration screen because Home Assistant could not serialize the old options dropdown schema.
+
 ### 3. Pair the Receiver 🔐
 
 1. Open Settings > Devices & services.
@@ -108,7 +110,7 @@ The dry-run build packages the custom integration zip and will remain the integr
 Each paired receiver creates:
 
 - Status sensor with playback state, receiver diagnostics, and parsed receiver capability metadata.
-- Focused sensors for active display mode, active stream type, last receiver error, and receiver app version.
+- Focused sensors for active display mode, active stream type, last receiver error, receiver app version, and receiver compatibility.
 - Last Camera Compatibility sensor with the latest stream test recommendation.
 - Last Camera Result sensor with the latest redacted camera/snapshot command outcome.
 - Restreaming Provider Status sensor for planned, configured, and active provider visibility.

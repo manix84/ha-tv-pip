@@ -108,6 +108,9 @@
       "receiver_version": {
         "name": "Receiver Version"
       },
+      "receiver_compatibility": {
+        "name": "Receiver Compatibility"
+      },
       "stream_type": {
         "name": "Active Stream Type"
       },

@@ -40,6 +40,11 @@ export const de = {
           "Android-TV-Geräte können nicht unterstützte Codecs oder sehr hochauflösende Streams ablehnen. HA TV PiP unterstützt bereits Snapshot-Fallbacks und verbessert Stream-Auswahl und Kompatibilität weiter.",
       },
       {
+        question: "Warum zeigt die Home-Assistant-Konfiguration einen 500-Fehler?",
+        answer:
+          "Nutze HA TV PiP v1.27.9 oder neuer. Frühere HACS-Beta-Versionen verwendeten ein Options-Dropdown-Schema, das Home Assistant installieren, aber nicht für das Frontend serialisieren konnte. Aktualisiere über HACS, starte Home Assistant neu und bestätige, dass die installierte Manifest-Version v1.27.9 oder neuer ist.",
+      },
+      {
         question: "Was gehört in einen Beta-Bugreport?",
         answer:
           "Bitte nenne Android-Receiver-Version, Home-Assistant-Integrationsversion, Home-Assistant-Version, TV-Modell, Kamera-Plattform, Stream-Strategie, Service-YAML und bereinigte Diagnosen. Die Fehlerbehebungsanleitung listet die Prüfungen vor dem Öffnen eines Issues.",

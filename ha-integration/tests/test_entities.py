@@ -131,6 +131,7 @@ def test_sensor_setup_adds_status_sensor() -> None:
         "device-1_stream_type",
         "device-1_last_error",
         "device-1_receiver_version",
+        "device-1_receiver_compatibility",
         "device-1_last_camera_compatibility",
         "device-1_last_camera_result",
         "device-1_restreaming_provider_status",
@@ -141,6 +142,7 @@ def test_sensor_setup_adds_status_sensor() -> None:
         "stream_type",
         "last_error",
         "receiver_version",
+        "receiver_compatibility",
         "last_camera_compatibility",
         "last_camera_result",
         "restreaming_provider_status",
@@ -291,16 +293,24 @@ def test_focused_status_sensors_update_from_receiver(monkeypatch) -> None:  # ty
     stream_type = sensor.ReceiverStreamTypeSensor(_entry())
     last_error = sensor.ReceiverLastErrorSensor(_entry())
     version = sensor.ReceiverVersionSensor(_entry())
+    compatibility = sensor.ReceiverCompatibilitySensor(_entry())
 
     asyncio.run(display_mode.async_update())
     asyncio.run(stream_type.async_update())
     asyncio.run(last_error.async_update())
     asyncio.run(version.async_update())
+    asyncio.run(compatibility.async_update())
 
     assert display_mode._attr_native_value == "overlay"
     assert stream_type._attr_native_value == "hls"
     assert last_error._attr_native_value == "none"
     assert version._attr_native_value == "0.24.0"
+    assert compatibility._attr_native_value == "compatible"
+    assert (
+        compatibility._attr_extra_state_attributes["summary"]
+        == "Receiver supports the current integration feature set."
+    )
+    assert compatibility._attr_extra_state_attributes["compatible"] is True
 
 
 def test_last_camera_result_sensor_reads_stored_result() -> None:
@@ -672,6 +682,10 @@ def test_diagnostics_redacts_token_and_url(monkeypatch) -> None:  # type: ignore
     result = asyncio.run(diagnostics.async_get_config_entry_diagnostics(None, entry))
 
     assert result["entry"][CONF_TOKEN] == diagnostics.REDACTED
+    assert result["integration"] == {
+        "version": diagnostics._manifest_version(),
+        "minimum_hacs_options_flow_version": "1.27.9",
+    }
     assert result["camera_defaults"] == {
         "camera.front_door": {
             "stream_type": "mjpeg_first",

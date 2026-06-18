@@ -838,6 +838,8 @@ Completed:
 - ✅ Restreaming provider metadata in compatibility and calibration responses, including current workaround paths, planned provider families, and documentation URL.
 - ✅ Manual `restream_url` and `restream_provider` support for per-camera defaults and direct TV-safe HLS/MJPEG sources such as go2rtc.
 - ✅ Public beta support hardening with a focused troubleshooting guide, structured bug report template, and clearer install/support checklist.
+- ✅ HACS options-flow hardening in `v1.27.9+`, including frontend-serializable selector dropdowns and troubleshooting notes for the earlier `500` configuration-screen failure.
+- ✅ Receiver Compatibility sensor so users can see compatible, degraded, legacy, or incompatible receiver states directly on the Home Assistant device.
 
 Still future:
 

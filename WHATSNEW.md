@@ -1,5 +1,12 @@
 # What's New ✨
 
+## 1.27.10 - HACS Support And Compatibility Polish 🧰
+
+- Added a Receiver Compatibility sensor so the Home Assistant device shows compatible, degraded, legacy, or incompatible receiver states directly 🩺
+- Added integration release metadata and the minimum HACS options-flow baseline to config entry diagnostics 🔎
+- Documented `v1.27.9+` as the practical HACS beta baseline for the Configuration screen and added troubleshooting guidance for the earlier `500` options-flow failure 📝
+- Added package/release verification notes so future releases check HACS zip layout, options-flow loading, and core receiver diagnostic entities before publishing 📦
+
 ## 1.27.9 - Options Flow Dropdown Fix 🧩
 
 - Fixed a Home Assistant options-flow 500 error caused by raw `vol.Any(...)` dropdown schemas that the frontend serializer could not convert 🛠️

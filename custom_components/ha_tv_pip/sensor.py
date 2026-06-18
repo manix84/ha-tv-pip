@@ -36,6 +36,7 @@ async def async_setup_entry(hass: Any, entry: Any, async_add_entities: Any) -> N
             ReceiverStreamTypeSensor(entry),
             ReceiverLastErrorSensor(entry),
             ReceiverVersionSensor(entry),
+            ReceiverCompatibilitySensor(entry),
             ReceiverLastCameraCompatibilitySensor(hass, entry),
             ReceiverLastCameraResultSensor(hass, entry),
             ReceiverRestreamingProviderStatusSensor(entry),
@@ -127,6 +128,25 @@ class ReceiverVersionSensor(ReceiverPollingSensor):
 
     def _native_value(self, status: ReceiverStatus) -> str:
         return status.version or "unknown"
+
+
+class ReceiverCompatibilitySensor(ReceiverPollingSensor):
+    """Receiver compatibility summary sensor."""
+
+    def __init__(self, entry: Any) -> None:
+        super().__init__(
+            entry,
+            key="receiver_compatibility",
+            name="Receiver Compatibility",
+        )
+
+    def _native_value(self, status: ReceiverStatus) -> str:
+        return status.compatibility.state
+
+    def _extra_attributes(self, status: ReceiverStatus) -> dict[str, Any]:
+        attributes = _status_attributes(status)
+        attributes["summary"] = _compatibility_summary(status)
+        return attributes
 
 
 class ReceiverLastCameraResultSensor(ReceiverEntity, SensorEntity):
@@ -269,3 +289,16 @@ def _status_attributes(status: ReceiverStatus) -> dict[str, Any]:
         )
 
     return attributes
+
+
+def _compatibility_summary(status: ReceiverStatus) -> str:
+    state = status.compatibility.state
+    if state == "compatible":
+        return "Receiver supports the current integration feature set."
+    if state == "degraded":
+        return "Receiver is usable, but some optional features are unavailable."
+    if state == "legacy":
+        return "Receiver is usable, but does not report detailed capabilities."
+    if state == "incompatible":
+        return "Receiver is missing required API or display capabilities."
+    return "Receiver compatibility state is unknown."
