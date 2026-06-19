@@ -594,7 +594,31 @@ Build the release Android App Bundle:
 npm run android:bundle:release
 ```
 
-The release APK and App Bundle are currently unsigned. Play Store deployment and signing automation are intentionally out of scope. Play Store listing, privacy, screenshot, signing, and release-note prep is tracked in `docs/play-store.md`.
+Release builds are signed when a complete signing configuration is provided through Gradle properties or environment variables:
+
+```txt
+HA_TV_PIP_RELEASE_STORE_FILE=/absolute/path/to/release.keystore
+HA_TV_PIP_RELEASE_STORE_PASSWORD=...
+HA_TV_PIP_RELEASE_KEY_ALIAS=...
+HA_TV_PIP_RELEASE_KEY_PASSWORD=...
+```
+
+Without those values, local release builds remain unsigned and continue to produce `app-release-unsigned.apk` for beta validation. Do not commit keystores, passwords, signing reports, or Play Console credentials.
+
+The GitHub release workflow can sign the release APK when these repository secrets are configured:
+
+```txt
+ANDROID_RELEASE_KEYSTORE_BASE64
+ANDROID_RELEASE_STORE_PASSWORD
+ANDROID_RELEASE_KEY_ALIAS
+ANDROID_RELEASE_KEY_PASSWORD
+```
+
+`ANDROID_RELEASE_KEYSTORE_BASE64` should be the base64-encoded keystore file. The workflow decodes it into the runner temp directory and exposes it to Gradle as `HA_TV_PIP_RELEASE_STORE_FILE`.
+
+Signing secrets are all-or-nothing. If only part of the secret set is configured, the release workflow fails before building the release APK. When all signing secrets are present, the workflow verifies the signed APK with Android SDK `apksigner` before uploading the release asset.
+
+Play Store deployment is intentionally out of scope. Play Store listing, privacy, screenshot, signing, and release-note prep is tracked in `docs/play-store.md`.
 
 ## Integration Local Packaging
 
@@ -640,6 +664,8 @@ When code is pushed or merged into `main`, `.github/workflows/release.yml`:
 5. Runs `Release Asset Check 🔎` to validate APK names, APK archive shape, integration zip names, HACS zip layout, manual zip layout, icon presence, ignored paths, and manifest version consistency.
 6. Runs `Publish Release 🚀` to create draft GitHub Release `vX.Y.Z` with the Android APKs, versioned integration zip, and stable HACS integration zip already attached, then publishes it.
 7. Runs `Cleanup 🧹` as a final visible workflow stage.
+
+The `Android APK Release 🤖` job signs and verifies the release APK when all Android signing secrets are available. If signing secrets are absent, it uploads the unsigned release APK under the same release asset name so beta release validation can continue. Partial signing configuration fails the job.
 
 Published GitHub Releases are treated as immutable. The workflow will not replace assets on an existing published release; it exits cleanly when the release for the current version already exists. Bump the root `package.json` version before producing another release. If an older failed workflow already created a published release without assets, delete that failed release manually or move forward with the next version.
 

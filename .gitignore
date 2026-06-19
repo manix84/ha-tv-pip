@@ -20,6 +20,9 @@ dist/
 *.apk
 *.aab
 *.zip
+*.jks
+*.keystore
+android-tv-app/signing/
 node_modules/
 .venv/
 ha-integration/.venv/

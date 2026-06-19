@@ -183,7 +183,7 @@ ha-tv-pip-integration-vX.Y.Z.zip
 ha-tv-pip-integration.zip
 ```
 
-The debug APK is for beta testing and easier sideloading. The release APK is currently unsigned and is the shape that will become the normal Android release artifact once signing is introduced. The stable `ha-tv-pip-integration.zip` asset is for HACS. That zip contains the integration files at archive root because HACS extracts `zip_release` assets directly into `config/custom_components/ha_tv_pip/`.
+The debug APK is for beta testing and easier sideloading. The release APK is signed when Android signing secrets are configured in GitHub Actions; otherwise it remains an unsigned release build for local/beta validation. The stable `ha-tv-pip-integration.zip` asset is for HACS. That zip contains the integration files at archive root because HACS extracts `zip_release` assets directly into `config/custom_components/ha_tv_pip/`.
 
 Published GitHub Releases are treated as immutable. If a release for the current version already exists, bump the root `package.json` version before producing another release.
 

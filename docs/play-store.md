@@ -1,12 +1,12 @@
 # Play Store Release Prep 📺
 
-This document prepares HA TV PiP for a future Android TV / Google TV Play Store release. It does not implement deployment, signing automation, or Play Console submission yet.
+This document prepares HA TV PiP for a future Android TV / Google TV Play Store release. It does not implement Play Console deployment or submission yet.
 
 ## Current Release Position 🚦
 
 HA TV PiP is still pre-release software. GitHub Releases remain the distribution target for now, while HACS custom-repository installation is prepared for the Home Assistant integration.
 
-Stage 12 proved the beta release path through GitHub Releases and HACS custom-repository installs. Play Store deployment should wait until signing, listing assets, tester guidance, and broader receiver feedback are ready.
+Stage 12 proved the beta release path through GitHub Releases and HACS custom-repository installs. Play Store deployment should wait until signed release artifacts, listing assets, tester guidance, and broader receiver feedback are ready.
 
 The Android app package name is:
 
@@ -144,13 +144,34 @@ Safety rules:
 
 ## Signing Guidance ✍️
 
-Current release builds produce an unsigned APK. Before Play Store upload:
+Release builds can now be signed when a complete signing configuration is provided. Before Play Store upload:
 
 1. Decide whether to use Play App Signing.
 2. Generate a production upload key and keep it outside the repository.
 3. Add local signing configuration through Gradle properties or CI secrets.
 4. Build an Android App Bundle (`.aab`) for Play Store upload.
 5. Keep debug, release, upload-key, and Play signing responsibilities documented separately.
+
+Local signing values can be provided through Gradle properties or environment variables:
+
+```txt
+HA_TV_PIP_RELEASE_STORE_FILE=/absolute/path/to/release.keystore
+HA_TV_PIP_RELEASE_STORE_PASSWORD=...
+HA_TV_PIP_RELEASE_KEY_ALIAS=...
+HA_TV_PIP_RELEASE_KEY_PASSWORD=...
+```
+
+GitHub Actions release signing uses repository secrets:
+
+```txt
+ANDROID_RELEASE_KEYSTORE_BASE64
+ANDROID_RELEASE_STORE_PASSWORD
+ANDROID_RELEASE_KEY_ALIAS
+ANDROID_RELEASE_KEY_PASSWORD
+```
+
+If those secrets are absent, the release workflow falls back to the unsigned release APK so beta release validation can continue.
+If only some signing secrets are configured, the workflow fails before building so it cannot accidentally publish an unsigned artifact that looked signed. When all signing secrets are configured, the workflow verifies the APK with Android SDK `apksigner` before upload.
 
 Local bundle build:
 
@@ -166,7 +187,7 @@ android-tv-app/app/build/outputs/bundle/release/app-release.aab
 
 Do not commit keystores, passwords, generated signing reports, or Play Console credentials.
 
-Future automation should use GitHub Actions secrets for signing only after the release process is stable.
+The current automation only signs the release artifact. Play Store upload remains a future task.
 
 ## Release Notes Guidance 📦
 
@@ -197,6 +218,7 @@ Production release notes should include:
 - Home Assistant integration package builds.
 - Android debug APK builds.
 - Android release APK builds.
+- Android release APK is signed when signing secrets are configured.
 - Android App Bundle build exists.
 - Release artifact version matches root `package.json`.
 - `PRIVACY.md` matches Play Console privacy answers.
@@ -207,7 +229,6 @@ Production release notes should include:
 ## Not Yet Implemented 🚧
 
 - Play Store deployment.
-- Production signing automation.
 - Play Console metadata upload.
 - Store screenshot generation automation.
 - Public production release approval.

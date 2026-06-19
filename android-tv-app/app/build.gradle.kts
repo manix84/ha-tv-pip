@@ -3,6 +3,24 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+fun signingValue(name: String): String? =
+    providers.gradleProperty(name)
+        .orElse(providers.environmentVariable(name))
+        .orNull
+        ?.takeIf { it.isNotBlank() }
+
+val releaseStoreFilePath = signingValue("HA_TV_PIP_RELEASE_STORE_FILE")
+val releaseStorePassword = signingValue("HA_TV_PIP_RELEASE_STORE_PASSWORD")
+val releaseKeyAlias = signingValue("HA_TV_PIP_RELEASE_KEY_ALIAS")
+val releaseKeyPassword = signingValue("HA_TV_PIP_RELEASE_KEY_PASSWORD")
+val hasReleaseSigningConfig =
+    listOf(
+        releaseStoreFilePath,
+        releaseStorePassword,
+        releaseKeyAlias,
+        releaseKeyPassword
+    ).all { !it.isNullOrBlank() }
+
 android {
     namespace = "com.hatvpip.receiver"
     compileSdk {
@@ -23,6 +41,25 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
+    }
+
+    signingConfigs {
+        if (hasReleaseSigningConfig) {
+            create("release") {
+                storeFile = file(releaseStoreFilePath!!)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            if (hasReleaseSigningConfig) {
+                signingConfig = signingConfigs.getByName("release")
+            }
+        }
     }
 
     compileOptions {
