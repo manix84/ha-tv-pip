@@ -138,6 +138,23 @@ class ReceiverServiceStatus:
 
 
 @dataclass(frozen=True)
+class ReceiverRemoteStatus:
+    """Remote receiver connection diagnostics returned by the local HTTP API."""
+
+    status: str | None
+    home_assistant_url: str | None
+    last_error: str | None
+    connected_at_millis: int | None
+    last_message_at_millis: int | None
+    connection_attempt_count: int | None
+    successful_connection_count: int | None
+    message_count: int | None
+    last_connection_attempt_at_millis: int | None
+    last_disconnected_at_millis: int | None
+    last_disconnect_reason: str | None
+
+
+@dataclass(frozen=True)
 class ReceiverStatus:
     """Receiver status returned by the local HTTP API."""
 
@@ -156,6 +173,7 @@ class ReceiverStatus:
     pairing_state: str | None
     launcher_visible: bool | None
     remote_status: str | None
+    remote: ReceiverRemoteStatus | None
     last_request: dict[str, Any] | None
     error: str | None
     raw: dict[str, Any]
@@ -278,6 +296,7 @@ async def async_get_receiver_status(host: str, port: int) -> ReceiverStatus:
             if isinstance(remote, dict) and remote.get("status")
             else None
         ),
+        remote=_parse_remote_status(remote),
         last_request=last_request if isinstance(last_request, dict) else None,
         error=str(response["error"]) if response.get("error") else None,
         raw=response,
@@ -479,6 +498,31 @@ def _parse_service_status(value: Any) -> ReceiverServiceStatus | None:
         last_boot_receiver_at_millis=_optional_int(
             value.get("lastBootReceiverAtMillis")
         ),
+    )
+
+
+def _parse_remote_status(value: Any) -> ReceiverRemoteStatus | None:
+    if not isinstance(value, dict):
+        return None
+
+    return ReceiverRemoteStatus(
+        status=_optional_text(value.get("status")),
+        home_assistant_url=_optional_text(value.get("homeAssistantUrl")),
+        last_error=_optional_text(value.get("lastError")),
+        connected_at_millis=_optional_int(value.get("connectedAtMillis")),
+        last_message_at_millis=_optional_int(value.get("lastMessageAtMillis")),
+        connection_attempt_count=_optional_int(value.get("connectionAttemptCount")),
+        successful_connection_count=_optional_int(
+            value.get("successfulConnectionCount")
+        ),
+        message_count=_optional_int(value.get("messageCount")),
+        last_connection_attempt_at_millis=_optional_int(
+            value.get("lastConnectionAttemptAtMillis")
+        ),
+        last_disconnected_at_millis=_optional_int(
+            value.get("lastDisconnectedAtMillis")
+        ),
+        last_disconnect_reason=_optional_text(value.get("lastDisconnectReason")),
     )
 
 

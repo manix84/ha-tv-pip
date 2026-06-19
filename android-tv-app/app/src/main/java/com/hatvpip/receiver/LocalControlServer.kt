@@ -191,6 +191,12 @@ class LocalControlServer(
                     .put("lastError", remote.lastError)
                     .put("connectedAtMillis", remote.connectedAtMillis)
                     .put("lastMessageAtMillis", remote.lastMessageAtMillis)
+                    .put("connectionAttemptCount", remote.connectionAttemptCount)
+                    .put("successfulConnectionCount", remote.successfulConnectionCount)
+                    .put("messageCount", remote.messageCount)
+                    .put("lastConnectionAttemptAtMillis", remote.lastConnectionAttemptAtMillis)
+                    .put("lastDisconnectedAtMillis", remote.lastDisconnectedAtMillis)
+                    .put("lastDisconnectReason", remote.lastDisconnectReason)
             )
             .put(
                 "lastRequest",

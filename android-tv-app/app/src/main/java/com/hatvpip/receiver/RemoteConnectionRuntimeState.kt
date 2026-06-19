@@ -15,7 +15,13 @@ data class RemoteConnectionSnapshot(
     val homeAssistantUrl: String? = null,
     val lastError: String? = null,
     val connectedAtMillis: Long? = null,
-    val lastMessageAtMillis: Long? = null
+    val lastMessageAtMillis: Long? = null,
+    val connectionAttemptCount: Long = 0,
+    val successfulConnectionCount: Long = 0,
+    val messageCount: Long = 0,
+    val lastConnectionAttemptAtMillis: Long? = null,
+    val lastDisconnectedAtMillis: Long? = null,
+    val lastDisconnectReason: String? = null
 )
 
 object RemoteConnectionRuntimeState {
@@ -23,42 +29,55 @@ object RemoteConnectionRuntimeState {
 
     fun snapshot(): RemoteConnectionSnapshot = current.get()
 
-    fun markDisabled(homeAssistantUrl: String? = null) {
-        current.set(
-            RemoteConnectionSnapshot(
+    fun markDisabled(
+        homeAssistantUrl: String? = null,
+        nowMillis: Long = System.currentTimeMillis()
+    ) {
+        current.updateAndGet { snapshot ->
+            snapshot.copy(
                 status = RemoteConnectionStatus.Disabled,
-                homeAssistantUrl = homeAssistantUrl
+                homeAssistantUrl = homeAssistantUrl,
+                lastDisconnectedAtMillis = nowMillis,
+                lastDisconnectReason = "disabled"
             )
-        )
+        }
     }
 
-    fun markConnecting(homeAssistantUrl: String) {
-        current.set(
-            RemoteConnectionSnapshot(
+    fun markConnecting(homeAssistantUrl: String, nowMillis: Long = System.currentTimeMillis()) {
+        current.updateAndGet { snapshot ->
+            snapshot.copy(
                 status = RemoteConnectionStatus.Connecting,
-                homeAssistantUrl = homeAssistantUrl
+                homeAssistantUrl = homeAssistantUrl,
+                lastError = null,
+                connectionAttemptCount = snapshot.connectionAttemptCount + 1,
+                lastConnectionAttemptAtMillis = nowMillis
             )
-        )
+        }
     }
 
     fun markConnected(homeAssistantUrl: String, nowMillis: Long = System.currentTimeMillis()) {
-        current.set(
-            RemoteConnectionSnapshot(
+        current.updateAndGet { snapshot ->
+            snapshot.copy(
                 status = RemoteConnectionStatus.Connected,
                 homeAssistantUrl = homeAssistantUrl,
+                lastError = null,
                 connectedAtMillis = nowMillis,
-                lastMessageAtMillis = nowMillis
+                lastMessageAtMillis = nowMillis,
+                successfulConnectionCount = snapshot.successfulConnectionCount + 1
             )
-        )
+        }
     }
 
     fun markMessage(nowMillis: Long = System.currentTimeMillis()) {
         current.updateAndGet { snapshot ->
-            snapshot.copy(lastMessageAtMillis = nowMillis)
+            snapshot.copy(
+                lastMessageAtMillis = nowMillis,
+                messageCount = snapshot.messageCount + 1
+            )
         }
     }
 
-    fun markDisconnected(error: String? = null) {
+    fun markDisconnected(error: String? = null, nowMillis: Long = System.currentTimeMillis()) {
         current.updateAndGet { snapshot ->
             snapshot.copy(
                 status = if (error == null) {
@@ -66,8 +85,14 @@ object RemoteConnectionRuntimeState {
                 } else {
                     RemoteConnectionStatus.Error
                 },
-                lastError = error
+                lastError = error,
+                lastDisconnectedAtMillis = nowMillis,
+                lastDisconnectReason = error
             )
         }
+    }
+
+    fun resetForTest() {
+        current.set(RemoteConnectionSnapshot())
     }
 }

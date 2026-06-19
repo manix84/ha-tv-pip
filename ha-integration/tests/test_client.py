@@ -235,7 +235,19 @@ def test_async_get_receiver_status_parses_response(monkeypatch) -> None:  # type
             "playbackState": "playing",
             "displayMode": "overlay",
             "playback": {"streamType": "hls"},
-            "remote": {"status": "connected"},
+            "remote": {
+                "status": "connected",
+                "homeAssistantUrl": "https://example.ui.nabu.casa",
+                "lastError": None,
+                "connectedAtMillis": 2_000,
+                "lastMessageAtMillis": 3_000,
+                "connectionAttemptCount": 4,
+                "successfulConnectionCount": 2,
+                "messageCount": 7,
+                "lastConnectionAttemptAtMillis": 1_500,
+                "lastDisconnectedAtMillis": 1_000,
+                "lastDisconnectReason": "receiver reconnect",
+            },
             "management": {"launcherVisible": False},
             "service": {
                 "running": True,
@@ -287,6 +299,18 @@ def test_async_get_receiver_status_parses_response(monkeypatch) -> None:  # type
     assert status.pairing_state == "paired"
     assert status.launcher_visible is False
     assert status.remote_status == "connected"
+    assert status.remote is not None
+    assert status.remote.status == "connected"
+    assert status.remote.home_assistant_url == "https://example.ui.nabu.casa"
+    assert status.remote.last_error is None
+    assert status.remote.connected_at_millis == 2_000
+    assert status.remote.last_message_at_millis == 3_000
+    assert status.remote.connection_attempt_count == 4
+    assert status.remote.successful_connection_count == 2
+    assert status.remote.message_count == 7
+    assert status.remote.last_connection_attempt_at_millis == 1_500
+    assert status.remote.last_disconnected_at_millis == 1_000
+    assert status.remote.last_disconnect_reason == "receiver reconnect"
     assert status.service is not None
     assert status.service.running is True
     assert status.service.foreground is True

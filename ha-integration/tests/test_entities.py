@@ -13,6 +13,7 @@ from custom_components.ha_tv_pip.client import (
     ReceiverCapabilities,
     ReceiverClientError,
     ReceiverCompatibility,
+    ReceiverRemoteStatus,
     ReceiverServiceStatus,
     ReceiverStatus,
 )
@@ -115,6 +116,19 @@ def _status() -> ReceiverStatus:
         pairing_state="paired",
         launcher_visible=True,
         remote_status="connected",
+        remote=ReceiverRemoteStatus(
+            status="connected",
+            home_assistant_url="https://example.ui.nabu.casa",
+            last_error=None,
+            connected_at_millis=2_000,
+            last_message_at_millis=3_000,
+            connection_attempt_count=4,
+            successful_connection_count=2,
+            message_count=7,
+            last_connection_attempt_at_millis=1_500,
+            last_disconnected_at_millis=1_000,
+            last_disconnect_reason="receiver reconnect",
+        ),
         last_request={"method": "GET", "path": "/status", "status": 200},
         error=None,
         raw={
@@ -274,6 +288,39 @@ def test_status_sensor_updates_from_receiver(monkeypatch) -> None:  # type: igno
     assert (
         entity._attr_extra_state_attributes["supports_remote_receiver_settings"]
         is True
+    )
+    assert (
+        entity._attr_extra_state_attributes["remote_home_assistant_url_configured"]
+        is True
+    )
+    assert entity._attr_extra_state_attributes["remote_last_error"] is None
+    assert entity._attr_extra_state_attributes["remote_connected_at_millis"] == 2_000
+    assert (
+        entity._attr_extra_state_attributes["remote_last_message_at_millis"]
+        == 3_000
+    )
+    assert (
+        entity._attr_extra_state_attributes["remote_connection_attempt_count"]
+        == 4
+    )
+    assert (
+        entity._attr_extra_state_attributes["remote_successful_connection_count"]
+        == 2
+    )
+    assert entity._attr_extra_state_attributes["remote_message_count"] == 7
+    assert (
+        entity._attr_extra_state_attributes[
+            "remote_last_connection_attempt_at_millis"
+        ]
+        == 1_500
+    )
+    assert (
+        entity._attr_extra_state_attributes["remote_last_disconnected_at_millis"]
+        == 1_000
+    )
+    assert (
+        entity._attr_extra_state_attributes["remote_last_disconnect_reason"]
+        == "receiver reconnect"
     )
     assert entity._attr_extra_state_attributes["service_running"] is True
     assert entity._attr_extra_state_attributes["service_foreground"] is True
@@ -587,6 +634,24 @@ def test_remote_connected_sensor_updates_from_receiver(monkeypatch) -> None:  # 
 
     assert entity._attr_is_on is True
     assert entity._attr_extra_state_attributes["remote_status"] == "connected"
+    assert (
+        entity._attr_extra_state_attributes["remote_home_assistant_url_configured"]
+        is True
+    )
+    assert entity._attr_extra_state_attributes["remote_last_error"] is None
+    assert (
+        entity._attr_extra_state_attributes["remote_connection_attempt_count"]
+        == 4
+    )
+    assert (
+        entity._attr_extra_state_attributes["remote_successful_connection_count"]
+        == 2
+    )
+    assert entity._attr_extra_state_attributes["remote_message_count"] == 7
+    assert (
+        entity._attr_extra_state_attributes["remote_last_disconnect_reason"]
+        == "receiver reconnect"
+    )
 
 
 def test_test_button_sends_public_test_stream(monkeypatch) -> None:  # type: ignore[no-untyped-def]

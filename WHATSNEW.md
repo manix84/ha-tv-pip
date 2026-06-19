@@ -4,6 +4,7 @@
 
 - Added Android receiver service runtime diagnostics for foreground state, start count, last start reason, and boot/package-replaced receiver activity 🔄
 - Exposed the new service-health block through the local `/status` endpoint and Home Assistant status attributes 🔎
+- Added remote receiver connection diagnostics for attempt count, successful connection count, message count, disconnect reason, and connection timestamps 🌍
 - Added tests for Android service runtime tracking and Home Assistant status parsing/entity attributes 🧪
 - Updated support docs so reboot/startup issues can be debugged without guessing whether the receiver service actually restarted 📚
 

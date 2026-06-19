@@ -95,6 +95,9 @@ If the receiver app is hidden from the Android TV launcher:
 - Confirm the Home Assistant external URL is reachable from the TV network.
 - Confirm the remote receiver token is current.
 - Use the Home Assistant Sync Remote Config control after changing remote settings.
+- Open the Remote Connected binary sensor attributes and check `remote_connection_attempt_count`, `remote_successful_connection_count`, `remote_last_error`, and `remote_last_disconnect_reason`.
+- If attempts increase but successful connections do not, check the external URL, token, DNS, TLS certificate, and outbound network access from the TV location.
+- If `remote_message_count` stays at `0` after a remote command, the receiver may be connected but not receiving Home Assistant command events.
 - Local LAN control remains preferred when the TV is at home.
 - Remote receiver mode is not a HA TV PiP cloud service; it uses the user's own Home Assistant WebSocket API.
 

@@ -388,6 +388,32 @@ def _status_attributes(status: ReceiverStatus) -> dict[str, Any]:
                 "last_boot_receiver_at_millis": service.last_boot_receiver_at_millis,
             }
         )
+    remote = status.remote
+    if remote is not None:
+        attributes.update(
+            {
+                "remote_home_assistant_url_configured": (
+                    remote.home_assistant_url is not None
+                ),
+                "remote_last_error": remote.last_error,
+                "remote_connected_at_millis": remote.connected_at_millis,
+                "remote_last_message_at_millis": remote.last_message_at_millis,
+                "remote_connection_attempt_count": (
+                    remote.connection_attempt_count
+                ),
+                "remote_successful_connection_count": (
+                    remote.successful_connection_count
+                ),
+                "remote_message_count": remote.message_count,
+                "remote_last_connection_attempt_at_millis": (
+                    remote.last_connection_attempt_at_millis
+                ),
+                "remote_last_disconnected_at_millis": (
+                    remote.last_disconnected_at_millis
+                ),
+                "remote_last_disconnect_reason": remote.last_disconnect_reason,
+            }
+        )
 
     return attributes
 

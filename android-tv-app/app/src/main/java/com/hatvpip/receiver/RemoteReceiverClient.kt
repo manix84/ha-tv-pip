@@ -86,7 +86,6 @@ class RemoteReceiverClient(
             event = "remote_registration_sent",
             state = RemoteConnectionStatus.Connecting.wireName
         )
-        RemoteConnectionRuntimeState.markConnecting(config.homeAssistantUrl)
     }
 
     private fun handleMessage(text: String, config: RemoteConnectionConfig, pairingToken: String) {

@@ -1,6 +1,6 @@
 {
   "name": "@ha-tv-pip/website",
-  "version": "1.28.1",
+  "version": "1.29.0",
   "private": true,
   "description": "Promotional website for HA TV PiP.",
   "license": "MIT",

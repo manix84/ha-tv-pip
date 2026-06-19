@@ -112,6 +112,7 @@ Each paired receiver creates:
 
 - Status sensor with playback state, receiver diagnostics, and parsed receiver capability metadata.
 - Status sensor attributes for receiver service health, including foreground state, start count, last start reason, and last boot/package-replaced receiver action.
+- Status sensor attributes for remote receiver health, including connection attempts, successful connections, received command messages, last disconnect reason, and connection timestamps.
 - Focused sensors for active display mode, active stream type, last receiver error, receiver app version, and receiver compatibility.
 - Last Camera Compatibility sensor with the latest stream test recommendation.
 - Last Camera Result sensor with the latest redacted camera/snapshot command outcome.
@@ -160,6 +161,11 @@ Receiver service health:
 
 - The status sensor includes `service_running`, `service_foreground`, `service_start_count`, `service_last_start_reason`, `service_last_started_at_millis`, `service_last_destroyed_at_millis`, `last_boot_receiver_action`, and `last_boot_receiver_at_millis`.
 - After a TV restart or app update, these fields help confirm whether Android delivered the boot/package-replaced event and whether the foreground receiver service started again.
+
+Remote receiver health:
+
+- The status sensor and Remote Connected binary sensor include `remote_connection_attempt_count`, `remote_successful_connection_count`, `remote_message_count`, `remote_last_connection_attempt_at_millis`, `remote_connected_at_millis`, `remote_last_message_at_millis`, `remote_last_disconnected_at_millis`, `remote_last_disconnect_reason`, and `remote_last_error`.
+- The configured Home Assistant external URL is not exposed in entity attributes; the integration only reports whether a remote URL is configured.
 
 ## Receiver Compatibility 🧩
 
