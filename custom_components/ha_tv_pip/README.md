@@ -17,11 +17,12 @@ You need both parts:
 
 1. Open the latest [GitHub Release](https://github.com/manix84/ha-tv-pip/releases).
 2. Download the matching Android APK for your release version.
-3. For current beta installs, use `ha-tv-pip-android-debug-vX.Y.Z.apk` unless a signed release APK is provided.
-4. Sideload the APK onto the Android TV / Google TV receiver.
-5. Open HA TV PiP on the TV once and confirm the receiver dashboard shows the local endpoint as running.
+3. For normal installs, use `ha-tv-pip-android-release-vX.Y.Z.apk`.
+4. Use `ha-tv-pip-android-debug-vX.Y.Z.apk` only when debugging or when a maintainer specifically asks for a debug build.
+5. Sideload the APK onto the Android TV / Google TV receiver.
+6. Open HA TV PiP on the TV once and confirm the receiver dashboard shows the local endpoint as running.
 
-The Android app is not on the Play Store yet. Play Store distribution, signed release artifacts, and listing assets are planned.
+The Android app is not on the Play Store yet. Signed APKs are available through GitHub Releases; Play Store distribution and listing assets are planned.
 
 ### 2. Install the Home Assistant Integration 🏠
 
@@ -62,7 +63,7 @@ Current beta features:
 - Receiver entities for status, connectivity, PiP controls, launcher controls, and diagnostics 🧰
 - Optional remote receiver mode through your own Home Assistant external URL 🌍
 
-HA TV PiP is still pre-release software. HACS custom-repository installation is the current integration distribution path. Play Store distribution for the Android TV app is planned; until then, install the APK from GitHub Releases.
+HA TV PiP is still pre-release software. HACS custom-repository installation is the current integration distribution path. Play Store distribution for the Android TV app is planned; until then, install the signed release APK from GitHub Releases.
 
 ## Beta Support Checklist 🧪
 

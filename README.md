@@ -19,11 +19,12 @@ HA TV PiP needs two installed parts:
 
 1. Open the latest [GitHub Release](https://github.com/manix84/ha-tv-pip/releases).
 2. Download the matching Android APK for your release version.
-3. For current beta installs, use `ha-tv-pip-android-debug-vX.Y.Z.apk` unless a signed release APK is provided.
-4. Sideload the APK onto the Android TV / Google TV receiver.
-5. Open HA TV PiP on the TV once and confirm the receiver dashboard shows the local endpoint as running.
+3. For normal installs, use `ha-tv-pip-android-release-vX.Y.Z.apk`.
+4. Use `ha-tv-pip-android-debug-vX.Y.Z.apk` only when debugging or when a maintainer specifically asks for a debug build.
+5. Sideload the APK onto the Android TV / Google TV receiver.
+6. Open HA TV PiP on the TV once and confirm the receiver dashboard shows the local endpoint as running.
 
-The Android app is not on the Play Store yet. Play Store distribution, signed release artifacts, and listing assets are planned.
+The Android app is not on the Play Store yet. Signed APKs are available through GitHub Releases; Play Store distribution and listing assets are planned.
 
 ### 2. Install the Home Assistant Integration 🏠
 
@@ -183,7 +184,7 @@ ha-tv-pip-integration-vX.Y.Z.zip
 ha-tv-pip-integration.zip
 ```
 
-The debug APK is for beta testing and easier sideloading. The release APK is signed when Android signing secrets are configured in GitHub Actions; otherwise it remains an unsigned release build for local/beta validation. The stable `ha-tv-pip-integration.zip` asset is for HACS. That zip contains the integration files at archive root because HACS extracts `zip_release` assets directly into `config/custom_components/ha_tv_pip/`.
+The release APK is the recommended sideload artifact for normal users. The debug APK remains available for troubleshooting and development. The stable `ha-tv-pip-integration.zip` asset is for HACS. That zip contains the integration files at archive root because HACS extracts `zip_release` assets directly into `config/custom_components/ha_tv_pip/`.
 
 Published GitHub Releases are treated as immutable. If a release for the current version already exists, bump the root `package.json` version before producing another release.
 
@@ -192,7 +193,7 @@ Play Store deployment is not implemented yet. Release-prep notes for listing cop
 Beta install/update validation for `1.27.0` confirmed:
 
 - Local debug APK build produces `ha-tv-pip-android-debug-v1.27.0.apk`.
-- Local unsigned release APK build produces `ha-tv-pip-android-release-v1.27.0.apk`.
+- Local signed release APK build produces `ha-tv-pip-android-release-v1.27.0.apk` when signing secrets are configured.
 - Integration packaging produces both `ha-tv-pip-integration-v1.27.0.zip` and `ha-tv-pip-integration.zip`.
 - The stable HACS zip contains `manifest.json`, `__init__.py`, `brand/`, translations, and other integration files at archive root so HACS installs them into `config/custom_components/ha_tv_pip/`.
 
