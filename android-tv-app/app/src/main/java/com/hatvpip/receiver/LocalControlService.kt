@@ -21,7 +21,8 @@ class LocalControlService : Service() {
         discoveryAdvertiser = DiscoveryAdvertiser(applicationContext)
         remoteReceiverClient = RemoteReceiverClient(
             context = applicationContext,
-            onShow = ::showPlayer
+            onShow = ::showPlayer,
+            onClose = ::closePlayer
         ).also { it.reconnect() }
         server = LocalControlServer(
             context = applicationContext,

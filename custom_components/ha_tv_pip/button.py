@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any
 from .client import (
     ReceiverClientError,
     ShowCameraCommand,
-    async_close_receiver,
     async_get_receiver_status,
     async_open_receiver,
 )
@@ -17,6 +16,7 @@ from .entity import ReceiverEntity
 from .remote import remote_registry
 from .remote_setup import async_sync_remote_setup, has_remote_setup_options
 from .services import (
+    _async_close_receiver_command,
     _async_send_receiver_command,
     _prefer_remote_transport,
     _resolve_receiver_from_entry,
@@ -245,11 +245,14 @@ class ReceiverCloseButton(ReceiverEntity, ButtonEntity):
     async def async_press(self) -> None:
         """Close the active display on the receiver."""
 
+        receiver = _resolve_receiver_from_entry(self.entry)
+        remote = remote_registry(self.hass)
+        prefer_remote = _prefer_remote_transport(receiver, remote)
         try:
-            accepted = await async_close_receiver(
-                self.host,
-                self.port,
-                token=str(self.entry.data[CONF_TOKEN]),
+            accepted, transport = await _async_close_receiver_command(
+                receiver,
+                remote,
+                prefer_remote=prefer_remote,
             )
         except ReceiverClientError as error:
             _store_button_result(
@@ -266,6 +269,7 @@ class ReceiverCloseButton(ReceiverEntity, ButtonEntity):
             self.entry,
             command_type="close_pip",
             status="accepted" if accepted else "failed",
+            transport=transport,
             reason=None if accepted else "receiver_command_rejected",
         )
 

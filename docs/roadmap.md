@@ -608,6 +608,7 @@ Possible approaches:
 - `ha_tv_pip.show_camera` and `ha_tv_pip.show_snapshot` use local HTTP first by default and can fall back to an active remote receiver connection when local control fails.
 - Receiver options can enable remote transport preference so WebSocket control is tried first.
 - Remote receiver commands use the same `show` payload as the local `/show` endpoint.
+- Remote receiver commands also support closing the active PiP/overlay display.
 - Camera stream and snapshot URLs prefer Home Assistant's external URL when a remote receiver connection is active.
 - Android TV includes a minimal remote receiver settings panel for Home Assistant external URL and long-lived access token.
 - Android TV `/status` reports remote connection state for diagnostics.
@@ -846,6 +847,7 @@ Completed:
 - ✅ Receiver service health diagnostics for foreground-service state, start count, boot/package-replaced startup activity, and last start reason.
 - ✅ Remote receiver health diagnostics for connection attempts, successful connections, received command messages, disconnect reason, and connection timestamps.
 - ✅ Receiver option for preferring remote WebSocket transport while keeping local HTTP first by default.
+- ✅ Remote Close PiP support over the outbound WebSocket receiver connection.
 
 Still future:
 

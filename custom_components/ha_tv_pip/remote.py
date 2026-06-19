@@ -103,6 +103,31 @@ class RemoteReceiverRegistry:
         )
         return True
 
+    async def async_send_close(self, *, device_id: str) -> bool:
+        """Send a close command to a connected remote receiver."""
+
+        return self._send_command_event(
+            device_id=device_id,
+            data={"command": "close"},
+        )
+
+    def _send_command_event(self, *, device_id: str, data: dict[str, Any]) -> bool:
+        remote = self._connections.get(device_id)
+        if remote is None:
+            return False
+
+        remote.connection.send_message(
+            {
+                "id": next(self._message_ids),
+                "type": "event",
+                "event": {
+                    "event_type": EVENT_RECEIVER_COMMAND,
+                    "data": data,
+                },
+            }
+        )
+        return True
+
 
 def remote_registry(hass: Any) -> RemoteReceiverRegistry:
     """Return the per-Home Assistant remote receiver registry."""

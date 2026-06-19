@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit
 class RemoteReceiverClient(
     private val context: Context,
     private val onShow: (ShowCommand) -> Unit,
+    private val onClose: () -> Unit,
     private val client: OkHttpClient = defaultClient()
 ) {
     private var webSocket: WebSocket? = null
@@ -134,6 +135,10 @@ class RemoteReceiverClient(
                             error.message ?: "invalid_show_command"
                         )
                     }
+            }
+            "close" -> {
+                RemoteConnectionRuntimeState.markMessage()
+                onClose()
             }
         }
     }

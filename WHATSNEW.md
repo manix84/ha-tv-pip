@@ -1,5 +1,17 @@
 # What's New ✨
 
+## 1.29.3 - Remote Close PiP 🚪
+
+- Added remote WebSocket support for Close PiP so remote receivers can close active popups without local HTTP access 🌍
+- Updated the Android remote receiver client to handle remote close commands and increment remote message diagnostics 📺
+- Updated the Home Assistant Close PiP button to follow the same transport preference ordering as Test PiP 🧭
+
+## 1.29.2 - Remote Transport Preference Fixes 🛠️
+
+- Kept the Home Assistant external URL prefilled while allowing options to save with a blank token and remote receiver mode disabled ⚙️
+- Made Test PiP follow the configured local-first or remote-first transport preference 🧪
+- Kept local HTTP as the default transport while preserving WebSocket fallback when local control fails 🌐
+
 ## 1.29.1 - Remote Transport Preference 🌍
 
 - Added a receiver option to prefer remote WebSocket transport while keeping local HTTP first by default ⚙️

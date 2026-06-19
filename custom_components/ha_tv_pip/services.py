@@ -13,6 +13,7 @@ from .client import (
     ReceiverCapabilities,
     ReceiverClientError,
     ShowCameraCommand,
+    async_close_receiver,
     async_get_receiver_status,
     async_show_camera,
 )
@@ -1109,6 +1110,38 @@ async def _async_send_receiver_command(
         command=command,
     )
     return "local"
+
+
+async def _async_close_receiver_command(
+    receiver: ReceiverEntry,
+    remote: Any,
+    *,
+    prefer_remote: bool,
+) -> tuple[bool, str]:
+    """Close a receiver display with remote/local fallback ordering."""
+
+    if prefer_remote and await remote.async_send_close(device_id=receiver.device_id):
+        return True, "remote"
+
+    if not prefer_remote:
+        try:
+            accepted = await async_close_receiver(
+                receiver.host,
+                receiver.port,
+                token=receiver.token,
+            )
+            return accepted, "local"
+        except ReceiverClientError:
+            if await remote.async_send_close(device_id=receiver.device_id):
+                return True, "remote"
+            raise
+
+    accepted = await async_close_receiver(
+        receiver.host,
+        receiver.port,
+        token=receiver.token,
+    )
+    return accepted, "local"
 
 
 def _configured_entries(hass: Any) -> list[Any]:

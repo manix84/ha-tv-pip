@@ -862,11 +862,28 @@ def test_close_button_sends_close_command(monkeypatch) -> None:  # type: ignore[
     captured: dict[str, Any] = {}
     hass = FakeHass()
 
-    async def fake_close(host: str, port: int, *, token: str) -> bool:
-        captured.update({"host": host, "port": port, "token": token})
-        return True
+    class FakeRemoteRegistry:
+        def is_connected(self, device_id: str) -> bool:
+            return False
 
-    monkeypatch.setattr(button, "async_close_receiver", fake_close)
+    async def fake_close(
+        receiver: Any,
+        remote: Any,
+        *,
+        prefer_remote: bool,
+    ) -> tuple[bool, str]:
+        captured.update(
+            {
+                "host": receiver.host,
+                "port": receiver.port,
+                "token": receiver.token,
+                "prefer_remote": prefer_remote,
+            }
+        )
+        return True, "local"
+
+    monkeypatch.setattr(button, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(button, "_async_close_receiver_command", fake_close)
 
     asyncio.run(button.ReceiverCloseButton(hass, _entry()).async_press())
 
@@ -874,10 +891,52 @@ def test_close_button_sends_close_command(monkeypatch) -> None:  # type: ignore[
         "host": "10.0.0.236",
         "port": 8765,
         "token": "secret-token",
+        "prefer_remote": False,
     }
     result = hass.data[DOMAIN][LAST_COMMAND_RESULT_KEY]["entry-1"]
     assert result["command_type"] == "close_pip"
     assert result["status"] == "accepted"
+    assert result["transport"] == "local"
+
+
+def test_close_button_prefers_remote_transport_when_enabled(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    captured: dict[str, Any] = {}
+    hass = FakeHass()
+
+    class FakeRemoteRegistry:
+        def is_connected(self, device_id: str) -> bool:
+            return device_id == "device-1"
+
+    async def fake_close(
+        receiver: Any,
+        remote: Any,
+        *,
+        prefer_remote: bool,
+    ) -> tuple[bool, str]:
+        captured.update(
+            {
+                "device_id": receiver.device_id,
+                "prefer_remote": prefer_remote,
+            }
+        )
+        return True, "remote"
+
+    entry = _entry()
+    entry.options = {CONF_PREFER_REMOTE_TRANSPORT: True}
+
+    monkeypatch.setattr(button, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(button, "_async_close_receiver_command", fake_close)
+
+    asyncio.run(button.ReceiverCloseButton(hass, entry).async_press())
+
+    assert captured == {
+        "device_id": "device-1",
+        "prefer_remote": True,
+    }
+    result = hass.data[DOMAIN][LAST_COMMAND_RESULT_KEY]["entry-1"]
+    assert result["command_type"] == "close_pip"
+    assert result["status"] == "accepted"
+    assert result["transport"] == "remote"
 
 
 def test_launcher_switch_updates_from_receiver(monkeypatch) -> None:  # type: ignore[no-untyped-def]

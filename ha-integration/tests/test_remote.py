@@ -46,6 +46,13 @@ class FakeConnection:
         self.errors.append({"id": message_id, "code": code, "message": message})
 
 
+def _install_fake_voluptuous(monkeypatch: pytest.MonkeyPatch) -> None:
+    vol = types.ModuleType("voluptuous")
+    vol.__dict__["Required"] = lambda value: value
+    vol.__dict__["Optional"] = lambda value: value
+    monkeypatch.setitem(sys.modules, "voluptuous", vol)
+
+
 def test_remote_registry_sends_show_command_event() -> None:
     registry = RemoteReceiverRegistry()
     connection = FakeConnection()
@@ -108,12 +115,47 @@ def test_remote_registry_returns_false_when_receiver_not_connected() -> None:
     assert accepted is False
 
 
+def test_remote_registry_sends_close_command_event() -> None:
+    registry = RemoteReceiverRegistry()
+    connection = FakeConnection()
+    registry.register(
+        device_id="device-1",
+        connection=connection,
+        connection_id="connection-1",
+        receiver_name="Travel TV",
+    )
+
+    accepted = asyncio.run(registry.async_send_close(device_id="device-1"))
+
+    assert accepted is True
+    assert connection.messages == [
+        {
+            "id": 1,
+            "type": "event",
+            "event": {
+                "event_type": EVENT_RECEIVER_COMMAND,
+                "data": {
+                    "command": "close",
+                },
+            },
+        }
+    ]
+
+
+def test_remote_registry_returns_false_for_close_when_receiver_not_connected() -> None:
+    registry = RemoteReceiverRegistry()
+
+    accepted = asyncio.run(registry.async_send_close(device_id="missing"))
+
+    assert accepted is False
+
+
 def test_remote_websocket_registers_authenticated_receiver(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     registered: dict[str, Any] = {}
     websocket_api = types.ModuleType("homeassistant.components.websocket_api")
-    vol = sys.modules["voluptuous"]
+    _install_fake_voluptuous(monkeypatch)
 
     def websocket_command(schema: dict[Any, Any]) -> Any:
         registered["schema"] = schema
@@ -137,9 +179,6 @@ def test_remote_websocket_registers_authenticated_receiver(
         "homeassistant.components.websocket_api",
         websocket_api,
     )
-    vol.Required = lambda value: value  # type: ignore[attr-defined]
-    vol.Optional = lambda value: value  # type: ignore[attr-defined]
-
     hass = FakeHass()
     hass.data[DOMAIN] = {
         "entries": {
@@ -186,7 +225,7 @@ def test_remote_websocket_rejects_unpaired_receiver(
 ) -> None:
     registered: dict[str, Any] = {}
     websocket_api = types.ModuleType("homeassistant.components.websocket_api")
-    vol = sys.modules["voluptuous"]
+    _install_fake_voluptuous(monkeypatch)
 
     websocket_api.websocket_command = lambda schema: (  # type: ignore[attr-defined]
         lambda handler: handler
@@ -200,9 +239,6 @@ def test_remote_websocket_rejects_unpaired_receiver(
         "homeassistant.components.websocket_api",
         websocket_api,
     )
-    vol.Required = lambda value: value  # type: ignore[attr-defined]
-    vol.Optional = lambda value: value  # type: ignore[attr-defined]
-
     hass = FakeHass()
     hass.data[DOMAIN] = {"entries": {}}
     connection = FakeConnection()
