@@ -1,5 +1,12 @@
 # What's New ✨
 
+## 1.28.0 - Receiver Service Health Diagnostics 🩺
+
+- Added Android receiver service runtime diagnostics for foreground state, start count, last start reason, and boot/package-replaced receiver activity 🔄
+- Exposed the new service-health block through the local `/status` endpoint and Home Assistant status attributes 🔎
+- Added tests for Android service runtime tracking and Home Assistant status parsing/entity attributes 🧪
+- Updated support docs so reboot/startup issues can be debugged without guessing whether the receiver service actually restarted 📚
+
 ## 1.27.14 - Signed APK Install Guidance 📦
 
 - Updated user-facing install docs to recommend the signed release APK from GitHub Releases for normal sideload installs 📺

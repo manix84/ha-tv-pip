@@ -1160,6 +1160,7 @@ Stage 4 adds pairing and request authentication. Use `Reset Pairing` on the TV a
 
 The Android TV main screen displays the local endpoint address when available. Duplicate `/show` requests replace current playback, and `durationSeconds` should close either full-screen playback or the overlay fallback.
 The `/status` response keeps legacy top-level playback fields and also includes a nested `playback` object with `state`, `status`, `isPlaying`, `displayMode`, `title`, `url`, `previewUrl`, `streamType`, `error`, and `updatedAtMillis` for debugging stream compatibility without showing fallback implementation details in the TV popup.
+The `/status` response also includes a `service` diagnostics object with `running`, `foreground`, `startCount`, `lastStartReason`, `lastStartedAtMillis`, `lastDestroyedAtMillis`, `lastBootReceiverAction`, and `lastBootReceiverAtMillis`. Use these fields to confirm whether Android delivered boot/package-replaced events and whether the local foreground receiver service restarted after TV reboot, app update, or process restart.
 The receiver's MJPEG parser uses connection/read timeouts and an 8 MiB per-frame limit so broken camera proxy streams fail cleanly instead of growing memory use indefinitely.
 
 Stage 3 local discovery testing:
@@ -1231,6 +1232,8 @@ The `Restreaming Provider Status` sensor and diagnostics expose the same provide
 Real camera and snapshot actions store a redacted last camera result under the receiver. The `Last Camera Result` sensor and config entry diagnostics expose status, stage, requested stream type, final stream type, stream source classification, transport, fallback flags, size, and failure reason without storing stream URLs. The `Last Command Result` sensor is broader and records the latest receiver command type, accepted/failed status, transport, final stream type where applicable, failure stage, reason, and update time for camera, snapshot, and notification actions.
 
 Receiver/integration compatibility is also calculated from `/status` API and capability metadata. Current receivers should report `compatible`; older receivers without capability metadata are treated as `legacy` best-effort; receivers missing optional presentation, fallback, launcher, or remote settings support report `degraded`; receivers missing required API or display stream support report `incompatible`. These fields are exposed on the status sensor attributes and in diagnostics.
+
+Receiver service health is exposed on the status sensor attributes and diagnostics. Check `service_running`, `service_foreground`, `service_start_count`, `service_last_start_reason`, `last_boot_receiver_action`, and the related timestamp fields when debugging reboot, app-update, or background-service startup issues.
 
 When a receiver lacks media text footer support, Home Assistant drops optional title/message footer fields from camera and snapshot commands instead of failing the whole action. This keeps older receivers useful while still surfacing the missing feature in diagnostics.
 

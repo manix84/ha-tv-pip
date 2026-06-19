@@ -842,6 +842,7 @@ Completed:
 - ✅ Receiver Compatibility sensor so users can see compatible, degraded, legacy, or incompatible receiver states directly on the Home Assistant device.
 - ✅ Last Command Result sensor so users can see the latest receiver command type, accepted/failed status, transport, final stream type, failure stage, and failure reason.
 - ✅ Automatic stream strategy now follows receiver capability metadata by preferring MJPEG first when the receiver does not support playable fallback.
+- ✅ Receiver service health diagnostics for foreground-service state, start count, boot/package-replaced startup activity, and last start reason.
 
 Still future:
 

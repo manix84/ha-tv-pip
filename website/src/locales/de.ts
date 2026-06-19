@@ -11,7 +11,7 @@ export const de = {
     currentStatus: {
       body: [
         "HA TV PiP unterstützt jetzt Erkennung, sichtbares Pairing auf dem Fernseher, authentifizierte Receiver-Steuerung, Kamerastream-Popups, Schnappschüsse, gestaltete Benachrichtigungen, Receiver-Verwaltung und Remote-Receiver-Transport.",
-        "Die Post-v1.0-Kompatibilitätsarbeit läuft. Kamera-Kalibrierung, gespeicherte Empfehlungen, TV-sichere Stream-Hinweise, Receiver-Diagnosen und geplante Restreaming-Erweiterungen stehen im Fokus.",
+        "Die Post-v1.0-Kompatibilitätsarbeit läuft. Kamera-Kalibrierung, gespeicherte Empfehlungen, TV-sichere Stream-Hinweise, Receiver-Servicezustand, Receiver-Diagnosen und geplante Restreaming-Erweiterungen stehen im Fokus.",
       ],
       eyebrow: "Aktueller Stand",
       title: "Post-v1.0-Kompatibilitätspolitur",

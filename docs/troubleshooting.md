@@ -10,7 +10,7 @@ HA TV PiP is still in beta. The most useful support data is the Android receiver
 2. Confirm the receiver app has been opened at least once after install or update.
 3. Confirm Home Assistant and the TV are on the same network for local discovery and local control.
 4. Open the receiver app dashboard and check that the local endpoint is running.
-5. In Home Assistant, open the receiver device and check receiver status, compatibility, and last camera result sensors.
+5. In Home Assistant, open the receiver device and check receiver status, service health, compatibility, and last camera result sensors.
 6. Download config entry diagnostics before opening a bug report. Tokens and active stream URLs are redacted by the integration.
 
 For HACS installs, use `v1.27.9` or newer. Earlier public beta builds can install but fail when opening the integration Configuration screen.
@@ -54,6 +54,15 @@ That means Home Assistant could not serialize the old options dropdown schema fo
 - If native Android TV PiP is unavailable, HA TV PiP should use the local overlay fallback when overlay permission is granted.
 - Confirm the receiver has not been paused by TV power management or network sleep settings.
 - If remote receiver mode is used, confirm the TV can reach the configured Home Assistant external URL.
+
+## Receiver Does Not Start After Reboot 🔄
+
+- Open the receiver device's Status sensor attributes in Home Assistant.
+- Confirm `service_running` and `service_foreground` are `true`.
+- Check `service_start_count` and `service_last_start_reason` to see whether the receiver service has started since install, update, or reboot.
+- Check `last_boot_receiver_action` after a TV restart or app update. Healthy values include Android boot or package-replaced actions.
+- If these fields are missing, update the Android receiver app and Home Assistant integration to matching recent versions.
+- If the service fields exist but do not change after reboot, check Android TV battery, sleep, and background app restrictions for the device.
 
 ## Video Is Black, Unsupported, Or Falls Back To Snapshot 📹
 

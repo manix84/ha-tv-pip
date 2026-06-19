@@ -111,6 +111,7 @@ The dry-run build packages the custom integration zip and will remain the integr
 Each paired receiver creates:
 
 - Status sensor with playback state, receiver diagnostics, and parsed receiver capability metadata.
+- Status sensor attributes for receiver service health, including foreground state, start count, last start reason, and last boot/package-replaced receiver action.
 - Focused sensors for active display mode, active stream type, last receiver error, receiver app version, and receiver compatibility.
 - Last Camera Compatibility sensor with the latest stream test recommendation.
 - Last Camera Result sensor with the latest redacted camera/snapshot command outcome.
@@ -153,7 +154,12 @@ Launcher visibility:
 Diagnostics:
 
 - Config entry diagnostics redact pairing tokens and active stream URLs.
-- Use diagnostics when reporting setup, pairing, stream compatibility, or remote receiver issues.
+- Use diagnostics when reporting setup, pairing, stream compatibility, receiver startup, or remote receiver issues.
+
+Receiver service health:
+
+- The status sensor includes `service_running`, `service_foreground`, `service_start_count`, `service_last_start_reason`, `service_last_started_at_millis`, `service_last_destroyed_at_millis`, `last_boot_receiver_action`, and `last_boot_receiver_at_millis`.
+- After a TV restart or app update, these fields help confirm whether Android delivered the boot/package-replaced event and whether the foreground receiver service started again.
 
 ## Receiver Compatibility 🧩
 
