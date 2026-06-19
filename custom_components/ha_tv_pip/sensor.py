@@ -374,6 +374,20 @@ def _status_attributes(status: ReceiverStatus) -> dict[str, Any]:
                 ),
             }
         )
+    service = status.service
+    if service is not None:
+        attributes.update(
+            {
+                "service_running": service.running,
+                "service_foreground": service.foreground,
+                "service_start_count": service.start_count,
+                "service_last_start_reason": service.last_start_reason,
+                "service_last_started_at_millis": service.last_started_at_millis,
+                "service_last_destroyed_at_millis": service.last_destroyed_at_millis,
+                "last_boot_receiver_action": service.last_boot_receiver_action,
+                "last_boot_receiver_at_millis": service.last_boot_receiver_at_millis,
+            }
+        )
 
     return attributes
 

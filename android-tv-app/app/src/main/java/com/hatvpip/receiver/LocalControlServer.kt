@@ -131,6 +131,7 @@ class LocalControlServer(
     private fun statusResponse(): HttpResponse {
         val playback = ReceiverRuntimeState.snapshot()
         val control = ControlRuntimeState.snapshot()
+        val service = ReceiverServiceRuntimeState.snapshot()
         val discovery = DiscoveryRuntimeState.snapshot()
         val pairing = PairingState.snapshot(context)
         val remote = RemoteConnectionRuntimeState.snapshot()
@@ -154,6 +155,18 @@ class LocalControlServer(
             .put("controlRunning", control.running)
             .put("controlUptimeSeconds", control.uptimeSeconds(System.currentTimeMillis()))
             .put("requestCount", control.requestCount)
+            .put(
+                "service",
+                JSONObject()
+                    .put("running", service.running)
+                    .put("foreground", service.foreground)
+                    .put("startCount", service.startCount)
+                    .put("lastStartReason", service.lastStartReason)
+                    .put("lastStartedAtMillis", service.lastStartedAtMillis)
+                    .put("lastDestroyedAtMillis", service.lastDestroyedAtMillis)
+                    .put("lastBootReceiverAction", service.lastBootReceiverAction)
+                    .put("lastBootReceiverAtMillis", service.lastBootReceiverAtMillis)
+            )
             .put(
                 "management",
                 JSONObject()

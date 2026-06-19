@@ -10,7 +10,10 @@ class BootReceiver : BroadcastReceiver() {
         val action = intent?.action ?: return
         if (action !in SUPPORTED_ACTIONS) return
 
+        ReceiverServiceRuntimeState.markBootReceiverAction(action)
+
         val serviceIntent = Intent(context, LocalControlService::class.java)
+            .putExtra(LocalControlService.EXTRA_START_REASON, action)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(serviceIntent)
         } else {

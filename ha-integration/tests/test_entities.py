@@ -13,6 +13,7 @@ from custom_components.ha_tv_pip.client import (
     ReceiverCapabilities,
     ReceiverClientError,
     ReceiverCompatibility,
+    ReceiverServiceStatus,
     ReceiverStatus,
 )
 from custom_components.ha_tv_pip.const import (
@@ -96,6 +97,16 @@ def _status() -> ReceiverStatus:
             compatible=True,
             missing_features=(),
             warnings=(),
+        ),
+        service=ReceiverServiceStatus(
+            running=True,
+            foreground=True,
+            start_count=2,
+            last_start_reason="android.intent.action.MY_PACKAGE_REPLACED",
+            last_started_at_millis=1_000,
+            last_destroyed_at_millis=None,
+            last_boot_receiver_action="android.intent.action.MY_PACKAGE_REPLACED",
+            last_boot_receiver_at_millis=900,
         ),
         control_running=True,
         playback_state="playing",
@@ -264,6 +275,26 @@ def test_status_sensor_updates_from_receiver(monkeypatch) -> None:  # type: igno
         entity._attr_extra_state_attributes["supports_remote_receiver_settings"]
         is True
     )
+    assert entity._attr_extra_state_attributes["service_running"] is True
+    assert entity._attr_extra_state_attributes["service_foreground"] is True
+    assert entity._attr_extra_state_attributes["service_start_count"] == 2
+    assert (
+        entity._attr_extra_state_attributes["service_last_start_reason"]
+        == "android.intent.action.MY_PACKAGE_REPLACED"
+    )
+    assert (
+        entity._attr_extra_state_attributes["service_last_started_at_millis"]
+        == 1_000
+    )
+    assert (
+        entity._attr_extra_state_attributes["service_last_destroyed_at_millis"]
+        is None
+    )
+    assert (
+        entity._attr_extra_state_attributes["last_boot_receiver_action"]
+        == "android.intent.action.MY_PACKAGE_REPLACED"
+    )
+    assert entity._attr_extra_state_attributes["last_boot_receiver_at_millis"] == 900
 
 
 def test_restreaming_provider_status_sensor_reports_planned_state() -> None:

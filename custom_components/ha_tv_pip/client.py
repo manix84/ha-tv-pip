@@ -124,6 +124,20 @@ class ReceiverCompatibility:
 
 
 @dataclass(frozen=True)
+class ReceiverServiceStatus:
+    """Foreground service and boot-start diagnostics from the receiver."""
+
+    running: bool | None
+    foreground: bool | None
+    start_count: int | None
+    last_start_reason: str | None
+    last_started_at_millis: int | None
+    last_destroyed_at_millis: int | None
+    last_boot_receiver_action: str | None
+    last_boot_receiver_at_millis: int | None
+
+
+@dataclass(frozen=True)
 class ReceiverStatus:
     """Receiver status returned by the local HTTP API."""
 
@@ -134,6 +148,7 @@ class ReceiverStatus:
     api_version: int | None
     capabilities: ReceiverCapabilities | None
     compatibility: ReceiverCompatibility
+    service: ReceiverServiceStatus | None
     control_running: bool
     playback_state: str
     display_mode: str
@@ -244,6 +259,7 @@ async def async_get_receiver_status(host: str, port: int) -> ReceiverStatus:
         api_version=api_version,
         capabilities=capabilities,
         compatibility=_receiver_compatibility(api_version, capabilities),
+        service=_parse_service_status(response.get("service")),
         control_running=bool(response.get("controlRunning", False)),
         playback_state=str(response.get("playbackState", "unknown")),
         display_mode=str(response.get("displayMode", "unknown")),
@@ -440,6 +456,30 @@ def _optional_text(value: Any) -> str | None:
         return None
     text = str(value).strip()
     return text or None
+
+
+def _optional_bool(value: Any) -> bool | None:
+    if isinstance(value, bool):
+        return value
+    return None
+
+
+def _parse_service_status(value: Any) -> ReceiverServiceStatus | None:
+    if not isinstance(value, dict):
+        return None
+
+    return ReceiverServiceStatus(
+        running=_optional_bool(value.get("running")),
+        foreground=_optional_bool(value.get("foreground")),
+        start_count=_optional_int(value.get("startCount")),
+        last_start_reason=_optional_text(value.get("lastStartReason")),
+        last_started_at_millis=_optional_int(value.get("lastStartedAtMillis")),
+        last_destroyed_at_millis=_optional_int(value.get("lastDestroyedAtMillis")),
+        last_boot_receiver_action=_optional_text(value.get("lastBootReceiverAction")),
+        last_boot_receiver_at_millis=_optional_int(
+            value.get("lastBootReceiverAtMillis")
+        ),
+    )
 
 
 def _parse_capabilities(value: Any) -> ReceiverCapabilities | None:

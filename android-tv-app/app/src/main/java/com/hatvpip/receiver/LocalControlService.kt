@@ -17,6 +17,7 @@ class LocalControlService : Service() {
     override fun onCreate() {
         super.onCreate()
         startForeground(NOTIFICATION_ID, buildNotification())
+        ReceiverServiceRuntimeState.markForegroundStarted()
         discoveryAdvertiser = DiscoveryAdvertiser(applicationContext)
         remoteReceiverClient = RemoteReceiverClient(
             context = applicationContext,
@@ -42,10 +43,16 @@ class LocalControlService : Service() {
         discoveryAdvertiser = null
         server?.stop()
         server = null
+        ReceiverServiceRuntimeState.markServiceDestroyed()
         super.onDestroy()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val startReason = intent?.getStringExtra(EXTRA_START_REASON)
+            ?: if (intent == null) START_REASON_SYSTEM_RESTART else START_REASON_REQUESTED
+        ReceiverServiceRuntimeState.markServiceStarted(
+            startReason
+        )
         if (intent?.action == ACTION_PAIRING_CHANGED) {
             refreshDiscovery()
             remoteReceiverClient?.reconnect()
@@ -180,6 +187,9 @@ class LocalControlService : Service() {
     companion object {
         const val ACTION_PAIRING_CHANGED = "com.hatvpip.receiver.PAIRING_CHANGED"
         const val ACTION_REMOTE_SETTINGS_CHANGED = "com.hatvpip.receiver.REMOTE_SETTINGS_CHANGED"
+        const val EXTRA_START_REASON = "com.hatvpip.receiver.START_REASON"
+        const val START_REASON_REQUESTED = "requested"
+        const val START_REASON_SYSTEM_RESTART = "system_restart"
         private const val NOTIFICATION_ID = 1001
         private const val NOTIFICATION_CHANNEL_ID = "local_control"
     }

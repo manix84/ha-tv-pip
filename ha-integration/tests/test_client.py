@@ -237,6 +237,16 @@ def test_async_get_receiver_status_parses_response(monkeypatch) -> None:  # type
             "playback": {"streamType": "hls"},
             "remote": {"status": "connected"},
             "management": {"launcherVisible": False},
+            "service": {
+                "running": True,
+                "foreground": True,
+                "startCount": 2,
+                "lastStartReason": "android.intent.action.MY_PACKAGE_REPLACED",
+                "lastStartedAtMillis": 1_000,
+                "lastDestroyedAtMillis": None,
+                "lastBootReceiverAction": "android.intent.action.MY_PACKAGE_REPLACED",
+                "lastBootReceiverAtMillis": 900,
+            },
             "pairing": {"state": "paired"},
             "lastRequest": {"method": "GET", "path": "/status", "status": 200},
             "error": "decoder_failed",
@@ -277,6 +287,21 @@ def test_async_get_receiver_status_parses_response(monkeypatch) -> None:  # type
     assert status.pairing_state == "paired"
     assert status.launcher_visible is False
     assert status.remote_status == "connected"
+    assert status.service is not None
+    assert status.service.running is True
+    assert status.service.foreground is True
+    assert status.service.start_count == 2
+    assert (
+        status.service.last_start_reason
+        == "android.intent.action.MY_PACKAGE_REPLACED"
+    )
+    assert status.service.last_started_at_millis == 1_000
+    assert status.service.last_destroyed_at_millis is None
+    assert (
+        status.service.last_boot_receiver_action
+        == "android.intent.action.MY_PACKAGE_REPLACED"
+    )
+    assert status.service.last_boot_receiver_at_millis == 900
     assert status.error == "decoder_failed"
     assert status.compatibility.state == "compatible"
     assert status.compatibility.compatible is True
