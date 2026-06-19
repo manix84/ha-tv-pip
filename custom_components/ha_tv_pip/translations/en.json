@@ -55,6 +55,7 @@
           "default_snapshot_fallback": "Snapshot fallback by default",
           "default_stream_type": "Preferred stream strategy",
           "default_width": "Default width",
+          "prefer_remote_transport": "Prefer remote transport",
           "remote_access_token": "Home Assistant long-lived access token",
           "remote_home_assistant_url": "Home Assistant external URL"
         },

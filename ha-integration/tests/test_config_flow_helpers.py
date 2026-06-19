@@ -48,6 +48,7 @@ from custom_components.ha_tv_pip.const import (  # noqa: E402
     CONF_DEFAULT_SNAPSHOT_FALLBACK,
     CONF_DEFAULT_STREAM_TYPE,
     CONF_DEFAULT_WIDTH,
+    CONF_PREFER_REMOTE_TRANSPORT,
     CONF_REMOTE_ACCESS_TOKEN,
     CONF_REMOTE_HOME_ASSISTANT_URL,
 )
@@ -231,6 +232,7 @@ def test_options_flow_stores_receiver_defaults_and_remote_setup(
                 CONF_DEFAULT_SNAPSHOT_FALLBACK: False,
                 CONF_DEFAULT_STREAM_TYPE: "mjpeg_first",
                 CONF_DEFAULT_WIDTH: 640,
+                CONF_PREFER_REMOTE_TRANSPORT: False,
                 CONF_REMOTE_ACCESS_TOKEN: "remote-token",
                 CONF_REMOTE_HOME_ASSISTANT_URL: "https://ha.example.test",
             }
@@ -247,6 +249,7 @@ def test_options_flow_stores_receiver_defaults_and_remote_setup(
             CONF_DEFAULT_SNAPSHOT_FALLBACK: False,
             CONF_DEFAULT_STREAM_TYPE: "mjpeg_first",
             CONF_DEFAULT_WIDTH: 640,
+            CONF_PREFER_REMOTE_TRANSPORT: False,
             CONF_REMOTE_ACCESS_TOKEN: "remote-token",
             CONF_REMOTE_HOME_ASSISTANT_URL: "https://ha.example.test",
         },

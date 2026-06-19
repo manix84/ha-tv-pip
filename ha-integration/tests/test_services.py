@@ -24,6 +24,7 @@ from custom_components.ha_tv_pip.const import (
     CONF_HOST,
     CONF_NAME,
     CONF_PORT,
+    CONF_PREFER_REMOTE_TRANSPORT,
     CONF_TOKEN,
 )
 from custom_components.ha_tv_pip.services import (
@@ -1017,6 +1018,100 @@ def test_show_camera_service_falls_back_to_local_http_when_remote_disconnected(
             CONF_PORT: 8765,
             CONF_TOKEN: "token",
         },
+    )
+    hass = FakeHass(
+        entries=[entry],
+        states={"camera.front_door": FakeState({"friendly_name": "Front Door"})},
+    )
+
+    asyncio.run(
+        services.async_handle_show_camera(
+            hass,
+            FakeCall(data={ATTR_CAMERA_ENTITY: "camera.front_door"}),
+        )
+    )
+
+    assert sent == {
+        "prefer_external": False,
+        "capabilities": None,
+        "host": "10.0.0.236",
+        "port": 8765,
+        "token": "token",
+        "url": "http://10.0.0.2:8123/api/hls/front-door",
+    }
+
+
+def test_show_camera_service_uses_local_http_when_remote_preference_disabled(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from custom_components.ha_tv_pip import services
+
+    sent: dict[str, Any] = {}
+
+    class FakeRemoteRegistry:
+        def is_connected(self, device_id: str) -> bool:
+            return device_id == "device-1"
+
+        async def async_send_show(
+            self,
+            *,
+            device_id: str,
+            command: ShowCameraCommand,
+        ) -> bool:
+            raise AssertionError("remote transport should not be used")
+
+    async def fake_command(
+        hass: Any,
+        request: Any,
+        *,
+        title: str,
+        prefer_external: bool = False,
+        capabilities: ReceiverCapabilities | None = None,
+    ) -> ShowCameraCommand:
+        sent["prefer_external"] = prefer_external
+        sent["capabilities"] = capabilities
+        return ShowCameraCommand(
+            title=title,
+            url="http://10.0.0.2:8123/api/hls/front-door",
+            duration_seconds=30,
+            enter_pip=True,
+        )
+
+    async def fake_local_show(
+        host: str,
+        port: int,
+        *,
+        token: str,
+        command: ShowCameraCommand,
+    ) -> None:
+        sent.update(
+            {
+                "host": host,
+                "port": port,
+                "token": token,
+                "url": command.url,
+            }
+        )
+
+    monkeypatch.setattr(services, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(
+        services,
+        "_async_receiver_capabilities",
+        lambda receiver: asyncio.sleep(0, result=None),
+    )
+    monkeypatch.setattr(services, "_async_show_camera_command", fake_command)
+    monkeypatch.setattr(services, "async_show_camera", fake_local_show)
+
+    entry = FakeEntry(
+        entry_id="entry-1",
+        data={
+            CONF_DEVICE_ID: "device-1",
+            CONF_NAME: "Nursery TV",
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "token",
+        },
+        options={CONF_PREFER_REMOTE_TRANSPORT: False},
     )
     hass = FakeHass(
         entries=[entry],

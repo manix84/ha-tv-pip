@@ -605,7 +605,8 @@ Possible approaches:
 - Home Assistant registers an optional WebSocket command for outbound receiver registration.
 - Remote receivers authenticate to Home Assistant with a normal Home Assistant long-lived access token.
 - Remote receivers also register with the existing receiver pairing token, so remote mode stays tied to the paired receiver model.
-- `ha_tv_pip.show_camera` and `ha_tv_pip.show_snapshot` prefer an active remote receiver connection and fall back to local HTTP when no remote connection is present.
+- `ha_tv_pip.show_camera` and `ha_tv_pip.show_snapshot` prefer an active remote receiver connection by default and fall back to local HTTP when no remote connection is present.
+- Receiver options can disable remote transport preference so local HTTP is used first.
 - Remote receiver commands use the same `show` payload as the local `/show` endpoint.
 - Camera stream and snapshot URLs prefer Home Assistant's external URL when a remote receiver connection is active.
 - Android TV includes a minimal remote receiver settings panel for Home Assistant external URL and long-lived access token.
@@ -619,7 +620,7 @@ HA TV PiP should not become a hosted cloud relay. Remote mode uses the user's ow
 
 - A remote Android TV device can connect back to Home Assistant.
 - No router port forwarding is required.
-- Local mode remains available and preferred when on the same LAN.
+- Local mode remains available and can be preferred through receiver options when on the same LAN.
 - Home Assistant continues to classify the integration as local-first rather than cloud-owned infrastructure.
 
 ## Completion Notes
@@ -844,12 +845,15 @@ Completed:
 - ✅ Automatic stream strategy now follows receiver capability metadata by preferring MJPEG first when the receiver does not support playable fallback.
 - ✅ Receiver service health diagnostics for foreground-service state, start count, boot/package-replaced startup activity, and last start reason.
 - ✅ Remote receiver health diagnostics for connection attempts, successful connections, received command messages, disconnect reason, and connection timestamps.
+- ✅ Receiver option for preferring remote WebSocket transport or local HTTP control first.
 
 Still future:
 
 - WebRTC low-latency mode.
 - Restreaming or transcoding for broad camera codec support.
 - Automatic camera-platform helpers such as go2rtc or Frigate-specific setup shortcuts.
+- Hide or collapse advanced receiver options by default so normal day-to-day setup stays compact while troubleshooting and expert controls remain available.
+- Network repair flow for DHCP address changes, using the stable receiver id from discovery to update the stored host/port instead of requiring users to delete and re-add the receiver.
 
 ## Additional TV Platforms
 

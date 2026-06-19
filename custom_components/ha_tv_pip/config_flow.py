@@ -24,6 +24,7 @@ from .const import (
     CONF_NAME,
     CONF_PAIRING,
     CONF_PORT,
+    CONF_PREFER_REMOTE_TRANSPORT,
     CONF_REMOTE_ACCESS_TOKEN,
     CONF_REMOTE_HOME_ASSISTANT_URL,
     CONF_TOKEN,
@@ -309,6 +310,9 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
         current_snapshot_fallback = bool(
             entry.options.get(CONF_DEFAULT_SNAPSHOT_FALLBACK, True)
         )
+        current_prefer_remote_transport = bool(
+            entry.options.get(CONF_PREFER_REMOTE_TRANSPORT, True)
+        )
 
         if user_input is not None:
             raw_remote_url = str(
@@ -340,6 +344,9 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
             default_snapshot_fallback = bool(
                 user_input.get(CONF_DEFAULT_SNAPSHOT_FALLBACK, True)
             )
+            prefer_remote_transport = bool(
+                user_input.get(CONF_PREFER_REMOTE_TRANSPORT, True)
+            )
 
             if bool(remote_url) != bool(remote_token):
                 errors["base"] = "remote_fields_required"
@@ -358,6 +365,7 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
                     CONF_DEFAULT_STREAM_TYPE: default_stream_type,
                     CONF_DEFAULT_POSITION: default_position,
                     CONF_DEFAULT_SNAPSHOT_FALLBACK: default_snapshot_fallback,
+                    CONF_PREFER_REMOTE_TRANSPORT: prefer_remote_transport,
                 }
                 if default_duration > 0:
                     options[CONF_DEFAULT_DURATION_SECONDS] = default_duration
@@ -398,6 +406,7 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
             if default_height is not None:
                 current_height = default_height
             current_snapshot_fallback = default_snapshot_fallback
+            current_prefer_remote_transport = prefer_remote_transport
 
         return self.async_show_form(
             step_id="init",
@@ -427,6 +436,10 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
                         CONF_DEFAULT_HEIGHT,
                         default=current_height,
                     ): int,
+                    vol.Optional(
+                        CONF_PREFER_REMOTE_TRANSPORT,
+                        default=current_prefer_remote_transport,
+                    ): bool,
                     vol.Optional(
                         CONF_REMOTE_HOME_ASSISTANT_URL,
                         default=current_url,

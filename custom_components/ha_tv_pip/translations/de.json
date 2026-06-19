@@ -56,7 +56,8 @@
           "default_position": "Default position",
           "default_snapshot_fallback": "Snapshot fallback by default",
           "default_stream_type": "Preferred stream strategy",
-          "default_width": "Default width"
+          "default_width": "Default width",
+          "prefer_remote_transport": "Remote-Transport bevorzugen"
         },
         "description": "Set receiver defaults used when an action does not provide its own value. Use 0 for duration, width, or height to keep the built-in service default. Remote receiver settings are sent to the paired TV over the local connection. Suggested external URL: {suggested_url}",
         "title": "Receiver defaults and remote setup"

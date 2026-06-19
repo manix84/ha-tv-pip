@@ -28,6 +28,7 @@ from .const import (
     CONF_HOST,
     CONF_NAME,
     CONF_PORT,
+    CONF_PREFER_REMOTE_TRANSPORT,
     CONF_TOKEN,
     DOMAIN,
     NOTIFICATION_POSITIONS,
@@ -501,7 +502,7 @@ async def async_handle_show_camera(hass: Any, call: Any) -> None:
     request = _apply_camera_defaults(request, receiver, duration_fallback=30)
     title = request.title or _camera_title(hass, request.camera_entity)
     remote = remote_registry(hass)
-    prefer_external = remote.is_connected(receiver.device_id)
+    prefer_external = _prefer_remote_transport(receiver, remote)
     capabilities = await _async_receiver_capabilities(receiver)
     request = _degrade_camera_request_for_capabilities(request, capabilities)
     try:
@@ -555,7 +556,10 @@ async def async_handle_show_camera(hass: Any, call: Any) -> None:
     )
 
     try:
-        if await remote.async_send_show(device_id=receiver.device_id, command=command):
+        if prefer_external and await remote.async_send_show(
+            device_id=receiver.device_id,
+            command=command,
+        ):
             _store_camera_action_result(
                 hass,
                 receiver,
@@ -617,7 +621,7 @@ async def async_handle_show_snapshot(hass: Any, call: Any) -> None:
     receiver = _resolve_receiver(hass, request)
     request = _apply_camera_defaults(request, receiver, duration_fallback=10)
     remote = remote_registry(hass)
-    prefer_external = remote.is_connected(receiver.device_id)
+    prefer_external = _prefer_remote_transport(receiver, remote)
     capabilities = await _async_receiver_capabilities(receiver)
     request = _degrade_camera_request_for_capabilities(request, capabilities)
     try:
@@ -677,7 +681,10 @@ async def async_handle_show_snapshot(hass: Any, call: Any) -> None:
             stream_type=STREAM_TYPE_SNAPSHOT,
             **_presentation_payload(request),
         )
-        if await remote.async_send_show(device_id=receiver.device_id, command=command):
+        if prefer_external and await remote.async_send_show(
+            device_id=receiver.device_id,
+            command=command,
+        ):
             _store_camera_action_result(
                 hass,
                 receiver,
@@ -738,7 +745,7 @@ async def async_handle_show_notification(hass: Any, call: Any) -> None:
     receiver = _resolve_receiver(hass, request)
     request = _apply_notification_defaults(request, receiver)
     remote = remote_registry(hass)
-    prefer_external = remote.is_connected(receiver.device_id)
+    prefer_external = _prefer_remote_transport(receiver, remote)
     capabilities = await _async_receiver_capabilities(receiver)
     try:
         _validate_notification_capabilities(capabilities)
@@ -781,7 +788,10 @@ async def async_handle_show_notification(hass: Any, call: Any) -> None:
             width=request.width,
             height=request.height,
         )
-        if await remote.async_send_show(device_id=receiver.device_id, command=command):
+        if prefer_external and await remote.async_send_show(
+            device_id=receiver.device_id,
+            command=command,
+        ):
             _store_command_result(
                 hass,
                 receiver,
@@ -873,7 +883,7 @@ async def _async_handle_camera_compatibility_workflow(
     receiver = _resolve_receiver(hass, request)
     request = _apply_camera_defaults(request, receiver, duration_fallback=30)
     remote = remote_registry(hass)
-    prefer_external = remote.is_connected(receiver.device_id)
+    prefer_external = _prefer_remote_transport(receiver, remote)
     capabilities = await _async_receiver_capabilities(receiver)
     result = await _async_camera_compatibility_report(
         hass,
@@ -1095,6 +1105,15 @@ def _resolve_receiver(
         port=int(data[CONF_PORT]),
         token=token,
         options=dict(getattr(entry, "options", {}) or {}),
+    )
+
+
+def _prefer_remote_transport(receiver: ReceiverEntry, remote: Any) -> bool:
+    """Return whether receiver commands should prefer the remote transport."""
+
+    return bool(
+        receiver.options.get(CONF_PREFER_REMOTE_TRANSPORT, True)
+        and remote.is_connected(receiver.device_id)
     )
 
 

@@ -483,7 +483,7 @@ Home Assistant integration
 Android TV receiver playback
 ```
 
-When a remote receiver is connected, Home Assistant should resolve camera streams and snapshots against the external Home Assistant URL. When no remote receiver is connected, local HTTP control remains the fallback.
+When a remote receiver is connected and remote transport is preferred for that receiver, Home Assistant should resolve camera streams and snapshots against the external Home Assistant URL. Users can disable remote transport preference per receiver when local LAN control should be used first. When remote transport is unavailable, local HTTP control remains the fallback.
 
 ---
 

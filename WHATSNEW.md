@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.29.1 - Remote Transport Preference 🌍
+
+- Added a receiver option to prefer remote WebSocket transport or use local HTTP first when both paths are available ⚙️
+- Updated command routing so disabling remote preference genuinely skips the remote send path before local control 🧭
+- Documented future options-screen polish so advanced receiver controls can be hidden or collapsed by default later 📝
+
 ## 1.29.0 - Receiver And Remote Health Diagnostics 🩺
 
 - Added Android receiver service runtime diagnostics for foreground state, start count, last start reason, and boot/package-replaced receiver activity 🔄
