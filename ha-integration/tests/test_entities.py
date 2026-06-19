@@ -23,6 +23,7 @@ from custom_components.ha_tv_pip.const import (
     CONF_HOST,
     CONF_NAME,
     CONF_PORT,
+    CONF_PREFER_REMOTE_TRANSPORT,
     CONF_REMOTE_ACCESS_TOKEN,
     CONF_REMOTE_HOME_ASSISTANT_URL,
     CONF_TOKEN,
@@ -658,18 +659,31 @@ def test_test_button_sends_public_test_stream(monkeypatch) -> None:  # type: ign
     captured: dict[str, Any] = {}
     hass = FakeHass()
 
-    async def fake_show(host: str, port: int, *, token: str, command: Any) -> None:
+    class FakeRemoteRegistry:
+        def is_connected(self, device_id: str) -> bool:
+            return False
+
+    async def fake_send(
+        receiver: Any,
+        remote: Any,
+        command: Any,
+        *,
+        prefer_remote: bool,
+    ) -> str:
         captured.update(
             {
-                "host": host,
-                "port": port,
-                "token": token,
+                "host": receiver.host,
+                "port": receiver.port,
+                "token": receiver.token,
+                "prefer_remote": prefer_remote,
                 "title": command.title,
                 "stream_type": command.stream_type,
             }
         )
+        return "local"
 
-    monkeypatch.setattr(button, "async_show_camera", fake_show)
+    monkeypatch.setattr(button, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(button, "_async_send_receiver_command", fake_send)
 
     asyncio.run(button.ReceiverTestButton(hass, _entry()).async_press())
 
@@ -677,6 +691,7 @@ def test_test_button_sends_public_test_stream(monkeypatch) -> None:  # type: ign
         "host": "10.0.0.236",
         "port": 8765,
         "token": "secret-token",
+        "prefer_remote": False,
         "title": "HA TV PiP Test",
         "stream_type": "hls",
     }
@@ -684,6 +699,49 @@ def test_test_button_sends_public_test_stream(monkeypatch) -> None:  # type: ign
     assert result["command_type"] == "test_pip"
     assert result["status"] == "accepted"
     assert result["final_stream_type"] == "hls"
+
+
+def test_test_button_prefers_remote_transport_when_enabled(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    captured: dict[str, Any] = {}
+    hass = FakeHass()
+
+    class FakeRemoteRegistry:
+        def is_connected(self, device_id: str) -> bool:
+            return device_id == "device-1"
+
+    async def fake_send(
+        receiver: Any,
+        remote: Any,
+        command: Any,
+        *,
+        prefer_remote: bool,
+    ) -> str:
+        captured.update(
+            {
+                "device_id": receiver.device_id,
+                "prefer_remote": prefer_remote,
+                "title": command.title,
+            }
+        )
+        return "remote"
+
+    entry = _entry()
+    entry.options = {CONF_PREFER_REMOTE_TRANSPORT: True}
+
+    monkeypatch.setattr(button, "remote_registry", lambda hass: FakeRemoteRegistry())
+    monkeypatch.setattr(button, "_async_send_receiver_command", fake_send)
+
+    asyncio.run(button.ReceiverTestButton(hass, entry).async_press())
+
+    assert captured == {
+        "device_id": "device-1",
+        "prefer_remote": True,
+        "title": "HA TV PiP Test",
+    }
+    result = hass.data[DOMAIN][LAST_COMMAND_RESULT_KEY]["entry-1"]
+    assert result["command_type"] == "test_pip"
+    assert result["status"] == "accepted"
+    assert result["transport"] == "remote"
 
 
 def test_refresh_status_button_fetches_receiver_status(monkeypatch) -> None:  # type: ignore[no-untyped-def]

@@ -311,7 +311,7 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
             entry.options.get(CONF_DEFAULT_SNAPSHOT_FALLBACK, True)
         )
         current_prefer_remote_transport = bool(
-            entry.options.get(CONF_PREFER_REMOTE_TRANSPORT, True)
+            entry.options.get(CONF_PREFER_REMOTE_TRANSPORT, False)
         )
 
         if user_input is not None:
@@ -319,7 +319,7 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
                 user_input.get(CONF_REMOTE_HOME_ASSISTANT_URL, "")
             ).strip()
             remote_token = str(user_input.get(CONF_REMOTE_ACCESS_TOKEN, "")).strip()
-            remote_url = raw_remote_url or (suggested_url if remote_token else "")
+            remote_url = (raw_remote_url or suggested_url) if remote_token else ""
             default_stream_type = str(
                 user_input.get(CONF_DEFAULT_STREAM_TYPE, STREAM_TYPE_AUTO)
             ).strip()
@@ -345,7 +345,7 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
                 user_input.get(CONF_DEFAULT_SNAPSHOT_FALLBACK, True)
             )
             prefer_remote_transport = bool(
-                user_input.get(CONF_PREFER_REMOTE_TRANSPORT, True)
+                user_input.get(CONF_PREFER_REMOTE_TRANSPORT, False)
             )
 
             if bool(remote_url) != bool(remote_token):
@@ -388,7 +388,7 @@ class ReceiverOptionsFlow(config_entries.OptionsFlow):  # type: ignore[misc]
                     remote_token,
                 ):
                     errors["base"] = "cannot_connect"
-                    current_url = remote_url or suggested_url
+                    current_url = raw_remote_url or suggested_url
                     current_token = remote_token
                 else:
                     return self.async_create_entry(title="", data=options)

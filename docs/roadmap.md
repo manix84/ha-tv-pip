@@ -605,8 +605,8 @@ Possible approaches:
 - Home Assistant registers an optional WebSocket command for outbound receiver registration.
 - Remote receivers authenticate to Home Assistant with a normal Home Assistant long-lived access token.
 - Remote receivers also register with the existing receiver pairing token, so remote mode stays tied to the paired receiver model.
-- `ha_tv_pip.show_camera` and `ha_tv_pip.show_snapshot` prefer an active remote receiver connection by default and fall back to local HTTP when no remote connection is present.
-- Receiver options can disable remote transport preference so local HTTP is used first.
+- `ha_tv_pip.show_camera` and `ha_tv_pip.show_snapshot` use local HTTP first by default and can fall back to an active remote receiver connection when local control fails.
+- Receiver options can enable remote transport preference so WebSocket control is tried first.
 - Remote receiver commands use the same `show` payload as the local `/show` endpoint.
 - Camera stream and snapshot URLs prefer Home Assistant's external URL when a remote receiver connection is active.
 - Android TV includes a minimal remote receiver settings panel for Home Assistant external URL and long-lived access token.
@@ -620,7 +620,7 @@ HA TV PiP should not become a hosted cloud relay. Remote mode uses the user's ow
 
 - A remote Android TV device can connect back to Home Assistant.
 - No router port forwarding is required.
-- Local mode remains available and can be preferred through receiver options when on the same LAN.
+- Local mode remains available and is preferred by default when on the same LAN.
 - Home Assistant continues to classify the integration as local-first rather than cloud-owned infrastructure.
 
 ## Completion Notes
@@ -628,7 +628,7 @@ HA TV PiP should not become a hosted cloud relay. Remote mode uses the user's ow
 - Implemented and tested the first remote receiver transport slice.
 - Android TV can connect outbound to the user's own Home Assistant WebSocket API.
 - Home Assistant can register authenticated remote receivers by matching the existing receiver pairing token.
-- `ha_tv_pip.show_camera` and `ha_tv_pip.show_snapshot` use the remote WebSocket connection when present and local HTTP otherwise.
+- `ha_tv_pip.show_camera` and `ha_tv_pip.show_snapshot` support both local-first and remote-first ordering, with local-first as the default.
 - Remote stream and snapshot URLs use Home Assistant's external URL.
 - `/status` reports remote receiver state for diagnostics.
 - Documentation explicitly describes remote mode as user-owned Home Assistant connectivity, not a hosted HA TV PiP cloud service.
@@ -845,7 +845,7 @@ Completed:
 - ✅ Automatic stream strategy now follows receiver capability metadata by preferring MJPEG first when the receiver does not support playable fallback.
 - ✅ Receiver service health diagnostics for foreground-service state, start count, boot/package-replaced startup activity, and last start reason.
 - ✅ Remote receiver health diagnostics for connection attempts, successful connections, received command messages, disconnect reason, and connection timestamps.
-- ✅ Receiver option for preferring remote WebSocket transport or local HTTP control first.
+- ✅ Receiver option for preferring remote WebSocket transport while keeping local HTTP first by default.
 
 Still future:
 

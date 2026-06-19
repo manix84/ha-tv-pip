@@ -162,8 +162,9 @@ Phase 9 adds optional outbound remote connectivity for travel TVs and external r
 - The Android TV app connects to the user's Home Assistant external URL.
 - Home Assistant sends receiver commands over its existing authenticated WebSocket API.
 - The receiver still proves it is paired by registering with its existing receiver pairing token.
-- Remote transport is preferred by default when the receiver is connected remotely, and can be disabled per receiver if local LAN control should be used first.
-- Local LAN control remains available as the fallback path.
+- Local LAN control is preferred by default.
+- Prefer Remote Transport can be enabled per receiver when the WebSocket path should be tried first.
+- The non-preferred path remains available as the fallback path when possible.
 
 Remote mode is for sending notifications to an external TV. It does not make HA TV PiP a cloud service and does not require port forwarding to the TV.
 

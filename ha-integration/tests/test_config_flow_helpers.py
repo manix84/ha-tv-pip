@@ -254,3 +254,107 @@ def test_options_flow_stores_receiver_defaults_and_remote_setup(
             CONF_REMOTE_HOME_ASSISTANT_URL: "https://ha.example.test",
         },
     }
+
+
+def test_options_flow_saves_defaults_when_suggested_remote_url_has_no_token(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    flow = ReceiverOptionsFlow(types.SimpleNamespace(options={}))
+    flow.hass = object()
+    synced: dict[str, Any] = {}
+
+    monkeypatch.setattr(
+        "custom_components.ha_tv_pip.config_flow.suggested_remote_home_assistant_url",
+        lambda hass: "https://example.ui.nabu.casa",
+    )
+
+    async def fake_sync(
+        hass: Any,
+        config_entry: Any,
+        remote_url: str,
+        remote_token: str,
+    ) -> bool:
+        synced["remote_url"] = remote_url
+        synced["remote_token"] = remote_token
+        return True
+
+    monkeypatch.setattr(
+        "custom_components.ha_tv_pip.config_flow.async_sync_remote_setup_values",
+        fake_sync,
+    )
+
+    result = asyncio.run(
+        flow.async_step_init(
+            {
+                CONF_DEFAULT_DURATION_SECONDS: 20,
+                CONF_DEFAULT_HEIGHT: 0,
+                CONF_DEFAULT_POSITION: "top_right",
+                CONF_DEFAULT_SNAPSHOT_FALLBACK: True,
+                CONF_DEFAULT_STREAM_TYPE: "auto",
+                CONF_DEFAULT_WIDTH: 0,
+                CONF_PREFER_REMOTE_TRANSPORT: False,
+                CONF_REMOTE_ACCESS_TOKEN: "",
+                CONF_REMOTE_HOME_ASSISTANT_URL: "https://example.ui.nabu.casa",
+            }
+        )
+    )
+
+    assert synced == {"remote_url": "", "remote_token": ""}
+    assert result == {
+        "type": "create_entry",
+        "title": "",
+        "data": {
+            CONF_DEFAULT_DURATION_SECONDS: 20,
+            CONF_DEFAULT_POSITION: "top_right",
+            CONF_DEFAULT_SNAPSHOT_FALLBACK: True,
+            CONF_DEFAULT_STREAM_TYPE: "auto",
+            CONF_PREFER_REMOTE_TRANSPORT: False,
+        },
+    }
+
+
+def test_options_flow_uses_suggested_remote_url_when_token_is_provided(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    flow = ReceiverOptionsFlow(types.SimpleNamespace(options={}))
+    flow.hass = object()
+
+    monkeypatch.setattr(
+        "custom_components.ha_tv_pip.config_flow.suggested_remote_home_assistant_url",
+        lambda hass: "https://example.ui.nabu.casa",
+    )
+
+    async def fake_sync(
+        hass: Any,
+        config_entry: Any,
+        remote_url: str,
+        remote_token: str,
+    ) -> bool:
+        return True
+
+    monkeypatch.setattr(
+        "custom_components.ha_tv_pip.config_flow.async_sync_remote_setup_values",
+        fake_sync,
+    )
+
+    result = asyncio.run(
+        flow.async_step_init(
+            {
+                CONF_DEFAULT_DURATION_SECONDS: 0,
+                CONF_DEFAULT_HEIGHT: 0,
+                CONF_DEFAULT_POSITION: "top_right",
+                CONF_DEFAULT_SNAPSHOT_FALLBACK: True,
+                CONF_DEFAULT_STREAM_TYPE: "auto",
+                CONF_DEFAULT_WIDTH: 0,
+                CONF_PREFER_REMOTE_TRANSPORT: True,
+                CONF_REMOTE_ACCESS_TOKEN: "remote-token",
+                CONF_REMOTE_HOME_ASSISTANT_URL: "",
+            }
+        )
+    )
+
+    assert result["data"][CONF_REMOTE_ACCESS_TOKEN] == "remote-token"
+    assert (
+        result["data"][CONF_REMOTE_HOME_ASSISTANT_URL]
+        == "https://example.ui.nabu.casa"
+    )

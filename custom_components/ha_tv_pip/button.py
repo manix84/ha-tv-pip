@@ -11,12 +11,17 @@ from .client import (
     async_close_receiver,
     async_get_receiver_status,
     async_open_receiver,
-    async_show_camera,
 )
 from .const import CONF_DEVICE_ID, CONF_NAME, CONF_TOKEN
 from .entity import ReceiverEntity
+from .remote import remote_registry
 from .remote_setup import async_sync_remote_setup, has_remote_setup_options
-from .services import store_last_command_result
+from .services import (
+    _async_send_receiver_command,
+    _prefer_remote_transport,
+    _resolve_receiver_from_entry,
+    store_last_command_result,
+)
 
 if TYPE_CHECKING:
 
@@ -199,12 +204,15 @@ class ReceiverTestButton(ReceiverEntity, ButtonEntity):
             enter_pip=True,
             stream_type="hls",
         )
+        receiver = _resolve_receiver_from_entry(self.entry)
+        remote = remote_registry(self.hass)
+        prefer_remote = _prefer_remote_transport(receiver, remote)
         try:
-            await async_show_camera(
-                self.host,
-                self.port,
-                token=str(self.entry.data[CONF_TOKEN]),
+            transport = await _async_send_receiver_command(
+                receiver,
+                remote,
                 command=command,
+                prefer_remote=prefer_remote,
             )
         except ReceiverClientError as error:
             _store_button_result(
@@ -222,6 +230,7 @@ class ReceiverTestButton(ReceiverEntity, ButtonEntity):
             self.entry,
             command_type="test_pip",
             status="accepted",
+            transport=transport,
             final_stream_type=command.stream_type,
         )
 

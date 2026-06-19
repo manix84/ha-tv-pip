@@ -556,29 +556,11 @@ async def async_handle_show_camera(hass: Any, call: Any) -> None:
     )
 
     try:
-        if prefer_external and await remote.async_send_show(
-            device_id=receiver.device_id,
-            command=command,
-        ):
-            _store_camera_action_result(
-                hass,
-                receiver,
-                _camera_action_result(
-                    request,
-                    receiver=receiver,
-                    status="accepted",
-                    command_type=SERVICE_SHOW_CAMERA,
-                    stage="receiver_command",
-                    transport="remote",
-                    command=command,
-                ),
-            )
-            return
-        await async_show_camera(
-            receiver.host,
-            receiver.port,
-            token=receiver.token,
-            command=command,
+        transport = await _async_send_receiver_command(
+            receiver,
+            remote,
+            command,
+            prefer_remote=prefer_external,
         )
         _store_camera_action_result(
             hass,
@@ -589,7 +571,7 @@ async def async_handle_show_camera(hass: Any, call: Any) -> None:
                 status="accepted",
                 command_type=SERVICE_SHOW_CAMERA,
                 stage="receiver_command",
-                transport="local",
+                transport=transport,
                 command=command,
             ),
         )
@@ -681,29 +663,11 @@ async def async_handle_show_snapshot(hass: Any, call: Any) -> None:
             stream_type=STREAM_TYPE_SNAPSHOT,
             **_presentation_payload(request),
         )
-        if prefer_external and await remote.async_send_show(
-            device_id=receiver.device_id,
-            command=command,
-        ):
-            _store_camera_action_result(
-                hass,
-                receiver,
-                _camera_action_result(
-                    request,
-                    receiver=receiver,
-                    status="accepted",
-                    command_type=SERVICE_SHOW_SNAPSHOT,
-                    stage="receiver_command",
-                    transport="remote",
-                    command=command,
-                ),
-            )
-            return
-        await async_show_camera(
-            receiver.host,
-            receiver.port,
-            token=receiver.token,
-            command=command,
+        transport = await _async_send_receiver_command(
+            receiver,
+            remote,
+            command,
+            prefer_remote=prefer_external,
         )
         _store_camera_action_result(
             hass,
@@ -714,7 +678,7 @@ async def async_handle_show_snapshot(hass: Any, call: Any) -> None:
                 status="accepted",
                 command_type=SERVICE_SHOW_SNAPSHOT,
                 stage="receiver_command",
-                transport="local",
+                transport=transport,
                 command=command,
             ),
         )
@@ -788,28 +752,11 @@ async def async_handle_show_notification(hass: Any, call: Any) -> None:
             width=request.width,
             height=request.height,
         )
-        if prefer_external and await remote.async_send_show(
-            device_id=receiver.device_id,
-            command=command,
-        ):
-            _store_command_result(
-                hass,
-                receiver,
-                _notification_action_result(
-                    request,
-                    receiver=receiver,
-                    status="accepted",
-                    stage="receiver_command",
-                    transport="remote",
-                    command=command,
-                ),
-            )
-            return
-        await async_show_camera(
-            receiver.host,
-            receiver.port,
-            token=receiver.token,
-            command=command,
+        transport = await _async_send_receiver_command(
+            receiver,
+            remote,
+            command,
+            prefer_remote=prefer_external,
         )
         _store_command_result(
             hass,
@@ -819,7 +766,7 @@ async def async_handle_show_notification(hass: Any, call: Any) -> None:
                 receiver=receiver,
                 status="accepted",
                 stage="receiver_command",
-                transport="local",
+                transport=transport,
                 command=command,
             ),
         )
@@ -1091,6 +1038,12 @@ def _resolve_receiver(
         raise ServiceValidationError("multiple_receivers")
 
     entry = entries[0]
+    return _resolve_receiver_from_entry(entry)
+
+
+def _resolve_receiver_from_entry(entry: Any) -> ReceiverEntry:
+    """Build a receiver command target from a config entry."""
+
     data = entry.data
     token = str(data.get(CONF_TOKEN, "")).strip()
     if not token:
@@ -1112,9 +1065,50 @@ def _prefer_remote_transport(receiver: ReceiverEntry, remote: Any) -> bool:
     """Return whether receiver commands should prefer the remote transport."""
 
     return bool(
-        receiver.options.get(CONF_PREFER_REMOTE_TRANSPORT, True)
+        receiver.options.get(CONF_PREFER_REMOTE_TRANSPORT, False)
         and remote.is_connected(receiver.device_id)
     )
+
+
+async def _async_send_receiver_command(
+    receiver: ReceiverEntry,
+    remote: Any,
+    command: ShowCameraCommand,
+    *,
+    prefer_remote: bool,
+) -> str:
+    """Send a receiver command with remote/local fallback ordering."""
+
+    if prefer_remote and await remote.async_send_show(
+        device_id=receiver.device_id,
+        command=command,
+    ):
+        return "remote"
+
+    if not prefer_remote:
+        try:
+            await async_show_camera(
+                receiver.host,
+                receiver.port,
+                token=receiver.token,
+                command=command,
+            )
+            return "local"
+        except ReceiverClientError:
+            if await remote.async_send_show(
+                device_id=receiver.device_id,
+                command=command,
+            ):
+                return "remote"
+            raise
+
+    await async_show_camera(
+        receiver.host,
+        receiver.port,
+        token=receiver.token,
+        command=command,
+    )
+    return "local"
 
 
 def _configured_entries(hass: Any) -> list[Any]:
