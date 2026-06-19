@@ -59,6 +59,8 @@ That means Home Assistant could not serialize the old options dropdown schema fo
 
 Android TV devices can reject unsupported codecs, high resolutions, or camera profiles. This is a stream compatibility issue rather than a pairing issue.
 
+If video turns green, tears, or shows corrupted frames while another video app such as YouTube is playing, the TV may be under decoder pressure from two simultaneous video streams. HA TV PiP asks adaptive HLS streams for receiver-sized video tracks, but fixed high-resolution camera streams can still overwhelm some devices. Prefer a lower-resolution H.264 substream, MJPEG, snapshot fallback, or a TV-safe restream URL for those cameras.
+
 Try this order:
 
 1. Run `ha_tv_pip.calibrate_camera` with `save: false`.
