@@ -10,9 +10,37 @@ permissions:
   contents: write
 
 jobs:
-  package-release:
-    name: Package release assets 🚀
+  setup:
+    name: Setup release metadata 🧭
     runs-on: ubuntu-latest
+
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Read release version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check version consistency
+        run: npm run version:check
+
+  android-debug:
+    name: Android APK Debug 🤖
+    runs-on: ubuntu-latest
+    needs: setup
 
     steps:
       - name: Checkout repo
@@ -33,42 +61,114 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Build debug APK
+        run: npm run android:assemble:debug
+
+      - name: Prepare debug APK asset
+        run: |
+          mkdir -p dist
+          cp android-tv-app/app/build/outputs/apk/debug/app-debug.apk \
+            "dist/ha-tv-pip-android-debug-v${{ needs.setup.outputs.version }}.apk"
+
+      - name: Upload debug APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-debug-apk
+          path: dist/ha-tv-pip-android-debug-v${{ needs.setup.outputs.version }}.apk
+          if-no-files-found: error
+
+  android-release:
+    name: Android APK Release 🤖
+    runs-on: ubuntu-latest
+    needs: setup
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-36.1" "build-tools;37.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build release APK
+        run: npm run android:assemble:release
+
+      - name: Prepare release APK asset
+        run: |
+          mkdir -p dist
+          cp android-tv-app/app/build/outputs/apk/release/app-release-unsigned.apk \
+            "dist/ha-tv-pip-android-release-v${{ needs.setup.outputs.version }}.apk"
+
+      - name: Upload release APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release-apk
+          path: dist/ha-tv-pip-android-release-v${{ needs.setup.outputs.version }}.apk
+          if-no-files-found: error
+
+  ha-integration:
+    name: HA Integration Release 🏠
+    runs-on: ubuntu-latest
+    needs: setup
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      - name: Read release version
-        id: version
-        run: |
-          VERSION=$(node -p "require('./package.json').version")
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Check version consistency
-        run: npm run version:check
-
-      - name: Build Android debug APK
-        run: npm run android:assemble:debug
-
-      - name: Build Android release APK
-        run: npm run android:assemble:release
-
-      - name: Prepare Android release assets
-        run: |
-          mkdir -p dist
-          cp android-tv-app/app/build/outputs/apk/debug/app-debug.apk "dist/ha-tv-pip-android-debug-v${{ steps.version.outputs.version }}.apk"
-          cp android-tv-app/app/build/outputs/apk/release/app-release-unsigned.apk "dist/ha-tv-pip-android-release-v${{ steps.version.outputs.version }}.apk"
-
       - name: Package Home Assistant integration
         run: npm run package:integration
+
+      - name: Upload HA integration artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ha-integration-zips
+          path: |
+            dist/ha-tv-pip-integration-v${{ needs.setup.outputs.version }}.zip
+            dist/ha-tv-pip-integration.zip
+          if-no-files-found: error
+
+  publish:
+    name: Publish Release 🚀
+    runs-on: ubuntu-latest
+    needs:
+      - setup
+      - android-debug
+      - android-release
+      - ha-integration
+
+    steps:
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Show release assets
+        run: ls -la dist
 
       - name: Create draft GitHub Release with assets
         id: release_assets
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ steps.version.outputs.tag }}
-          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ needs.setup.outputs.tag }}
+          RELEASE_VERSION: ${{ needs.setup.outputs.version }}
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             IS_DRAFT=$(gh release view "$RELEASE_TAG" --json isDraft --jq '.isDraft')
@@ -104,6 +204,24 @@ jobs:
         if: steps.release_assets.outputs.publish == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ needs.setup.outputs.tag }}
+        run: gh release edit "$RELEASE_TAG" --draft=false
+
+  cleanup:
+    name: Cleanup 🧹
+    runs-on: ubuntu-latest
+    needs:
+      - setup
+      - android-debug
+      - android-release
+      - ha-integration
+      - publish
+    if: always()
+
+    steps:
+      - name: Finish release workflow
+        if: always()
         run: |
-          gh release edit "$RELEASE_TAG" --draft=false
+          echo "Release workflow cleanup complete."
+          echo "Runner workspaces are ephemeral; uploaded workflow artifacts are retained for audit."
