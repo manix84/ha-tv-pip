@@ -174,7 +174,7 @@ See `docs/translations.md` for the full language plan.
 
 ## Releases 📦
 
-GitHub Releases are the distribution target for now. When code is pushed or merged into `main`, the release workflow reads the version from the root `package.json`, builds the Android TV APK, packages the Home Assistant integration, creates draft release `vX.Y.Z` with the assets already attached, and then publishes it:
+GitHub Releases are the distribution target for now. When code is pushed or merged into `main`, the release workflow reads the version from the root `package.json`, builds the Android TV APK, packages the Home Assistant integration, validates the APK and zip asset layout, creates draft release `vX.Y.Z` with the assets already attached, and then publishes it:
 
 ```txt
 ha-tv-pip-android-debug-vX.Y.Z.apk

@@ -143,6 +143,33 @@ jobs:
             dist/ha-tv-pip-integration.zip
           if-no-files-found: error
 
+  release-check:
+    name: Release Asset Check 🔎
+    runs-on: ubuntu-latest
+    needs:
+      - setup
+      - android-debug
+      - android-release
+      - ha-integration
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Check release assets
+        run: npm run package:release:check
+
   publish:
     name: Publish Release 🚀
     runs-on: ubuntu-latest
@@ -151,6 +178,7 @@ jobs:
       - android-debug
       - android-release
       - ha-integration
+      - release-check
 
     steps:
       - name: Download release artifacts
@@ -216,6 +244,7 @@ jobs:
       - android-debug
       - android-release
       - ha-integration
+      - release-check
       - publish
     if: always()
 

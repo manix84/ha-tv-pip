@@ -633,14 +633,13 @@ The versioned zip is the human-readable/manual-install release asset. The stable
 
 When code is pushed or merged into `main`, `.github/workflows/release.yml`:
 
-1. Checks out the repo.
-2. Sets up Java, Android SDK, Gradle, and Node.
-3. Reads the release version from root `package.json`.
-4. Runs the version consistency check.
-5. Builds the Android debug and release APKs.
-6. Packages the Home Assistant integration zip.
-7. Creates draft GitHub Release `vX.Y.Z` with the Android APKs, versioned integration zip, and stable HACS integration zip already attached.
-8. Publishes the draft GitHub Release.
+1. Runs `Setup release metadata 🧭` to read the release version from root `package.json` and run the version consistency check.
+2. Runs `Android APK Debug 🤖` to build and stage the debug APK.
+3. Runs `Android APK Release 🤖` to build and stage the release APK.
+4. Runs `HA Integration Release 🏠` to package the Home Assistant integration zips.
+5. Runs `Release Asset Check 🔎` to validate APK names, APK archive shape, integration zip names, HACS zip layout, manual zip layout, icon presence, ignored paths, and manifest version consistency.
+6. Runs `Publish Release 🚀` to create draft GitHub Release `vX.Y.Z` with the Android APKs, versioned integration zip, and stable HACS integration zip already attached, then publishes it.
+7. Runs `Cleanup 🧹` as a final visible workflow stage.
 
 Published GitHub Releases are treated as immutable. The workflow will not replace assets on an existing published release; it exits cleanly when the release for the current version already exists. Bump the root `package.json` version before producing another release. If an older failed workflow already created a published release without assets, delete that failed release manually or move forward with the next version.
 
@@ -651,6 +650,12 @@ ha-tv-pip-android-debug-v1.2.3.apk
 ha-tv-pip-android-release-v1.2.3.apk
 ha-tv-pip-integration-v1.2.3.zip
 ha-tv-pip-integration.zip
+```
+
+The same release asset validation can be run locally after building the APKs and packaging the integration:
+
+```sh
+npm run package:release:check
 ```
 
 ## HACS Distribution
@@ -703,6 +708,7 @@ It also built and packaged each project area:
 npm run android:assemble:debug
 npm run android:assemble:release
 npm run package:integration
+npm run package:release:check
 npm run website:build
 ```
 

@@ -24,6 +24,7 @@
     "install:all": "node scripts/install-all.mjs",
     "lint": "npm run android:lint && npm run ha:lint && npm run website:lint",
     "package:integration": "node scripts/package-integration.mjs",
+    "package:release:check": "node scripts/check-release-assets.mjs",
     "prepare": "npm run hooks:install",
     "test": "npm run android:test && npm run ha:test && npm run website:test",
     "typecheck": "npm run android:typecheck && npm run ha:typecheck && npm run website:typecheck",
