@@ -29,7 +29,7 @@ RESTREAMING_MANUAL_PROVIDER_WORKFLOWS: list[dict[str, Any]] = [
             "Save a known TV-safe go2rtc HLS or MJPEG URL as a per-camera "
             "restream_url."
         ),
-        "service": "set_camera_defaults",
+        "service": "save_restream_source",
         "fields": [
             "camera_entity",
             "restream_provider",

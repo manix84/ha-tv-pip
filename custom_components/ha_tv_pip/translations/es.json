@@ -414,6 +414,42 @@
           "name": "Save"
         }
       }
+    },
+    "save_restream_source": {
+      "name": "Guardar fuente restream",
+      "description": "Guarda una URL restream HLS o MJPEG probada como valor predeterminado de cámara para un receptor emparejado.",
+      "fields": {
+        "camera_entity": {
+          "name": "Entidad de cámara"
+        },
+        "restream_url": {
+          "name": "URL restream"
+        },
+        "restream_provider": {
+          "name": "Proveedor restream"
+        },
+        "snapshot_camera_entity": {
+          "name": "Entidad de cámara de captura alternativa"
+        },
+        "snapshot_fallback": {
+          "name": "Captura alternativa"
+        },
+        "stream_type": {
+          "name": "Tipo restream"
+        },
+        "duration_seconds": {
+          "name": "Duración"
+        },
+        "position": {
+          "name": "Posición"
+        },
+        "width": {
+          "name": "Anchura"
+        },
+        "height": {
+          "name": "Altura"
+        }
+      }
     }
   }
 }

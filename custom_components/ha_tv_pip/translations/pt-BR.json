@@ -414,6 +414,42 @@
           "name": "Save"
         }
       }
+    },
+    "save_restream_source": {
+      "name": "Salvar fonte restream",
+      "description": "Salva uma URL restream HLS ou MJPEG testada como padrão de câmera para um receptor pareado.",
+      "fields": {
+        "camera_entity": {
+          "name": "Entidade de câmera"
+        },
+        "restream_url": {
+          "name": "URL restream"
+        },
+        "restream_provider": {
+          "name": "Provedor restream"
+        },
+        "snapshot_camera_entity": {
+          "name": "Entidade de câmera para snapshot fallback"
+        },
+        "snapshot_fallback": {
+          "name": "Snapshot fallback"
+        },
+        "stream_type": {
+          "name": "Tipo restream"
+        },
+        "duration_seconds": {
+          "name": "Duração"
+        },
+        "position": {
+          "name": "Posição"
+        },
+        "width": {
+          "name": "Largura"
+        },
+        "height": {
+          "name": "Altura"
+        }
+      }
     }
   }
 }

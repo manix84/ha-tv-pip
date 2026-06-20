@@ -260,7 +260,7 @@ Calibration tests HLS, MJPEG, and snapshot availability, returns a summary with 
 
 If live HLS/MJPEG paths are unavailable, the response includes `restreaming_recommended: true`, `restreaming_reason`, `restreaming_next_step`, and `restreaming_options`. This means the current camera entity is likely snapshot-only for HA TV PiP, or needs a TV-safe source such as another camera entity, a lower-resolution profile, go2rtc, WebRTC, or future transcoding support.
 
-If you already expose a TV-safe stream through go2rtc or another local restreaming tool, set `restream_url` and `restream_provider` with `ha_tv_pip.set_camera_defaults`. The receiver will use that URL for live video while still using `camera_entity` for titles and snapshot previews. Saved restream URLs are redacted from diagnostics.
+If you already expose a TV-safe stream through go2rtc or another local restreaming tool, set `restream_url` and `restream_provider` with `ha_tv_pip.save_restream_source`. The receiver will use that URL for live video while still using `camera_entity` for titles and snapshot previews. Saved restream URLs are redacted from diagnostics.
 
 For the full setup workflow, see the project camera compatibility guide: <https://github.com/manix84/ha-tv-pip/blob/main/docs/camera-compatibility.md>.
 
@@ -348,6 +348,25 @@ For cameras with multiple streams, use a TV-compatible H.264/HLS stream where po
 Automatic restreaming providers are not active yet. Manual `restream_url` support is available for users who already expose a TV-safe HLS or MJPEG source. Compatibility and calibration responses include manual provider helper metadata for go2rtc, including example URL patterns and the `set_camera_defaults` fields to save once a URL works. Diagnostics include a planned provider section so future support tooling can distinguish "manual URL configured" from "automatic provider not implemented". HLS, MJPEG, and snapshots remain the supported receiver paths today.
 
 The receiver device also exposes a `Restreaming Provider Status` sensor. It reports `planned` today, with attributes for configured, active, supported, and planned providers. This is intentionally a visibility surface only; it does not enable go2rtc, WebRTC, or transcoding yet.
+
+## Restream Source Helper 🧵
+
+Use `ha_tv_pip.save_restream_source` after testing a go2rtc or similar restream URL from the TV network:
+
+```yaml
+service: ha_tv_pip.save_restream_source
+target:
+  device_id: living_room_tv
+data:
+  camera_entity: camera.front_door
+  restream_url: http://homeassistant.local:1984/api/stream.m3u8?src=front_door
+  restream_provider: go2rtc
+  snapshot_fallback: true
+  width: 720
+  height: 405
+```
+
+The helper saves the URL as the camera's live source, defaults the provider label to `go2rtc`, keeps snapshot fallback enabled unless disabled, and infers `hls` or `mjpeg` from common URL shapes when `stream_type` is omitted. After saving, normal automations can call `ha_tv_pip.show_camera` with only `camera_entity`.
 
 ## Snapshot Service 🖼️
 

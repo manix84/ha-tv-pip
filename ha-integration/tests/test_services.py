@@ -1678,6 +1678,127 @@ def test_set_camera_defaults_persists_per_camera_options() -> None:
     }
 
 
+def test_save_restream_source_persists_go2rtc_hls_defaults() -> None:
+    from custom_components.ha_tv_pip import services
+
+    entry = FakeEntry(
+        entry_id="entry-1",
+        data={
+            CONF_DEVICE_ID: "device-1",
+            CONF_NAME: "Nursery TV",
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "token",
+        },
+        options={},
+    )
+    hass = FakeHass(
+        entries=[entry],
+        states={
+            "camera.front_door": FakeState({"friendly_name": "Front Door"}),
+            "camera.front_door_sub": FakeState({"friendly_name": "Front Door Sub"}),
+        },
+    )
+
+    result = asyncio.run(
+        services.async_handle_save_restream_source(
+            hass,
+            FakeCall(
+                data={
+                    ATTR_CAMERA_ENTITY: "camera.front_door",
+                    ATTR_RESTREAM_URL: (
+                        "http://homeassistant.local:1984/api/stream.m3u8"
+                        "?src=front_door"
+                    ),
+                    ATTR_SNAPSHOT_CAMERA_ENTITY: "camera.front_door_sub",
+                    ATTR_WIDTH: 720,
+                    ATTR_HEIGHT: 405,
+                },
+                target={ATTR_DEVICE_ID: "device-1"},
+            ),
+        )
+    )
+
+    assert result == {
+        "accepted": True,
+        "camera_entity": "camera.front_door",
+        "receiver": "Nursery TV",
+        "defaults": {
+            ATTR_HEIGHT: 405,
+            ATTR_RESTREAM_PROVIDER: "go2rtc",
+            ATTR_RESTREAM_URL: (
+                "http://homeassistant.local:1984/api/stream.m3u8?src=front_door"
+            ),
+            ATTR_SNAPSHOT_CAMERA_ENTITY: "camera.front_door_sub",
+            ATTR_SNAPSHOT_FALLBACK: True,
+            ATTR_STREAM_TYPE: "hls",
+            ATTR_WIDTH: 720,
+        },
+        "next_action": {
+            "service": "show_camera",
+            "data": {ATTR_CAMERA_ENTITY: "camera.front_door"},
+        },
+    }
+    assert entry.options == {
+        "camera_defaults": {
+            "camera.front_door": result["defaults"],
+        }
+    }
+
+
+def test_save_restream_source_can_save_mjpeg_defaults() -> None:
+    from custom_components.ha_tv_pip import services
+
+    entry = FakeEntry(
+        entry_id="entry-1",
+        data={
+            CONF_DEVICE_ID: "device-1",
+            CONF_NAME: "Nursery TV",
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "token",
+        },
+        options={},
+    )
+    hass = FakeHass(
+        entries=[entry],
+        states={"camera.front_door": FakeState({"friendly_name": "Front Door"})},
+    )
+
+    result = asyncio.run(
+        services.async_handle_save_restream_source(
+            hass,
+            FakeCall(
+                data={
+                    ATTR_CAMERA_ENTITY: "camera.front_door",
+                    ATTR_RESTREAM_PROVIDER: "custom",
+                    ATTR_RESTREAM_URL: (
+                        "http://homeassistant.local:1984/api/stream.mjpeg"
+                        "?src=front_door"
+                    ),
+                    ATTR_SNAPSHOT_FALLBACK: False,
+                    ATTR_STREAM_TYPE: "mjpeg",
+                },
+                target={ATTR_DEVICE_ID: "device-1"},
+            ),
+        )
+    )
+
+    assert result["defaults"] == {
+        ATTR_RESTREAM_PROVIDER: "custom",
+        ATTR_RESTREAM_URL: (
+            "http://homeassistant.local:1984/api/stream.mjpeg?src=front_door"
+        ),
+        ATTR_SNAPSHOT_FALLBACK: False,
+        ATTR_STREAM_TYPE: "mjpeg",
+    }
+    assert entry.options == {
+        "camera_defaults": {
+            "camera.front_door": result["defaults"],
+        }
+    }
+
+
 def test_show_camera_service_applies_per_camera_defaults_before_receiver_defaults(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

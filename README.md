@@ -64,6 +64,7 @@ The latest receiver/integration flow includes:
 - Compatibility tests that check HLS, MJPEG, and snapshot availability for a camera/receiver pair.
 - `recommended_defaults` previews so users can inspect exactly what would be saved before applying defaults.
 - Optional `restream_url` and `restream_provider` per-camera defaults for users who already expose a TV-safe go2rtc or similar HLS/MJPEG stream.
+- `ha_tv_pip.save_restream_source` for saving a tested go2rtc or similar restream URL as the camera's TV-safe live source.
 - `restreaming_recommended`, `restreaming_reason`, `restreaming_next_step`, and `restreaming_options` fields when a camera likely needs a TV-safe restreamed source.
 - Manual go2rtc helper metadata in calibration/action-plan responses, including example URL patterns and the `set_camera_defaults` fields to save a working TV-safe restream URL.
 - `Last Camera Compatibility`, `Camera Restreaming Recommended`, `Last Camera Result`, and `Last Command Result` entities on the receiver device.

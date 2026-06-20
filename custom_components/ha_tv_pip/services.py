@@ -36,6 +36,7 @@ from .const import (
     NOTIFICATION_POSITIONS,
     SERVICE_CALIBRATE_CAMERA,
     SERVICE_CLEAR_CAMERA_DEFAULTS,
+    SERVICE_SAVE_RESTREAM_SOURCE,
     SERVICE_SET_CAMERA_DEFAULTS,
     SERVICE_SHOW_CAMERA,
     SERVICE_SHOW_NOTIFICATION,
@@ -356,6 +357,33 @@ async def async_register_services(hass: Any) -> None:
             vol.Optional(ATTR_SAVE, default=False): bool,
         }
     )
+    save_restream_schema = vol.Schema(
+        {
+            **target_schema,
+            vol.Required(ATTR_CAMERA_ENTITY): cv.entity_id,
+            vol.Required(ATTR_RESTREAM_URL): str,
+            vol.Optional(ATTR_RESTREAM_PROVIDER, default="go2rtc"): str,
+            vol.Optional(ATTR_SNAPSHOT_CAMERA_ENTITY): cv.entity_id,
+            vol.Optional(ATTR_SNAPSHOT_FALLBACK, default=True): bool,
+            vol.Optional(ATTR_STREAM_TYPE): vol.Any(
+                STREAM_TYPE_HLS,
+                STREAM_TYPE_MJPEG,
+            ),
+            vol.Optional(ATTR_DURATION_SECONDS): vol.All(
+                vol.Coerce(int),
+                vol.Range(min=1, max=3600),
+            ),
+            vol.Optional(ATTR_POSITION): vol.Any(*NOTIFICATION_POSITIONS),
+            vol.Optional(ATTR_WIDTH): vol.All(
+                vol.Coerce(int),
+                vol.Range(min=240, max=1600),
+            ),
+            vol.Optional(ATTR_HEIGHT): vol.All(
+                vol.Coerce(int),
+                vol.Range(min=120, max=900),
+            ),
+        }
+    )
     snapshot_schema = vol.Schema(
         {
             **base_schema,
@@ -425,6 +453,9 @@ async def async_register_services(hass: Any) -> None:
     async def handle_set_camera_defaults(call: Any) -> dict[str, Any]:
         return await async_handle_set_camera_defaults(hass, call)
 
+    async def handle_save_restream_source(call: Any) -> dict[str, Any]:
+        return await async_handle_save_restream_source(hass, call)
+
     async def handle_clear_camera_defaults(call: Any) -> dict[str, Any]:
         return await async_handle_clear_camera_defaults(hass, call)
 
@@ -478,6 +509,15 @@ async def async_register_services(hass: Any) -> None:
             SERVICE_SET_CAMERA_DEFAULTS,
             handle_set_camera_defaults,
             schema=camera_defaults_schema,
+            **response_kwargs,
+        )
+
+    if not hass.services.has_service(DOMAIN, SERVICE_SAVE_RESTREAM_SOURCE):
+        hass.services.async_register(
+            DOMAIN,
+            SERVICE_SAVE_RESTREAM_SOURCE,
+            handle_save_restream_source,
+            schema=save_restream_schema,
             **response_kwargs,
         )
 
@@ -885,18 +925,56 @@ async def async_handle_set_camera_defaults(hass: Any, call: Any) -> dict[str, An
         _validate_camera_entity(hass, request.snapshot_camera_entity)
 
     receiver = _resolve_receiver(hass, request)
-    entry = _entry_for_receiver(hass, receiver.entry_id)
     defaults = _camera_defaults_payload(request)
-    options = dict(getattr(entry, "options", {}) or {})
-    camera_defaults = dict(options.get(CONF_CAMERA_DEFAULTS, {}) or {})
-    camera_defaults[request.camera_entity] = defaults
-    options[CONF_CAMERA_DEFAULTS] = camera_defaults
-    _update_entry_options(hass, entry, options)
+    _save_camera_defaults(hass, receiver, request.camera_entity, defaults)
     return {
         "accepted": True,
         "camera_entity": request.camera_entity,
         "receiver": receiver.name,
         "defaults": defaults,
+    }
+
+
+async def async_handle_save_restream_source(hass: Any, call: Any) -> dict[str, Any]:
+    """Persist a tested restream URL as the camera's TV-safe live source."""
+
+    request = _request_from_call(call)
+    _validate_camera_entity(hass, request.camera_entity)
+    if request.snapshot_camera_entity is not None:
+        _validate_camera_entity(hass, request.snapshot_camera_entity)
+
+    if request.restream_url is None:
+        raise ServiceValidationError("invalid_restream_url")
+
+    receiver = _resolve_receiver(hass, request)
+    stream_type = _restream_url_stream_type(request)
+    defaults: dict[str, Any] = {
+        ATTR_RESTREAM_PROVIDER: request.restream_provider or "go2rtc",
+        ATTR_RESTREAM_URL: request.restream_url,
+        ATTR_SNAPSHOT_FALLBACK: request.snapshot_fallback,
+        ATTR_STREAM_TYPE: stream_type,
+    }
+    if request.snapshot_camera_entity is not None:
+        defaults[ATTR_SNAPSHOT_CAMERA_ENTITY] = request.snapshot_camera_entity
+    if request.duration_explicit and request.duration_seconds is not None:
+        defaults[ATTR_DURATION_SECONDS] = request.duration_seconds
+    if request.position_explicit:
+        defaults[ATTR_POSITION] = request.position
+    if request.width_explicit and request.width is not None:
+        defaults[ATTR_WIDTH] = request.width
+    if request.height_explicit and request.height is not None:
+        defaults[ATTR_HEIGHT] = request.height
+
+    _save_camera_defaults(hass, receiver, request.camera_entity, defaults)
+    return {
+        "accepted": True,
+        "camera_entity": request.camera_entity,
+        "receiver": receiver.name,
+        "defaults": defaults,
+        "next_action": {
+            "service": SERVICE_SHOW_CAMERA,
+            "data": {ATTR_CAMERA_ENTITY: request.camera_entity},
+        },
     }
 
 
@@ -1423,6 +1501,20 @@ def _camera_defaults_payload(request: ShowCameraRequest) -> dict[str, Any]:
     if request.height_explicit and request.height is not None:
         defaults[ATTR_HEIGHT] = request.height
     return defaults
+
+
+def _save_camera_defaults(
+    hass: Any,
+    receiver: ReceiverEntry,
+    camera_entity: str,
+    defaults: dict[str, Any],
+) -> None:
+    entry = _entry_for_receiver(hass, receiver.entry_id)
+    options = dict(getattr(entry, "options", {}) or {})
+    camera_defaults = dict(options.get(CONF_CAMERA_DEFAULTS, {}) or {})
+    camera_defaults[camera_entity] = defaults
+    options[CONF_CAMERA_DEFAULTS] = camera_defaults
+    _update_entry_options(hass, entry, options)
 
 
 def _save_camera_recommendation_defaults(

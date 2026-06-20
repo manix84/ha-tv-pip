@@ -70,18 +70,17 @@ When the recommendation looks right, run the same action with `save: true`. The 
 If you already expose a TV-safe restream through go2rtc or another tool, save it as the camera's live source:
 
 ```yaml
-service: ha_tv_pip.set_camera_defaults
+service: ha_tv_pip.save_restream_source
 target:
   device_id: living_room_tv
 data:
   camera_entity: camera.front_door
-  restream_provider: go2rtc
   restream_url: http://homeassistant.local:1984/api/stream.m3u8?src=front_door
-  stream_type: hls
+  restream_provider: go2rtc
   snapshot_fallback: true
 ```
 
-The receiver still uses `camera_entity` for titles and snapshot previews, but live video comes from the saved restream URL. Saved restream URLs are redacted from diagnostics.
+The helper defaults the provider to `go2rtc`, keeps snapshot fallback enabled, and infers `hls` or `mjpeg` from common URL shapes when `stream_type` is omitted. The receiver still uses `camera_entity` for titles and snapshot previews, but live video comes from the saved restream URL. Saved restream URLs are redacted from diagnostics.
 
 Future automations can then stay small:
 
@@ -106,7 +105,7 @@ The current manual go2rtc path is:
 
 1. Create or identify a TV-safe go2rtc stream name for the camera.
 2. Test the go2rtc HLS or MJPEG URL from a device on the same network as the TV.
-3. Save that URL with `ha_tv_pip.set_camera_defaults`.
+3. Save that URL with `ha_tv_pip.save_restream_source`.
 4. Keep `snapshot_fallback: true` so the receiver can show an image while live video loads or if live video fails.
 
 Example URL patterns:

@@ -84,6 +84,16 @@ SERVICE_EXAMPLES: dict[str, set[str]] = {
         "restream_provider",
         "restream_url",
     },
+    "save_restream_source": {
+        "stream_type",
+        "duration_seconds",
+        "position",
+        "snapshot_fallback",
+        "width",
+        "height",
+        "restream_provider",
+        "restream_url",
+    },
     "clear_camera_defaults": set(),
 }
 
@@ -111,6 +121,10 @@ NO_EXAMPLE_FIELDS: dict[str, set[str]] = {
         "camera_entity",
         "snapshot_camera_entity",
         "stream_camera_entity",
+    },
+    "save_restream_source": {
+        "camera_entity",
+        "snapshot_camera_entity",
     },
     "clear_camera_defaults": {
         "camera_entity",

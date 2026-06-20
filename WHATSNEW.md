@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.7 - Restream Source Helper 🧵
+
+- Added `ha_tv_pip.save_restream_source` to save a tested HLS or MJPEG restream URL as per-camera defaults 🧰
+- Defaulted the helper flow to `go2rtc`, snapshot fallback on, and inferred HLS/MJPEG stream type when possible 📺
+- Added Home Assistant action metadata, translations, docs, and tests for the new restream-source save workflow 🧪
+
 ## 1.31.6 - Popup Visual Polish 🪟
 
 - Added Android window background blur for translucent overlay popup backgrounds on supported Android TV devices 🧊

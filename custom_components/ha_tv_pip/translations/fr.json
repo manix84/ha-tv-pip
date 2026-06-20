@@ -414,6 +414,42 @@
           "name": "Save"
         }
       }
+    },
+    "save_restream_source": {
+      "name": "Enregistrer la source restream",
+      "description": "Enregistre une URL restream HLS ou MJPEG testée comme valeur par défaut caméra pour un récepteur appairé.",
+      "fields": {
+        "camera_entity": {
+          "name": "Entité caméra"
+        },
+        "restream_url": {
+          "name": "URL restream"
+        },
+        "restream_provider": {
+          "name": "Fournisseur restream"
+        },
+        "snapshot_camera_entity": {
+          "name": "Entité caméra de secours instantané"
+        },
+        "snapshot_fallback": {
+          "name": "Secours instantané"
+        },
+        "stream_type": {
+          "name": "Type restream"
+        },
+        "duration_seconds": {
+          "name": "Durée"
+        },
+        "position": {
+          "name": "Position"
+        },
+        "width": {
+          "name": "Largeur"
+        },
+        "height": {
+          "name": "Hauteur"
+        }
+      }
     }
   }
 }

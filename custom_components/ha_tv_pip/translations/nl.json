@@ -414,6 +414,42 @@
           "name": "Save"
         }
       }
+    },
+    "save_restream_source": {
+      "name": "Restreambron opslaan",
+      "description": "Sla een geteste HLS- of MJPEG-restream-URL op als camerastandaard voor een gekoppelde receiver.",
+      "fields": {
+        "camera_entity": {
+          "name": "Camera-entiteit"
+        },
+        "restream_url": {
+          "name": "Restream-URL"
+        },
+        "restream_provider": {
+          "name": "Restreamprovider"
+        },
+        "snapshot_camera_entity": {
+          "name": "Snapshotfallback-camera-entiteit"
+        },
+        "snapshot_fallback": {
+          "name": "Snapshotfallback"
+        },
+        "stream_type": {
+          "name": "Restreamtype"
+        },
+        "duration_seconds": {
+          "name": "Duur"
+        },
+        "position": {
+          "name": "Positie"
+        },
+        "width": {
+          "name": "Breedte"
+        },
+        "height": {
+          "name": "Hoogte"
+        }
+      }
     }
   }
 }

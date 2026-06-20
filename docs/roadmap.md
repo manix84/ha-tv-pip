@@ -855,6 +855,7 @@ Completed:
 - ✅ Compact Home Assistant receiver options screen with advanced popup size, position, and remote receiver credential fields hidden behind an explicit advanced-settings step.
 - ✅ Camera calibration and compatibility action plans so users can see the recommended next service call, safe data payload, and restreaming/source fields to try.
 - ✅ Manual go2rtc helper workflow metadata in restreaming provider diagnostics and calibration action plans, including URL patterns and fields to save a working TV-safe restream URL.
+- ✅ `ha_tv_pip.save_restream_source` helper action for saving a tested HLS/MJPEG restream URL as per-camera defaults without using the lower-level defaults service.
 
 Still future:
 
