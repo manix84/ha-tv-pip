@@ -373,6 +373,10 @@
         }
       }
     },
+    "clear_all_camera_defaults": {
+      "name": "Clear all camera defaults",
+      "description": "Remove all stored per-camera defaults for a paired receiver."
+    },
     "calibrate_camera": {
       "name": "Calibrate camera",
       "description": "Test a camera against a paired receiver and optionally save the recommended per-camera defaults.",

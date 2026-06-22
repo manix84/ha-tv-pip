@@ -1956,6 +1956,44 @@ def test_clear_camera_defaults_removes_stored_camera_options() -> None:
     assert entry.options == {}
 
 
+def test_clear_all_camera_defaults_removes_all_stored_camera_options() -> None:
+    from custom_components.ha_tv_pip import services
+
+    entry = FakeEntry(
+        entry_id="entry-1",
+        data={
+            CONF_DEVICE_ID: "device-1",
+            CONF_NAME: "Nursery TV",
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "token",
+        },
+        options={
+            "camera_defaults": {
+                "camera.front_door": {ATTR_STREAM_TYPE: "hls"},
+                "camera.garden": {ATTR_STREAM_TYPE: "snapshot"},
+            },
+            CONF_DEFAULT_STREAM_TYPE: "mjpeg_first",
+        },
+    )
+    hass = FakeHass(entries=[entry])
+
+    result = asyncio.run(
+        services.async_handle_clear_all_camera_defaults(
+            hass,
+            FakeCall(data={}, target={ATTR_DEVICE_ID: "device-1"}),
+        )
+    )
+
+    assert result == {
+        "accepted": True,
+        "receiver": "Nursery TV",
+        "cleared_camera_count": 2,
+        "cleared_cameras": ["camera.front_door", "camera.garden"],
+    }
+    assert entry.options == {CONF_DEFAULT_STREAM_TYPE: "mjpeg_first"}
+
+
 def test_camera_stream_test_stores_non_sensitive_compatibility_report(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

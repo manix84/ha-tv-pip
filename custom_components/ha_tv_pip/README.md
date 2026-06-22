@@ -194,7 +194,7 @@ Each receiver has configurable defaults in the Home Assistant integration option
 
 Use `0` for duration, width, or height to keep the built-in service defaults. Explicit service data always wins, so one automation can still override the receiver defaults when needed.
 
-Per-camera defaults can be stored with `ha_tv_pip.set_camera_defaults`. They apply before receiver-level defaults, which is useful when one camera needs `mjpeg_first`, a substream entity, a different snapshot entity, or a different popup size. Use `ha_tv_pip.clear_camera_defaults` to remove stored defaults for a camera.
+Per-camera defaults can be stored with `ha_tv_pip.set_camera_defaults`. They apply before receiver-level defaults, which is useful when one camera needs `mjpeg_first`, a substream entity, a different snapshot entity, or a different popup size. Use `ha_tv_pip.clear_camera_defaults` to remove stored defaults for one camera, or `ha_tv_pip.clear_all_camera_defaults` to remove every saved camera default from a receiver.
 
 Stored per-camera defaults are visible through the receiver device's Saved Camera Defaults sensor and included in config entry diagnostics so setup issues can be reviewed without exposing stream URLs.
 
@@ -370,6 +370,16 @@ data:
 ```
 
 The helper saves the URL as the camera's live source, defaults the provider label to `go2rtc`, keeps snapshot fallback enabled unless disabled, and infers `hls` or `mjpeg` from common URL shapes when `stream_type` is omitted. After saving, normal automations can call `ha_tv_pip.show_camera` with only `camera_entity`. Check the receiver device's Saved Camera Defaults sensor to confirm the camera has a saved restream source without exposing the URL.
+
+To reset all saved camera compatibility choices for a receiver:
+
+```yaml
+service: ha_tv_pip.clear_all_camera_defaults
+target:
+  device_id: living_room_tv
+```
+
+The response includes `cleared_camera_count` and `cleared_cameras` so you can confirm which saved camera defaults were removed.
 
 ## Snapshot Service 🖼️
 

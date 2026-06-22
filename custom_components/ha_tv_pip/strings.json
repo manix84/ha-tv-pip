@@ -420,6 +420,10 @@
         }
       }
     },
+    "clear_all_camera_defaults": {
+      "name": "Clear all camera defaults",
+      "description": "Remove all stored per-camera defaults for a paired receiver."
+    },
     "save_restream_source": {
       "name": "Save restream source",
       "description": "Save a tested HLS or MJPEG restream URL as the camera default for a paired receiver.",

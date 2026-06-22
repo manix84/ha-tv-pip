@@ -35,6 +35,7 @@ from .const import (
     DOMAIN,
     NOTIFICATION_POSITIONS,
     SERVICE_CALIBRATE_CAMERA,
+    SERVICE_CLEAR_ALL_CAMERA_DEFAULTS,
     SERVICE_CLEAR_CAMERA_DEFAULTS,
     SERVICE_SAVE_RESTREAM_SOURCE,
     SERVICE_SET_CAMERA_DEFAULTS,
@@ -459,6 +460,9 @@ async def async_register_services(hass: Any) -> None:
     async def handle_clear_camera_defaults(call: Any) -> dict[str, Any]:
         return await async_handle_clear_camera_defaults(hass, call)
 
+    async def handle_clear_all_camera_defaults(call: Any) -> dict[str, Any]:
+        return await async_handle_clear_all_camera_defaults(hass, call)
+
     if not hass.services.has_service(DOMAIN, SERVICE_SHOW_CAMERA):
         hass.services.async_register(
             DOMAIN,
@@ -532,6 +536,15 @@ async def async_register_services(hass: Any) -> None:
                     vol.Required(ATTR_CAMERA_ENTITY): cv.entity_id,
                 }
             ),
+            **response_kwargs,
+        )
+
+    if not hass.services.has_service(DOMAIN, SERVICE_CLEAR_ALL_CAMERA_DEFAULTS):
+        hass.services.async_register(
+            DOMAIN,
+            SERVICE_CLEAR_ALL_CAMERA_DEFAULTS,
+            handle_clear_all_camera_defaults,
+            schema=vol.Schema(target_schema),
             **response_kwargs,
         )
 
@@ -1001,6 +1014,28 @@ async def async_handle_clear_camera_defaults(hass: Any, call: Any) -> dict[str, 
     }
 
 
+async def async_handle_clear_all_camera_defaults(
+    hass: Any,
+    call: Any,
+) -> dict[str, Any]:
+    """Remove all per-camera defaults for a receiver."""
+
+    receiver = _resolve_receiver_from_target(hass, call)
+    entry = _entry_for_receiver(hass, receiver.entry_id)
+    options = dict(getattr(entry, "options", {}) or {})
+    camera_defaults = options.pop(CONF_CAMERA_DEFAULTS, {})
+    cleared_cameras = (
+        sorted(camera_defaults) if isinstance(camera_defaults, dict) else []
+    )
+    _update_entry_options(hass, entry, options)
+    return {
+        "accepted": True,
+        "receiver": receiver.name,
+        "cleared_camera_count": len(cleared_cameras),
+        "cleared_cameras": cleared_cameras,
+    }
+
+
 def _request_from_call(call: Any) -> ShowCameraRequest:
     data = dict(getattr(call, "data", {}))
     target = getattr(call, "target", {}) or {}
@@ -1108,14 +1143,29 @@ def _resolve_receiver(
     hass: Any,
     request: ShowCameraRequest | ShowNotificationRequest,
 ) -> ReceiverEntry:
+    return _resolve_receiver_from_device_ids(hass, request.device_ids)
+
+
+def _resolve_receiver_from_target(hass: Any, call: Any) -> ReceiverEntry:
+    data = dict(getattr(call, "data", {}))
+    target = getattr(call, "target", {}) or {}
+    _reject_unsupported_target_types(data, target)
+    device_ids = _tuple_value(target.get(ATTR_DEVICE_ID) or data.get(ATTR_DEVICE_ID))
+    return _resolve_receiver_from_device_ids(hass, device_ids)
+
+
+def _resolve_receiver_from_device_ids(
+    hass: Any,
+    device_ids: tuple[str, ...],
+) -> ReceiverEntry:
     entries = _configured_entries(hass)
-    if request.device_ids:
-        entries = _entries_for_devices(hass, entries, request.device_ids)
+    if device_ids:
+        entries = _entries_for_devices(hass, entries, device_ids)
 
     if not entries:
         _LOGGER.warning(
             "No receiver matched service target devices: %s",
-            request.device_ids,
+            device_ids,
         )
         raise ServiceValidationError("receiver_not_found")
 

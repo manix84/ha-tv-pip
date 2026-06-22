@@ -95,6 +95,7 @@ SERVICE_EXAMPLES: dict[str, set[str]] = {
         "restream_url",
     },
     "clear_camera_defaults": set(),
+    "clear_all_camera_defaults": set(),
 }
 
 NO_EXAMPLE_FIELDS: dict[str, set[str]] = {
@@ -129,6 +130,7 @@ NO_EXAMPLE_FIELDS: dict[str, set[str]] = {
     "clear_camera_defaults": {
         "camera_entity",
     },
+    "clear_all_camera_defaults": set(),
 }
 
 

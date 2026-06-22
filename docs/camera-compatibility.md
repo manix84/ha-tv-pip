@@ -92,6 +92,16 @@ data:
   camera_entity: camera.front_door
 ```
 
+If you want to reset all saved camera compatibility choices for a receiver, use:
+
+```yaml
+service: ha_tv_pip.clear_all_camera_defaults
+target:
+  device_id: living_room_tv
+```
+
+The response includes `cleared_camera_count` and `cleared_cameras`, and the receiver device's `Saved Camera Defaults` sensor should return to `0`.
+
 ## Manual go2rtc Helper Workflow 🧰
 
 Automatic go2rtc setup is not implemented yet, but the calibration response now exposes enough helper metadata to guide a manual setup:
@@ -134,6 +144,7 @@ When this happens, try these before changing automations everywhere:
 - Use the camera's H.264 substream or compatibility profile when available.
 - Use `restream_url` with a known TV-safe HLS or MJPEG URL from go2rtc or another local restreaming tool.
 - Save working settings as per-camera defaults.
+- Use `ha_tv_pip.clear_all_camera_defaults` if you want to wipe saved compatibility choices for a receiver and recalibrate from scratch.
 
 ## Future Provider Model 🚧
 

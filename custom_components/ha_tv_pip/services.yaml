@@ -777,3 +777,7 @@ clear_camera_defaults:
           domain: camera
       name: Camera entity
       description: Camera entity whose stored defaults should be removed.
+clear_all_camera_defaults:
+  target:
+    device:
+      integration: ha_tv_pip

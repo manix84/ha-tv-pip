@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.9 - Camera Defaults Cleanup 🧹
+
+- Added `ha_tv_pip.clear_all_camera_defaults` to remove every saved per-camera default from a receiver in one action 🧰
+- Returned cleared camera counts and entity IDs so users can confirm exactly what was removed 🔎
+- Updated Home Assistant service metadata, translations, tests, and camera compatibility docs for the cleanup flow 🧪
+
 ## 1.31.8 - Saved Camera Defaults Visibility 🩺
 
 - Added a Saved Camera Defaults sensor to each receiver device so saved per-camera defaults and restream source counts are visible in Home Assistant 🔎

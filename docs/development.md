@@ -1205,6 +1205,8 @@ Use the standard Home Assistant `target.device_id` selector for the HA TV PiP re
 
 Per-camera defaults are stored through `ha_tv_pip.set_camera_defaults` and removed through `ha_tv_pip.clear_camera_defaults`. They apply before receiver-level defaults. Use them for cameras that need a specific stream strategy, substream entity, snapshot entity, popup size, duration, or position without repeating those values in every automation.
 
+Use `ha_tv_pip.clear_all_camera_defaults` to remove every saved per-camera default for one receiver. The action resolves the receiver from `target.device_id`, leaves receiver-level defaults intact, and returns the cleared camera count plus entity IDs.
+
 `ha_tv_pip.test_camera_stream` checks HLS, MJPEG, and snapshot URL availability for a camera/receiver pair. The test result is stored in config entry diagnostics without active stream URLs, so users can share compatibility data without exposing camera endpoints.
 
 `ha_tv_pip.calibrate_camera` wraps the compatibility test in a friendlier workflow. It returns a `summary` object with compatibility, recommended stream type, recommendation reason, whether defaults were saved, and a next-step hint. The response also includes `action_plan`, which gives support tools and dashboards a stable primary action key, readable label, suggested HA TV PiP service, safe payload, optional fields to try, and short notes. Use `save: true` to store the recommended stream strategy plus any explicit calibration fields as per-camera defaults.
