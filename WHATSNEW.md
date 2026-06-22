@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.11 - Compatibility Guidance Surfacing 🩺
+
+- Added `restream_source_suggestion` to camera compatibility and calibration results when a TV-safe restream source is recommended 🧭
+- Moved detailed receiver, compatibility, command-result, and restreaming helper entities into Home Assistant's diagnostic entity category 🧰
+- Kept the main Status sensor as the primary receiver state while preserving troubleshooting data on the device page 🔎
+
 ## 1.31.10 - Restream Source Suggestions 🧭
 
 - Added `ha_tv_pip.suggest_restream_source` to produce manual go2rtc-style restream setup guidance for a selected camera and receiver 📹

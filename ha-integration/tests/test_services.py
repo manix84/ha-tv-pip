@@ -2577,6 +2577,20 @@ def test_camera_stream_test_recommends_restreaming_for_snapshot_only(
         "wait_for_transcoding_support",
     ]
     assert result["restreaming_provider"] == restreaming_provider_metadata()
+    assert result["restream_source_suggestion"]["candidate_stream_names"] == [
+        "front_door",
+        "front-door",
+    ]
+    assert result["restream_source_suggestion"]["save_action"] == {
+        "service": "save_restream_source",
+        "target": {ATTR_DEVICE_ID: "device-1"},
+        "data": {
+            ATTR_CAMERA_ENTITY: "camera.front_door",
+            ATTR_RESTREAM_PROVIDER: "go2rtc",
+            ATTR_RESTREAM_URL: "<tested go2rtc HLS or MJPEG URL for front_door>",
+            ATTR_SNAPSHOT_FALLBACK: True,
+        },
+    }
     assert result["recommended_defaults"] == {ATTR_STREAM_TYPE: "snapshot"}
     assert result["action_plan"] == {
         "primary_action": "use_snapshot_or_configure_live_source",
@@ -2709,6 +2723,10 @@ def test_calibrate_camera_flags_restreaming_when_no_paths_work(
     }
     assert result["restreaming_recommended"] is True
     assert result["restreaming_provider"] == restreaming_provider_metadata()
+    assert result["restream_source_suggestion"]["candidate_stream_names"] == [
+        "front_door",
+        "front-door",
+    ]
     assert "recommended_defaults" not in result
 
 

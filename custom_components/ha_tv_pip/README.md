@@ -122,6 +122,8 @@ Each paired receiver creates:
 - Connected binary sensor based on the configured local/remote status transport path.
 - Remote connected binary sensor for outbound remote receiver mode.
 
+Detailed receiver, compatibility, command-result, restreaming, connectivity, and saved-defaults entities are marked as Home Assistant diagnostic entities. The main Status sensor remains the primary receiver state.
+
 PiP controls:
 
 - Refresh Status button that checks the receiver status endpoint on demand.
@@ -294,6 +296,8 @@ Restreaming provider support is planned, not active. Until go2rtc, WebRTC, or tr
 The response includes `recommended_defaults`, which previews the exact per-camera defaults that would be stored. Inspect that payload first if you want to verify the recommendation before saving it.
 
 The response also includes `action_plan`. For compatible cameras, this points to saving recommended defaults or using `show_camera` after defaults have been saved. For snapshot-only cameras, it points to either saving snapshot alerts now or configuring a TV-safe live source with fields such as `stream_camera_entity`, `restream_url`, and `restream_provider`. For cameras where no path works, it points to checking camera access or trying another stream source. When restreaming is recommended, `action_plan.provider_help` includes manual go2rtc URL helper metadata that can be used today, plus planned WebRTC and transcoding provider notes for future support.
+
+When restreaming is recommended, the response also includes `restream_source_suggestion` with candidate stream names, go2rtc-style HLS/MJPEG URL patterns, provider help, and a safe follow-up `save_restream_source` payload.
 
 Set `save_recommendation: true` to save the recommended stream strategy as per-camera defaults. Any explicit test fields, such as width, height, duration, position, snapshot fallback, stream camera entity, or snapshot camera entity, are saved with it. If no compatible stream is found, no defaults are saved.
 

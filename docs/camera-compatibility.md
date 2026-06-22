@@ -94,6 +94,8 @@ data:
 
 The response includes candidate stream names, go2rtc-style HLS/MJPEG URL patterns, provider help, and a `save_action` payload to use after you have tested a working URL. This is advisory only; it does not create go2rtc streams or validate the candidate URLs automatically.
 
+When calibration or compatibility testing recommends restreaming, the action response includes the same guidance in `restream_source_suggestion` so you can move directly from a failed or snapshot-only live path to candidate manual restream values.
+
 Future automations can then stay small:
 
 ```yaml

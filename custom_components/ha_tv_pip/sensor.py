@@ -91,9 +91,12 @@ class ReceiverPollingSensor(ReceiverEntity, SensorEntity):
         key: str,
         name: str,
         hass: Any | None = None,
+        entity_category: str | None = None,
     ) -> None:
         super().__init__(entry, key=key, name=name)
         self.hass = hass
+        if entity_category is not None:
+            self._attr_entity_category = entity_category
         self._attr_native_value: str | None = self.unavailable_value
         self._attr_extra_state_attributes: dict[str, Any] = {}
 
@@ -146,6 +149,7 @@ class ReceiverDisplayModeSensor(ReceiverPollingSensor):
             key="display_mode",
             name="Active Display Mode",
             hass=hass,
+            entity_category=EntityCategory.DIAGNOSTIC,
         )
 
     def _native_value(self, status: ReceiverStatus) -> str:
@@ -158,7 +162,13 @@ class ReceiverStreamTypeSensor(ReceiverPollingSensor):
     unavailable_value = "unknown"
 
     def __init__(self, entry: Any, *, hass: Any | None = None) -> None:
-        super().__init__(entry, key="stream_type", name="Active Stream Type", hass=hass)
+        super().__init__(
+            entry,
+            key="stream_type",
+            name="Active Stream Type",
+            hass=hass,
+            entity_category=EntityCategory.DIAGNOSTIC,
+        )
 
     def _native_value(self, status: ReceiverStatus) -> str:
         return status.stream_type or "unknown"
@@ -168,7 +178,13 @@ class ReceiverLastErrorSensor(ReceiverPollingSensor):
     """Receiver last error sensor."""
 
     def __init__(self, entry: Any, *, hass: Any | None = None) -> None:
-        super().__init__(entry, key="last_error", name="Last Receiver Error", hass=hass)
+        super().__init__(
+            entry,
+            key="last_error",
+            name="Last Receiver Error",
+            hass=hass,
+            entity_category=EntityCategory.DIAGNOSTIC,
+        )
 
     def _native_value(self, status: ReceiverStatus) -> str:
         return status.error or "none"
@@ -183,6 +199,7 @@ class ReceiverVersionSensor(ReceiverPollingSensor):
             key="receiver_version",
             name="Receiver Version",
             hass=hass,
+            entity_category=EntityCategory.DIAGNOSTIC,
         )
 
     def _native_value(self, status: ReceiverStatus) -> str:
@@ -198,6 +215,7 @@ class ReceiverCompatibilitySensor(ReceiverPollingSensor):
             key="receiver_compatibility",
             name="Receiver Compatibility",
             hass=hass,
+            entity_category=EntityCategory.DIAGNOSTIC,
         )
 
     def _native_value(self, status: ReceiverStatus) -> str:
@@ -215,6 +233,7 @@ class ReceiverLastCameraResultSensor(ReceiverEntity, SensorEntity):
     def __init__(self, hass: Any, entry: Any) -> None:
         super().__init__(entry, key="last_camera_result", name="Last Camera Result")
         self.hass = hass
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_native_value: str = "none"
         self._attr_extra_state_attributes: dict[str, Any] = {}
 
@@ -242,6 +261,7 @@ class ReceiverLastCommandResultSensor(ReceiverEntity, SensorEntity):
     def __init__(self, hass: Any, entry: Any) -> None:
         super().__init__(entry, key="last_command_result", name="Last Command Result")
         self.hass = hass
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_native_value: str = "none"
         self._attr_extra_state_attributes: dict[str, Any] = {}
         self._attr_should_poll = False
@@ -326,6 +346,7 @@ class ReceiverLastCameraCompatibilitySensor(ReceiverEntity, SensorEntity):
             name="Last Camera Compatibility",
         )
         self.hass = hass
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_native_value: str = "none"
         self._attr_extra_state_attributes: dict[str, Any] = {}
 
@@ -351,6 +372,7 @@ class ReceiverRestreamingProviderStatusSensor(ReceiverEntity, SensorEntity):
             key="restreaming_provider_status",
             name="Restreaming Provider Status",
         )
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_native_value = RESTREAMING_PROVIDER_STATUS
         self._attr_extra_state_attributes = restreaming_provider_metadata()
 

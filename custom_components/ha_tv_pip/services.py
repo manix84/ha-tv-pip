@@ -916,6 +916,16 @@ async def _async_handle_camera_compatibility_workflow(
         prefer_external=prefer_external,
         capabilities=capabilities,
     )
+    if bool(result.get("restreaming_recommended", False)):
+        result = {
+            **result,
+            "restream_source_suggestion": _restream_source_suggestion(
+                hass,
+                receiver,
+                request.camera_entity,
+                request.restream_provider or "go2rtc",
+            ),
+        }
     if bool(getattr(call, "data", {}).get(save_field, False)):
         saved_defaults = _save_camera_recommendation_defaults(
             hass,
@@ -1861,10 +1871,9 @@ def _restream_source_suggestion(
 
 def _candidate_restream_names(camera_entity: str, camera_title: str) -> list[str]:
     object_id = camera_entity.split(".", 1)[-1]
-    candidates = [
-        _slug_like_name(object_id),
-        _slug_like_name(camera_title),
-    ]
+    candidates = [_slug_like_name(object_id)]
+    if camera_title != camera_entity:
+        candidates.append(_slug_like_name(camera_title))
     expanded: list[str] = []
     for candidate in candidates:
         if not candidate:

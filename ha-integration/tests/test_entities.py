@@ -194,6 +194,19 @@ def test_sensor_setup_adds_status_sensor() -> None:
         "restreaming_provider_status",
         "saved_camera_defaults",
     ]
+    assert not hasattr(added[0], "_attr_entity_category")
+    assert [entity._attr_entity_category for entity in added[1:]] == [
+        "diagnostic",
+        "diagnostic",
+        "diagnostic",
+        "diagnostic",
+        "diagnostic",
+        "diagnostic",
+        "diagnostic",
+        "diagnostic",
+        "diagnostic",
+        "diagnostic",
+    ]
     assert added[-1].update_before_add is True
 
 
@@ -211,6 +224,11 @@ def test_binary_sensor_setup_adds_connected_sensor() -> None:
         "connected",
         "remote_connected",
         "camera_restreaming_recommended",
+    ]
+    assert [entity._attr_entity_category for entity in added] == [
+        "diagnostic",
+        "diagnostic",
+        "diagnostic",
     ]
 
 

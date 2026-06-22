@@ -1215,6 +1215,8 @@ Calibration and compatibility responses also include `restreaming_recommended`, 
 
 Use `ha_tv_pip.suggest_restream_source` to generate advisory manual restream setup values for a selected camera and receiver. It returns candidate stream names, go2rtc-style HLS/MJPEG URL patterns, provider help, and a safe follow-up `save_restream_source` payload. It does not create provider streams or validate candidate URLs.
 
+Camera compatibility and calibration responses include `restream_source_suggestion` automatically when `restreaming_recommended` is true. This keeps the manual restream workflow discoverable from the first failing or snapshot-only test result.
+
 See [camera compatibility](camera-compatibility.md) for the current TV-safe stream workflow, calibration loop, snapshot fallback guidance, and planned restreaming provider model.
 
 See [troubleshooting](troubleshooting.md) for the public beta support path, including discovery, pairing, launcher recovery, remote receiver checks, stream compatibility checks, and the diagnostics expected in bug reports.
@@ -1232,6 +1234,8 @@ Set `save_recommendation: true` on `ha_tv_pip.test_camera_stream` to write the r
 The latest compatibility test is also exposed through the receiver's `Last Camera Compatibility` sensor. The sensor state is the recommended stream type and the attributes include the tested camera, recommendation reason, action plan, stream availability results, source classification, and timestamp.
 
 Saved per-camera defaults are exposed through the receiver's `Saved Camera Defaults` sensor. The sensor state is the saved camera count, and attributes list saved cameras plus restream-enabled cameras without exposing raw restream URLs.
+
+Only the receiver Status sensor is intended as the primary day-to-day state. Detailed receiver, compatibility, command-result, connectivity, restreaming, and saved-defaults entities are diagnostic entities so Home Assistant can keep the device page focused while retaining support data.
 
 The receiver also exposes a `Camera Restreaming Recommended` binary sensor. It turns on when the latest compatibility result includes `restreaming_recommended: true`, with attributes for the camera entity, recommended stream type, recommendation reason, restreaming reason, next step, suggested options, current workaround paths, planned provider families, documentation URL, and timestamp.
 

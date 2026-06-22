@@ -21,14 +21,25 @@ if TYPE_CHECKING:
     class BinarySensorEntity:
         """Fallback base for unit tests outside Home Assistant."""
 
+    class EntityCategory:
+        """Fallback entity category for unit tests outside Home Assistant."""
+
+        DIAGNOSTIC = "diagnostic"
+
 
 else:
     try:
         from homeassistant.components.binary_sensor import BinarySensorEntity
+        from homeassistant.const import EntityCategory
     except ModuleNotFoundError:
 
         class BinarySensorEntity:
             """Fallback base for unit tests outside Home Assistant."""
+
+        class EntityCategory:
+            """Fallback entity category for unit tests outside Home Assistant."""
+
+            DIAGNOSTIC = "diagnostic"
 
 
 async def async_setup_entry(hass: Any, entry: Any, async_add_entities: Any) -> None:
@@ -56,6 +67,7 @@ class ReceiverPollingBinarySensor(ReceiverEntity, BinarySensorEntity):
     ) -> None:
         super().__init__(entry, key=key, name=name)
         self.hass = hass
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_is_on = False
         self._attr_extra_state_attributes: dict[str, Any] = {}
 
@@ -158,6 +170,7 @@ class ReceiverCameraRestreamingRecommendedBinarySensor(
             name="Camera Restreaming Recommended",
         )
         self.hass = hass
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_is_on = False
         self._attr_extra_state_attributes: dict[str, Any] = {}
 
