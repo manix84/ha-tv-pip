@@ -1138,6 +1138,7 @@ async def async_handle_test_restream_source(
     provider = _optional_text(data.get(ATTR_RESTREAM_PROVIDER)) or "go2rtc"
     snapshot_fallback = bool(data.get(ATTR_SNAPSHOT_FALLBACK, True))
     stream_type = _restream_url_stream_type_from_url(restream_url)
+    url_shape = _restream_url_shape(restream_url, stream_type)
     capabilities = await _async_receiver_capabilities(receiver)
     receiver_supports_stream_type = _supports_stream(capabilities, stream_type)
     reachability = {"checked": False}
@@ -1148,7 +1149,11 @@ async def async_handle_test_restream_source(
         )
 
     url_reachable = reachability.get("reachable")
-    save_recommended = receiver_supports_stream_type and url_reachable is not False
+    save_recommended = (
+        url_shape["valid"]
+        and receiver_supports_stream_type
+        and url_reachable is not False
+    )
     result: dict[str, Any] = {
         "accepted": True,
         "camera_entity": camera_entity,
@@ -1158,10 +1163,12 @@ async def async_handle_test_restream_source(
         "restream_provider": provider,
         "restream_url": restream_url,
         "stream_type": stream_type,
+        "url_shape": url_shape,
         "receiver_supports_stream_type": receiver_supports_stream_type,
         "reachability": reachability,
         "save_recommended": save_recommended,
         "next_step": _restream_test_next_step(
+            url_shape,
             receiver_supports_stream_type,
             reachability,
         ),
@@ -2706,14 +2713,37 @@ def _restream_url_stream_type_from_url(restream_url: str) -> str:
 
 
 def _restream_test_next_step(
+    url_shape: dict[str, Any],
     receiver_supports_stream_type: bool,
     reachability: dict[str, Any],
 ) -> str:
+    if not bool(url_shape.get("valid", False)):
+        return "choose_playable_stream_endpoint"
     if not receiver_supports_stream_type:
         return "choose_supported_hls_or_mjpeg_url"
     if reachability.get("reachable") is False:
         return "fix_url_or_network_access"
     return "save_restream_source"
+
+
+def _restream_url_shape(restream_url: str, stream_type: str) -> dict[str, Any]:
+    parsed = urlparse(restream_url)
+    path = parsed.path.strip("/")
+    if not path:
+        return {
+            "valid": False,
+            "reason": "provider_base_url_not_stream_endpoint",
+        }
+    if stream_type == STREAM_TYPE_MJPEG:
+        return {"valid": True, "reason": "mjpeg_stream_endpoint"}
+    if parsed.path.lower().endswith(".m3u8"):
+        return {"valid": True, "reason": "hls_playlist_endpoint"}
+    if "stream" in parsed.path.lower() and parsed.query:
+        return {"valid": True, "reason": "stream_endpoint_with_query"}
+    return {
+        "valid": False,
+        "reason": "url_does_not_look_like_hls_or_mjpeg_stream",
+    }
 
 
 async def _async_check_restream_url_reachability(

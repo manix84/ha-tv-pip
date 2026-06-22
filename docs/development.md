@@ -1215,7 +1215,7 @@ Calibration and compatibility responses also include `restreaming_recommended`, 
 
 Use `ha_tv_pip.suggest_restream_source` to generate advisory manual restream setup values for a selected camera and receiver. It returns candidate stream names, go2rtc-style HLS/MJPEG URL patterns, provider help, the effective `restream_base_url`, and a safe follow-up `save_restream_source` payload. It does not create provider streams.
 
-Use `ha_tv_pip.test_restream_source` to validate a candidate manual restream URL before saving it. It infers HLS or MJPEG from the URL, checks receiver stream capability metadata, optionally checks reachability from Home Assistant, and returns a `save_action` payload when the URL should be saved as a per-camera default.
+Use `ha_tv_pip.test_restream_source` to validate a candidate manual restream URL before saving it. It infers HLS or MJPEG from the URL, checks that the URL looks like a playable stream endpoint rather than a provider base URL, checks receiver stream capability metadata, optionally checks reachability from Home Assistant, and returns a `save_action` payload when the URL should be saved as a per-camera default.
 
 Camera compatibility and calibration responses include `restream_source_suggestion` automatically when `restreaming_recommended` is true. This keeps the manual restream workflow discoverable from the first failing or snapshot-only test result.
 

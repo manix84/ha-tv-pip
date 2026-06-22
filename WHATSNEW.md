@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.14 - Restream URL Shape Validation 🧭
+
+- Made `ha_tv_pip.test_restream_source` distinguish playable stream endpoints from provider base URLs before recommending a save action 🧪
+- Added `url_shape` details to restream validation responses so users can see why a candidate URL should or should not be saved 🔎
+- Updated tests and camera compatibility docs for the base-URL validation path 🧰
+
 ## 1.31.13 - Restream Source Validation 🧪
 
 - Added `ha_tv_pip.test_restream_source` to validate a candidate manual HLS/MJPEG restream URL before saving it 🧰

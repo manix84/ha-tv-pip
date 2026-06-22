@@ -2157,6 +2157,7 @@ def test_test_restream_source_returns_save_action_for_supported_hls(
         "restream_provider": "go2rtc",
         "restream_url": "http://go2rtc.local:1984/api/stream.m3u8?src=front_door",
         "stream_type": "hls",
+        "url_shape": {"valid": True, "reason": "hls_playlist_endpoint"},
         "receiver_supports_stream_type": True,
         "reachability": {"checked": False},
         "save_recommended": True,
@@ -2224,6 +2225,55 @@ def test_test_restream_source_warns_when_receiver_lacks_stream_support(
     assert result["receiver_supports_stream_type"] is False
     assert result["save_recommended"] is False
     assert result["next_step"] == "choose_supported_hls_or_mjpeg_url"
+    assert "save_action" not in result
+
+
+def test_test_restream_source_does_not_recommend_provider_base_url(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from custom_components.ha_tv_pip import services
+
+    monkeypatch.setattr(
+        services,
+        "_async_receiver_capabilities",
+        lambda receiver: asyncio.sleep(0, result=_capabilities()),
+    )
+    entry = FakeEntry(
+        entry_id="entry-1",
+        data={
+            CONF_DEVICE_ID: "device-1",
+            CONF_NAME: "Nursery TV",
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "token",
+        },
+    )
+    hass = FakeHass(
+        entries=[entry],
+        states={"camera.front_door": FakeState({"friendly_name": "Front Door"})},
+    )
+
+    result = asyncio.run(
+        services.async_handle_test_restream_source(
+            hass,
+            FakeCall(
+                data={
+                    ATTR_CAMERA_ENTITY: "camera.front_door",
+                    ATTR_RESTREAM_URL: "http://go2rtc.local:1984",
+                },
+                target={ATTR_DEVICE_ID: "device-1"},
+            ),
+        )
+    )
+
+    assert result["stream_type"] == "hls"
+    assert result["url_shape"] == {
+        "valid": False,
+        "reason": "provider_base_url_not_stream_endpoint",
+    }
+    assert result["receiver_supports_stream_type"] is True
+    assert result["save_recommended"] is False
+    assert result["next_step"] == "choose_playable_stream_endpoint"
     assert "save_action" not in result
 
 

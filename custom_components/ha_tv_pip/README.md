@@ -403,7 +403,7 @@ data:
   check_reachability: false
 ```
 
-The action returns `stream_type`, `receiver_supports_stream_type`, `reachability`, `save_recommended`, `next_step`, and a `save_action` payload when the URL should be saved. Keep `check_reachability: false` if the candidate URL is only reachable from the TV network or you only want to check URL shape and receiver capability support.
+The action returns `stream_type`, `url_shape`, `receiver_supports_stream_type`, `reachability`, `save_recommended`, `next_step`, and a `save_action` payload when the URL should be saved. Provider base URLs such as `http://go2rtc.local:1984` are accepted for validation but are not recommended for saving; use a playable endpoint such as `/api/stream.m3u8?src=<stream_name>` or `/api/stream.mjpeg?src=<stream_name>`. Keep `check_reachability: false` if the candidate URL is only reachable from the TV network or you only want to check URL shape and receiver capability support.
 
 This is advisory only. It does not create go2rtc streams or validate the returned URLs automatically.
 

@@ -108,7 +108,7 @@ data:
   check_reachability: false
 ```
 
-This action infers HLS or MJPEG from the URL, checks the selected receiver's capability metadata, optionally checks reachability from Home Assistant, and returns a `save_action` payload when the candidate looks worth saving. Keep `check_reachability: false` for candidate URLs that may only be reachable from the TV network.
+This action infers HLS or MJPEG from the URL, checks that the URL looks like a playable stream endpoint, checks the selected receiver's capability metadata, optionally checks reachability from Home Assistant, and returns a `save_action` payload when the candidate looks worth saving. Provider base URLs such as `http://go2rtc.local:1984` are accepted for validation but return `save_recommended: false`; use a playable endpoint such as `/api/stream.m3u8?src=<stream_name>` or `/api/stream.mjpeg?src=<stream_name>`. Keep `check_reachability: false` for candidate URLs that may only be reachable from the TV network.
 
 When calibration or compatibility testing recommends restreaming, the action response includes the same guidance in `restream_source_suggestion` so you can move directly from a failed or snapshot-only live path to candidate manual restream values.
 
