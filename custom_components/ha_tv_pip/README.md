@@ -117,6 +117,7 @@ Each paired receiver creates:
 - Last Camera Compatibility sensor with the latest stream test recommendation.
 - Last Camera Result sensor with the latest redacted camera/snapshot command outcome.
 - Last Command Result sensor with the latest receiver command status, command type, transport, stream choice, and failure reason.
+- Saved Camera Defaults sensor with the number of cameras that have saved defaults, plus non-sensitive attributes showing which cameras use saved restream sources.
 - Restreaming Provider Status sensor for planned, configured, and active provider visibility.
 - Connected binary sensor based on the configured local/remote status transport path.
 - Remote connected binary sensor for outbound remote receiver mode.
@@ -195,7 +196,7 @@ Use `0` for duration, width, or height to keep the built-in service defaults. Ex
 
 Per-camera defaults can be stored with `ha_tv_pip.set_camera_defaults`. They apply before receiver-level defaults, which is useful when one camera needs `mjpeg_first`, a substream entity, a different snapshot entity, or a different popup size. Use `ha_tv_pip.clear_camera_defaults` to remove stored defaults for a camera.
 
-Stored per-camera defaults are included in config entry diagnostics so setup issues can be reviewed without exposing stream URLs.
+Stored per-camera defaults are visible through the receiver device's Saved Camera Defaults sensor and included in config entry diagnostics so setup issues can be reviewed without exposing stream URLs.
 
 ## Camera Defaults Workflow ⚙️
 
@@ -260,7 +261,7 @@ Calibration tests HLS, MJPEG, and snapshot availability, returns a summary with 
 
 If live HLS/MJPEG paths are unavailable, the response includes `restreaming_recommended: true`, `restreaming_reason`, `restreaming_next_step`, and `restreaming_options`. This means the current camera entity is likely snapshot-only for HA TV PiP, or needs a TV-safe source such as another camera entity, a lower-resolution profile, go2rtc, WebRTC, or future transcoding support.
 
-If you already expose a TV-safe stream through go2rtc or another local restreaming tool, set `restream_url` and `restream_provider` with `ha_tv_pip.save_restream_source`. The receiver will use that URL for live video while still using `camera_entity` for titles and snapshot previews. Saved restream URLs are redacted from diagnostics.
+If you already expose a TV-safe stream through go2rtc or another local restreaming tool, set `restream_url` and `restream_provider` with `ha_tv_pip.save_restream_source`. The receiver will use that URL for live video while still using `camera_entity` for titles and snapshot previews. Saved restream URLs are redacted from diagnostics and are not exposed by the Saved Camera Defaults sensor.
 
 For the full setup workflow, see the project camera compatibility guide: <https://github.com/manix84/ha-tv-pip/blob/main/docs/camera-compatibility.md>.
 
@@ -297,6 +298,8 @@ Set `save_recommendation: true` to save the recommended stream strategy as per-c
 After a compatibility test runs, the receiver device's `Last Camera Compatibility` sensor shows the latest recommended stream type. Its attributes include the tested camera, recommendation reason, action plan, stream availability results, source classification, and timestamp.
 
 The receiver device also exposes a `Camera Restreaming Recommended` binary sensor. It turns on when the latest compatibility result says live video likely needs another TV-safe source, and its attributes include the camera entity, recommended stream type, recommendation reason, restreaming reason, next step, suggested options, current workaround paths, planned provider families, documentation URL, and timestamp.
+
+The receiver device's `Saved Camera Defaults` sensor shows how many cameras have saved defaults. Its attributes list saved camera entities and restream-enabled cameras without exposing raw restream URLs, so you can confirm a camera is now using a saved TV-safe source from the device page.
 
 After a real camera or snapshot action runs, the receiver device's `Last Camera Result` sensor shows whether the latest camera command was accepted or failed. Its attributes include the requested stream strategy, final stream type, source classification, transport, fallback usage, popup size, and failure reason where available. URLs are not stored.
 
@@ -366,7 +369,7 @@ data:
   height: 405
 ```
 
-The helper saves the URL as the camera's live source, defaults the provider label to `go2rtc`, keeps snapshot fallback enabled unless disabled, and infers `hls` or `mjpeg` from common URL shapes when `stream_type` is omitted. After saving, normal automations can call `ha_tv_pip.show_camera` with only `camera_entity`.
+The helper saves the URL as the camera's live source, defaults the provider label to `go2rtc`, keeps snapshot fallback enabled unless disabled, and infers `hls` or `mjpeg` from common URL shapes when `stream_type` is omitted. After saving, normal automations can call `ha_tv_pip.show_camera` with only `camera_entity`. Check the receiver device's Saved Camera Defaults sensor to confirm the camera has a saved restream source without exposing the URL.
 
 ## Snapshot Service 🖼️
 

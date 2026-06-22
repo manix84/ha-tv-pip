@@ -856,6 +856,7 @@ Completed:
 - ✅ Camera calibration and compatibility action plans so users can see the recommended next service call, safe data payload, and restreaming/source fields to try.
 - ✅ Manual go2rtc helper workflow metadata in restreaming provider diagnostics and calibration action plans, including URL patterns and fields to save a working TV-safe restream URL.
 - ✅ `ha_tv_pip.save_restream_source` helper action for saving a tested HLS/MJPEG restream URL as per-camera defaults without using the lower-level defaults service.
+- ✅ Saved Camera Defaults sensor on receiver devices so saved per-camera defaults and restream source state can be confirmed without opening diagnostics.
 
 Still future:
 

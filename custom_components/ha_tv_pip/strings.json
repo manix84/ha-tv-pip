@@ -121,6 +121,9 @@
       "restreaming_provider_status": {
         "name": "Restreaming Provider Status"
       },
+      "saved_camera_defaults": {
+        "name": "Saved Camera Defaults"
+      },
       "receiver_version": {
         "name": "Receiver Version"
       },

@@ -158,7 +158,15 @@ def _status() -> ReceiverStatus:
 def test_sensor_setup_adds_status_sensor() -> None:
     added: list[Any] = []
 
-    asyncio.run(sensor.async_setup_entry(None, _entry(), added.extend))
+    def add_entities(
+        entities: list[Any],
+        update_before_add: bool = False,
+    ) -> None:
+        added.extend(entities)
+        for entity in entities:
+            entity.update_before_add = update_before_add
+
+    asyncio.run(sensor.async_setup_entry(None, _entry(), add_entities))
 
     assert [entity._attr_unique_id for entity in added] == [
         "device-1_status",
@@ -171,6 +179,7 @@ def test_sensor_setup_adds_status_sensor() -> None:
         "device-1_last_camera_compatibility",
         "device-1_last_camera_result",
         "device-1_restreaming_provider_status",
+        "device-1_saved_camera_defaults",
     ]
     assert [entity._attr_translation_key for entity in added] == [
         "status",
@@ -183,7 +192,9 @@ def test_sensor_setup_adds_status_sensor() -> None:
         "last_camera_compatibility",
         "last_camera_result",
         "restreaming_provider_status",
+        "saved_camera_defaults",
     ]
+    assert added[-1].update_before_add is True
 
 
 def test_binary_sensor_setup_adds_connected_sensor() -> None:
@@ -351,6 +362,74 @@ def test_restreaming_provider_status_sensor_reports_planned_state() -> None:
 
     assert entity._attr_native_value == "planned"
     assert entity._attr_extra_state_attributes == restreaming_provider_metadata()
+
+
+def test_saved_camera_defaults_sensor_reports_empty_defaults() -> None:
+    entity = sensor.ReceiverSavedCameraDefaultsSensor(_entry())
+
+    assert entity._attr_native_value == 0
+    assert entity._attr_should_poll is False
+    assert entity._attr_available is True
+
+    asyncio.run(entity.async_update())
+
+    assert entity._attr_native_value == 0
+    assert entity._attr_entity_category == "diagnostic"
+    assert entity._attr_extra_state_attributes == {
+        "saved_camera_count": 0,
+        "saved_cameras": [],
+        "restream_camera_count": 0,
+        "restream_cameras": [],
+    }
+
+
+def test_saved_camera_defaults_sensor_summarizes_restream_defaults() -> None:
+    entry = _entry()
+    entry.options = {
+        CONF_CAMERA_DEFAULTS: {
+            "camera.front_door": {
+                "duration_seconds": 20,
+                "height": 405,
+                "position": "top_right",
+                "restream_provider": "go2rtc",
+                "restream_url": "http://homeassistant.local:1984/api/stream.m3u8",
+                "snapshot_camera_entity": "camera.front_door_sub",
+                "snapshot_fallback": True,
+                "stream_camera_entity": "camera.front_door_sub",
+                "stream_type": "hls",
+                "width": 720,
+            },
+            "camera.garden": {
+                "snapshot_fallback": True,
+                "stream_type": "snapshot",
+            },
+        }
+    }
+    entity = sensor.ReceiverSavedCameraDefaultsSensor(entry)
+
+    asyncio.run(entity.async_update())
+
+    assert entity._attr_native_value == 2
+    assert entity._attr_extra_state_attributes == {
+        "saved_camera_count": 2,
+        "saved_cameras": ["camera.front_door", "camera.garden"],
+        "restream_camera_count": 1,
+        "restream_cameras": [
+            {
+                "camera_entity": "camera.front_door",
+                "duration_seconds": 20,
+                "has_restream_url": True,
+                "height": 405,
+                "position": "top_right",
+                "restream_provider": "go2rtc",
+                "snapshot_camera_entity": "camera.front_door_sub",
+                "snapshot_fallback": True,
+                "stream_camera_entity": "camera.front_door_sub",
+                "stream_type": "hls",
+                "width": 720,
+            }
+        ],
+    }
 
 
 def test_status_sensor_prefers_remote_transport_when_enabled(

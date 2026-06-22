@@ -6,11 +6,21 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from .client import ReceiverClientError, ReceiverStatus, async_get_receiver_status
-from .const import DOMAIN
+from .const import CONF_CAMERA_DEFAULTS, DOMAIN
 from .entity import ReceiverEntity
 from .remote import remote_registry
 from .restreaming import RESTREAMING_PROVIDER_STATUS, restreaming_provider_metadata
 from .services import (
+    ATTR_DURATION_SECONDS,
+    ATTR_HEIGHT,
+    ATTR_POSITION,
+    ATTR_RESTREAM_PROVIDER,
+    ATTR_RESTREAM_URL,
+    ATTR_SNAPSHOT_CAMERA_ENTITY,
+    ATTR_SNAPSHOT_FALLBACK,
+    ATTR_STREAM_CAMERA_ENTITY,
+    ATTR_STREAM_TYPE,
+    ATTR_WIDTH,
     CAMERA_COMPATIBILITY_KEY,
     CAMERA_LAST_RESULT_KEY,
     LAST_COMMAND_RESULT_KEY,
@@ -26,14 +36,27 @@ if TYPE_CHECKING:
     class SensorEntity:
         """Fallback base for unit tests outside Home Assistant."""
 
+    class EntityCategory:
+        """Fallback entity category for unit tests outside Home Assistant."""
+
+        CONFIG = "config"
+        DIAGNOSTIC = "diagnostic"
+
 
 else:
     try:
         from homeassistant.components.sensor import SensorEntity
+        from homeassistant.const import EntityCategory
     except ModuleNotFoundError:
 
         class SensorEntity:
             """Fallback base for unit tests outside Home Assistant."""
+
+        class EntityCategory:
+            """Fallback entity category for unit tests outside Home Assistant."""
+
+            CONFIG = "config"
+            DIAGNOSTIC = "diagnostic"
 
 
 async def async_setup_entry(hass: Any, entry: Any, async_add_entities: Any) -> None:
@@ -53,6 +76,7 @@ async def async_setup_entry(hass: Any, entry: Any, async_add_entities: Any) -> N
             ReceiverRestreamingProviderStatusSensor(entry, hass=hass),
         ]
     )
+    async_add_entities([ReceiverSavedCameraDefaultsSensor(entry)], True)
 
 
 class ReceiverPollingSensor(ReceiverEntity, SensorEntity):
@@ -331,6 +355,42 @@ class ReceiverRestreamingProviderStatusSensor(ReceiverEntity, SensorEntity):
         self._attr_extra_state_attributes = restreaming_provider_metadata()
 
 
+class ReceiverSavedCameraDefaultsSensor(ReceiverEntity, SensorEntity):
+    """Summary of per-camera defaults saved for this receiver."""
+
+    def __init__(self, entry: Any) -> None:
+        super().__init__(
+            entry,
+            key="saved_camera_defaults",
+            name="Saved Camera Defaults",
+        )
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
+        self._attr_should_poll = False
+        self._attr_available = True
+        self._attr_native_value: int = 0
+        self._attr_extra_state_attributes: dict[str, Any] = {}
+        self._refresh_from_options()
+
+    async def async_added_to_hass(self) -> None:
+        """Publish the saved defaults summary when Home Assistant adds the entity."""
+
+        self._refresh_from_options()
+
+    async def async_update(self) -> None:
+        """Refresh the saved per-camera defaults summary."""
+
+        self._refresh_from_options()
+
+    def _refresh_from_options(self) -> None:
+        """Refresh state from config entry options without polling the receiver."""
+
+        camera_defaults = _saved_camera_defaults(self.entry)
+        self._attr_native_value = len(camera_defaults)
+        self._attr_extra_state_attributes = _saved_camera_defaults_attributes(
+            camera_defaults
+        )
+
+
 async def _async_status_for_entry(
     hass: Any | None,
     entry: Any,
@@ -375,6 +435,69 @@ def _latest_camera_compatibility_result(
         if str(result.get("tested_at", "")) > str(latest.get("tested_at", "")):
             latest = result
     return latest
+
+
+def _saved_camera_defaults(entry: Any) -> dict[str, dict[str, Any]]:
+    options = dict(getattr(entry, "options", {}) or {})
+    raw_defaults = options.get(CONF_CAMERA_DEFAULTS)
+    if not isinstance(raw_defaults, dict):
+        return {}
+
+    defaults: dict[str, dict[str, Any]] = {}
+    for camera_entity, camera_defaults in raw_defaults.items():
+        if not isinstance(camera_entity, str) or not isinstance(
+            camera_defaults,
+            dict,
+        ):
+            continue
+        defaults[camera_entity] = dict(camera_defaults)
+    return defaults
+
+
+def _saved_camera_defaults_attributes(
+    camera_defaults: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    cameras = sorted(camera_defaults)
+    restream_cameras = [
+        _camera_defaults_summary(camera_entity, defaults)
+        for camera_entity, defaults in sorted(camera_defaults.items())
+        if defaults.get(ATTR_RESTREAM_URL)
+    ]
+    return {
+        "saved_camera_count": len(cameras),
+        "saved_cameras": cameras,
+        "restream_camera_count": len(restream_cameras),
+        "restream_cameras": restream_cameras,
+    }
+
+
+def _camera_defaults_summary(
+    camera_entity: str,
+    defaults: dict[str, Any],
+) -> dict[str, Any]:
+    summary: dict[str, Any] = {
+        "camera_entity": camera_entity,
+        "has_restream_url": bool(defaults.get(ATTR_RESTREAM_URL)),
+    }
+    _copy_present_default(summary, defaults, ATTR_RESTREAM_PROVIDER)
+    _copy_present_default(summary, defaults, ATTR_STREAM_TYPE)
+    _copy_present_default(summary, defaults, ATTR_STREAM_CAMERA_ENTITY)
+    _copy_present_default(summary, defaults, ATTR_SNAPSHOT_CAMERA_ENTITY)
+    _copy_present_default(summary, defaults, ATTR_SNAPSHOT_FALLBACK)
+    _copy_present_default(summary, defaults, ATTR_DURATION_SECONDS)
+    _copy_present_default(summary, defaults, ATTR_POSITION)
+    _copy_present_default(summary, defaults, ATTR_WIDTH)
+    _copy_present_default(summary, defaults, ATTR_HEIGHT)
+    return summary
+
+
+def _copy_present_default(
+    summary: dict[str, Any],
+    defaults: dict[str, Any],
+    key: str,
+) -> None:
+    if key in defaults:
+        summary[key] = defaults[key]
 
 
 def _status_attributes(status: ReceiverStatus) -> dict[str, Any]:

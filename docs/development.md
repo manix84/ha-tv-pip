@@ -1227,6 +1227,8 @@ Set `save_recommendation: true` on `ha_tv_pip.test_camera_stream` to write the r
 
 The latest compatibility test is also exposed through the receiver's `Last Camera Compatibility` sensor. The sensor state is the recommended stream type and the attributes include the tested camera, recommendation reason, action plan, stream availability results, source classification, and timestamp.
 
+Saved per-camera defaults are exposed through the receiver's `Saved Camera Defaults` sensor. The sensor state is the saved camera count, and attributes list saved cameras plus restream-enabled cameras without exposing raw restream URLs.
+
 The receiver also exposes a `Camera Restreaming Recommended` binary sensor. It turns on when the latest compatibility result includes `restreaming_recommended: true`, with attributes for the camera entity, recommended stream type, recommendation reason, restreaming reason, next step, suggested options, current workaround paths, planned provider families, documentation URL, and timestamp.
 
 The `Restreaming Provider Status` sensor and diagnostics expose the same provider metadata. Automatic provider support is currently `planned`; current recommended paths are `use_stream_camera_entity`, `use_mjpeg_first`, `use_snapshot_fallback`, `use_camera_substream`, `use_restream_url`, and `save_per_camera_defaults`.

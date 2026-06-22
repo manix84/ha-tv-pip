@@ -80,7 +80,7 @@ data:
   snapshot_fallback: true
 ```
 
-The helper defaults the provider to `go2rtc`, keeps snapshot fallback enabled, and infers `hls` or `mjpeg` from common URL shapes when `stream_type` is omitted. The receiver still uses `camera_entity` for titles and snapshot previews, but live video comes from the saved restream URL. Saved restream URLs are redacted from diagnostics.
+The helper defaults the provider to `go2rtc`, keeps snapshot fallback enabled, and infers `hls` or `mjpeg` from common URL shapes when `stream_type` is omitted. The receiver still uses `camera_entity` for titles and snapshot previews, but live video comes from the saved restream URL. Saved restream URLs are redacted from diagnostics and are not exposed by the Saved Camera Defaults sensor.
 
 Future automations can then stay small:
 
@@ -107,6 +107,7 @@ The current manual go2rtc path is:
 2. Test the go2rtc HLS or MJPEG URL from a device on the same network as the TV.
 3. Save that URL with `ha_tv_pip.save_restream_source`.
 4. Keep `snapshot_fallback: true` so the receiver can show an image while live video loads or if live video fails.
+5. Check the receiver device's `Saved Camera Defaults` sensor to confirm the camera has a saved restream source.
 
 Example URL patterns:
 
@@ -158,6 +159,7 @@ These future providers should be optional. The local-first HLS, MJPEG, and snaps
 ## Troubleshooting Notes 🩺
 
 - Check the receiver device's `Last Camera Compatibility` sensor after running a compatibility test.
+- Check the receiver device's `Saved Camera Defaults` sensor after saving a recommendation or restream source. Its attributes list saved cameras and restream-enabled cameras without exposing raw restream URLs.
 - Check the `Camera Restreaming Recommended` binary sensor when live video falls back to snapshots. Its attributes include current workaround paths, planned provider families, and a documentation URL.
 - Check the `Last Command Result` sensor after any popup command for command type, accepted/failed status, transport, final stream type, failure stage, and failure reason.
 - Check the `Last Camera Result` sensor after a real camera or snapshot command. `stream_source` shows whether the command used the main camera entity, alternate stream entity, snapshot entity, or manual restream URL.

@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.8 - Saved Camera Defaults Visibility 🩺
+
+- Added a Saved Camera Defaults sensor to each receiver device so saved per-camera defaults and restream source counts are visible in Home Assistant 🔎
+- Exposed non-sensitive saved camera and restream summary attributes while keeping raw restream URLs hidden from entity attributes 🛡️
+- Updated HA tests and docs for the new saved-defaults visibility path 🧪
+
 ## 1.31.7 - Restream Source Helper 🧵
 
 - Added `ha_tv_pip.save_restream_source` to save a tested HLS or MJPEG restream URL as per-camera defaults 🧰
