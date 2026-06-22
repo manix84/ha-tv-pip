@@ -105,6 +105,8 @@ ATTR_TITLE_SIZE = "title_size"
 ATTR_WIDTH = "width"
 CAMERA_COMPATIBILITY_KEY = "camera_compatibility"
 CAMERA_LAST_RESULT_KEY = "camera_last_result"
+CAMERA_DEFAULTS_LISTENERS_KEY = "camera_defaults_listeners"
+CAMERA_DEFAULTS_SIGNAL = f"{DOMAIN}_camera_defaults"
 LAST_COMMAND_RESULT_KEY = "last_command_result"
 LAST_COMMAND_RESULT_LISTENERS_KEY = "last_command_result_listeners"
 LAST_COMMAND_RESULT_SIGNAL = f"{DOMAIN}_last_command_result"
@@ -1061,6 +1063,7 @@ async def async_handle_clear_camera_defaults(hass: Any, call: Any) -> dict[str, 
     else:
         options.pop(CONF_CAMERA_DEFAULTS, None)
     _update_entry_options(hass, entry, options)
+    _send_camera_defaults_signal(hass, receiver.entry_id)
     return {
         "accepted": True,
         "camera_entity": request.camera_entity,
@@ -1083,6 +1086,7 @@ async def async_handle_clear_all_camera_defaults(
         sorted(camera_defaults) if isinstance(camera_defaults, dict) else []
     )
     _update_entry_options(hass, entry, options)
+    _send_camera_defaults_signal(hass, receiver.entry_id)
     return {
         "accepted": True,
         "receiver": receiver.name,
@@ -1716,6 +1720,7 @@ def _save_camera_defaults(
     camera_defaults[camera_entity] = defaults
     options[CONF_CAMERA_DEFAULTS] = camera_defaults
     _update_entry_options(hass, entry, options)
+    _send_camera_defaults_signal(hass, receiver.entry_id)
 
 
 def _save_camera_recommendation_defaults(
@@ -1733,6 +1738,7 @@ def _save_camera_recommendation_defaults(
     camera_defaults[request.camera_entity] = defaults
     options[CONF_CAMERA_DEFAULTS] = camera_defaults
     _update_entry_options(hass, entry, options)
+    _send_camera_defaults_signal(hass, receiver.entry_id)
     return defaults
 
 
@@ -2419,6 +2425,31 @@ def store_last_command_result(
 
 def last_command_result_signal(entry_id: str) -> str:
     return f"{LAST_COMMAND_RESULT_SIGNAL}_{entry_id}"
+
+
+def camera_defaults_signal(entry_id: str) -> str:
+    return f"{CAMERA_DEFAULTS_SIGNAL}_{entry_id}"
+
+
+def _send_camera_defaults_signal(hass: Any, entry_id: str) -> None:
+    listeners = (
+        getattr(hass, "data", {})
+        .get(DOMAIN, {})
+        .get(CAMERA_DEFAULTS_LISTENERS_KEY, {})
+        .get(entry_id, [])
+    )
+    for listener in list(listeners):
+        listener()
+
+    try:
+        dispatcher = __import__(
+            "homeassistant.helpers.dispatcher",
+            fromlist=["async_dispatcher_send"],
+        )
+    except ModuleNotFoundError:
+        return
+
+    dispatcher.async_dispatcher_send(hass, camera_defaults_signal(entry_id))
 
 
 def _send_last_command_result_signal(hass: Any, entry_id: str) -> None:

@@ -22,12 +22,14 @@ from .services import (
     ATTR_STREAM_TYPE,
     ATTR_WIDTH,
     CAMERA_COMPATIBILITY_KEY,
+    CAMERA_DEFAULTS_LISTENERS_KEY,
     CAMERA_LAST_RESULT_KEY,
     LAST_COMMAND_RESULT_KEY,
     LAST_COMMAND_RESULT_LISTENERS_KEY,
     _async_get_receiver_status_command,
     _prefer_remote_transport,
     _resolve_receiver_from_entry,
+    camera_defaults_signal,
     last_command_result_signal,
 )
 
@@ -76,7 +78,7 @@ async def async_setup_entry(hass: Any, entry: Any, async_add_entities: Any) -> N
             ReceiverRestreamingProviderStatusSensor(entry, hass=hass),
         ]
     )
-    async_add_entities([ReceiverSavedCameraDefaultsSensor(entry)], True)
+    async_add_entities([ReceiverSavedCameraDefaultsSensor(entry, hass=hass)], True)
 
 
 class ReceiverPollingSensor(ReceiverEntity, SensorEntity):
@@ -380,12 +382,13 @@ class ReceiverRestreamingProviderStatusSensor(ReceiverEntity, SensorEntity):
 class ReceiverSavedCameraDefaultsSensor(ReceiverEntity, SensorEntity):
     """Summary of per-camera defaults saved for this receiver."""
 
-    def __init__(self, entry: Any) -> None:
+    def __init__(self, entry: Any, *, hass: Any | None = None) -> None:
         super().__init__(
             entry,
             key="saved_camera_defaults",
             name="Saved Camera Defaults",
         )
+        self.hass = hass
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_should_poll = False
         self._attr_available = True
@@ -397,6 +400,34 @@ class ReceiverSavedCameraDefaultsSensor(ReceiverEntity, SensorEntity):
         """Publish the saved defaults summary when Home Assistant adds the entity."""
 
         self._refresh_from_options()
+        if self.hass is None:
+            return
+
+        data = self.hass.data.setdefault(DOMAIN, {})
+        listeners = data.setdefault(CAMERA_DEFAULTS_LISTENERS_KEY, {})
+        entry_listeners = listeners.setdefault(self.entry.entry_id, [])
+        entry_listeners.append(self._handle_camera_defaults_changed)
+
+        async_on_remove = getattr(self, "async_on_remove", None)
+        if callable(async_on_remove):
+            async_on_remove(self._remove_direct_listener)
+
+        try:
+            dispatcher = __import__(
+                "homeassistant.helpers.dispatcher",
+                fromlist=["async_dispatcher_connect"],
+            )
+        except ModuleNotFoundError:
+            return
+
+        remove_listener = dispatcher.async_dispatcher_connect(
+            self.hass,
+            camera_defaults_signal(self.entry.entry_id),
+            self._handle_camera_defaults_changed,
+        )
+        async_on_remove = getattr(self, "async_on_remove", None)
+        if callable(async_on_remove):
+            async_on_remove(remove_listener)
 
     async def async_update(self) -> None:
         """Refresh the saved per-camera defaults summary."""
@@ -411,6 +442,24 @@ class ReceiverSavedCameraDefaultsSensor(ReceiverEntity, SensorEntity):
         self._attr_extra_state_attributes = _saved_camera_defaults_attributes(
             camera_defaults
         )
+
+    def _handle_camera_defaults_changed(self) -> None:
+        self._refresh_from_options()
+        write_state = getattr(self, "async_write_ha_state", None)
+        if callable(write_state):
+            write_state()
+
+    def _remove_direct_listener(self) -> None:
+        if self.hass is None:
+            return
+        listeners = (
+            getattr(self.hass, "data", {})
+            .get(DOMAIN, {})
+            .get(CAMERA_DEFAULTS_LISTENERS_KEY, {})
+            .get(self.entry.entry_id, [])
+        )
+        if self._handle_camera_defaults_changed in listeners:
+            listeners.remove(self._handle_camera_defaults_changed)
 
 
 async def _async_status_for_entry(

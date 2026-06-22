@@ -2,7 +2,7 @@
 
 import asyncio
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 import custom_components.ha_tv_pip.binary_sensor as binary_sensor
 import custom_components.ha_tv_pip.button as button
@@ -32,6 +32,7 @@ from custom_components.ha_tv_pip.const import (
 from custom_components.ha_tv_pip.restreaming import restreaming_provider_metadata
 from custom_components.ha_tv_pip.services import (
     CAMERA_COMPATIBILITY_KEY,
+    CAMERA_DEFAULTS_LISTENERS_KEY,
     CAMERA_LAST_RESULT_KEY,
     LAST_COMMAND_RESULT_KEY,
     LAST_COMMAND_RESULT_LISTENERS_KEY,
@@ -445,6 +446,45 @@ def test_saved_camera_defaults_sensor_summarizes_restream_defaults() -> None:
                 "stream_camera_entity": "camera.front_door_sub",
                 "stream_type": "hls",
                 "width": 720,
+            }
+        ],
+    }
+
+
+def test_saved_camera_defaults_sensor_refreshes_from_signal() -> None:
+    hass = FakeHass()
+    entry = _entry()
+    entity = sensor.ReceiverSavedCameraDefaultsSensor(entry, hass=hass)
+    writes: list[bool] = []
+    cast(Any, entity).async_write_ha_state = lambda: writes.append(True)
+
+    asyncio.run(entity.async_added_to_hass())
+
+    assert entity._attr_native_value == 0
+    entry.options = {
+        CONF_CAMERA_DEFAULTS: {
+            "camera.front_door": {
+                "restream_provider": "go2rtc",
+                "restream_url": "http://homeassistant.local:1984/api/stream.m3u8",
+                "stream_type": "hls",
+            }
+        }
+    }
+    listener = hass.data[DOMAIN][CAMERA_DEFAULTS_LISTENERS_KEY]["entry-1"][0]
+    listener()
+
+    assert writes == [True]
+    assert entity._attr_native_value == 1
+    assert entity._attr_extra_state_attributes == {
+        "saved_camera_count": 1,
+        "saved_cameras": ["camera.front_door"],
+        "restream_camera_count": 1,
+        "restream_cameras": [
+            {
+                "camera_entity": "camera.front_door",
+                "has_restream_url": True,
+                "restream_provider": "go2rtc",
+                "stream_type": "hls",
             }
         ],
     }

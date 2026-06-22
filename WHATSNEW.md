@@ -1,5 +1,10 @@
 # What's New ✨
 
+## 1.31.15 - Saved Defaults Sensor Refresh 🔄
+
+- Made the Saved Camera Defaults sensor refresh immediately when per-camera defaults are saved or cleared 🩺
+- Added regression coverage for camera-default update signals so the sensor does not stay stale after `save_restream_source` 🧪
+
 ## 1.31.14 - Restream URL Shape Validation 🧭
 
 - Made `ha_tv_pip.test_restream_source` distinguish playable stream endpoints from provider base URLs before recommending a save action 🧪
