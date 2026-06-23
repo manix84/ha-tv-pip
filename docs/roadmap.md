@@ -862,6 +862,7 @@ Completed:
 - ✅ `ha_tv_pip.clear_all_camera_defaults` helper action for resetting saved camera compatibility choices across one receiver.
 - ✅ `ha_tv_pip.suggest_restream_source` advisory action for candidate go2rtc/Frigate-style stream names, HLS/MJPEG URL patterns, provider help, and save-action payloads.
 - ✅ `go2rtc`, `frigate`, and `manual` helper presets for manual restream source suggestions.
+- ✅ Ordered manual restream setup steps with HLS-first validation, MJPEG fallback validation, and save-working-source actions.
 - ✅ Automatic `restream_source_suggestion` payloads in compatibility and calibration results when restreaming is recommended.
 - ✅ Optional `restream_base_url` support for restream source suggestions when go2rtc is not reachable at the default placeholder host.
 - ✅ `ha_tv_pip.test_restream_source` helper action for validating a candidate manual HLS/MJPEG restream URL before saving it.

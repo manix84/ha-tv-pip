@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.27 - Guided Restream Setup Steps 🧭
+
+- Added ordered setup steps to `ha_tv_pip.suggest_restream_source` so manual go2rtc/Frigate setup has a clear HLS-first, MJPEG-fallback, save-source flow 🧰
+- Added a `fallback_test_action` payload for validating the matching MJPEG candidate when the first HLS URL is not TV-safe 🔁
+- Updated tests, README, roadmap, and camera compatibility docs for the guided manual restream setup response 📚
+
 ## 1.31.26 - Camera Compatibility Docs Alignment 📚
 
 - Updated the root README to mention copyable camera compatibility follow-up action payloads 🧰

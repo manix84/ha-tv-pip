@@ -2100,6 +2100,61 @@ def test_suggest_restream_source_returns_manual_go2rtc_plan() -> None:
             ATTR_SAVE: False,
         },
     }
+    assert result["fallback_test_action"] == {
+        "service": "test_restream_source",
+        "action": "ha_tv_pip.test_restream_source",
+        "target": {ATTR_DEVICE_ID: "device-1"},
+        "data": {
+            ATTR_CAMERA_ENTITY: "camera.front_door_bell_main",
+            ATTR_RESTREAM_PROVIDER: "go2rtc",
+            ATTR_RESTREAM_URL: (
+                "http://homeassistant.local:1984/api/stream.mjpeg?"
+                "src=front_door_bell_main"
+            ),
+            ATTR_CHECK_REACHABILITY: False,
+            ATTR_SAVE: False,
+        },
+    }
+    assert result["setup_summary"] == {
+        "mode": "manual_restream_source",
+        "provider": "go2rtc",
+        "provider_status": "planned",
+        "complete": False,
+        "next_step": "test_candidate_stream_url",
+        "primary_action": "test_restream_source",
+        "primary_action_label": "Test the first candidate HLS URL",
+    }
+    assert result["setup_steps"] == [
+        {
+            "key": "choose_candidate_stream_name",
+            "label": "Choose the provider stream name",
+            "status": "ready",
+            "details": {
+                "candidate_stream_names": [
+                    "front_door_bell_main",
+                    "front-door-bell-main",
+                ],
+            },
+        },
+        {
+            "key": "test_candidate_hls_url",
+            "label": "Test the first candidate HLS URL",
+            "status": "ready",
+            "action": result["test_action"],
+        },
+        {
+            "key": "test_candidate_mjpeg_url",
+            "label": "If HLS fails, test the matching MJPEG URL",
+            "status": "fallback",
+            "action": result["fallback_test_action"],
+        },
+        {
+            "key": "save_working_restream_source",
+            "label": "Save the first TV-safe URL that works",
+            "status": "waiting",
+            "action": result["save_action"],
+        },
+    ]
     assert result["provider_help"] == _expected_restreaming_provider_help()
 
 

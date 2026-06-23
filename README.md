@@ -68,7 +68,7 @@ The latest receiver/integration flow includes:
 - `ha_tv_pip.save_restream_source` for saving a tested go2rtc, Frigate, or similar restream URL as the camera's TV-safe live source, with a redacted `defaults_summary` confirmation.
 - Saved Camera Defaults receiver sensor so saved per-camera defaults and restream source state are visible without exposing stream URLs.
 - `ha_tv_pip.clear_all_camera_defaults` for resetting saved compatibility choices on a receiver before recalibrating.
-- `ha_tv_pip.suggest_restream_source` for candidate manual restream stream names, go2rtc/Frigate-style HLS/MJPEG URL patterns, validation payloads, and save-action payloads.
+- `ha_tv_pip.suggest_restream_source` for ordered manual restream setup steps, candidate go2rtc/Frigate-style HLS/MJPEG URL patterns, validation payloads, fallback MJPEG test payloads, and save-action payloads.
 - Optional restream base URL support for generating candidate URLs against a real go2rtc or Frigate host.
 - `ha_tv_pip.test_restream_source` for validating candidate restream URLs before saving them as per-camera defaults.
 - Copyable Home Assistant `action` payloads for validation, save, and follow-up `show_camera` steps.

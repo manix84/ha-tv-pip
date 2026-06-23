@@ -2245,6 +2245,31 @@ def _restream_source_suggestion(
     )
     primary_stream_name = candidate_stream_names[0]
     primary_hls_url = url_patterns[0]["hls"] if url_patterns else ""
+    primary_mjpeg_url = url_patterns[0]["mjpeg"] if url_patterns else ""
+    save_action = _service_action_payload(
+        SERVICE_SAVE_RESTREAM_SOURCE,
+        receiver,
+        {
+            ATTR_CAMERA_ENTITY: camera_entity,
+            ATTR_RESTREAM_PROVIDER: provider,
+            ATTR_RESTREAM_URL: (
+                f"<tested {provider} HLS or MJPEG URL for {primary_stream_name}>"
+            ),
+            ATTR_SNAPSHOT_FALLBACK: True,
+        },
+    )
+    test_action = _restream_test_action_payload(
+        receiver,
+        camera_entity,
+        provider,
+        primary_hls_url,
+    )
+    fallback_test_action = _restream_test_action_payload(
+        receiver,
+        camera_entity,
+        provider,
+        primary_mjpeg_url,
+    )
     return {
         "accepted": True,
         "camera_entity": camera_entity,
@@ -2256,36 +2281,30 @@ def _restream_source_suggestion(
         "restream_base_url": base_url or _default_restream_base_url(provider),
         "candidate_stream_names": candidate_stream_names,
         "candidate_urls": url_patterns,
+        "setup_mode": "manual_restream_source",
+        "setup_summary": {
+            "mode": "manual_restream_source",
+            "provider": provider,
+            "provider_status": metadata.get("status"),
+            "complete": False,
+            "next_step": "test_candidate_stream_url",
+            "primary_action": SERVICE_TEST_RESTREAM_SOURCE,
+            "primary_action_label": "Test the first candidate HLS URL",
+        },
+        "setup_steps": _manual_restream_setup_steps(
+            candidate_stream_names,
+            test_action,
+            fallback_test_action,
+            save_action,
+        ),
         "recommended_test_order": [
             "Test candidate HLS URLs from a browser on the TV network.",
             "If HLS fails, test the matching MJPEG URL.",
             "Save the first TV-safe URL that plays reliably.",
         ],
-        "save_action": {
-            "service": SERVICE_SAVE_RESTREAM_SOURCE,
-            "action": f"{DOMAIN}.{SERVICE_SAVE_RESTREAM_SOURCE}",
-            "target": {ATTR_DEVICE_ID: receiver.device_id},
-            "data": {
-                ATTR_CAMERA_ENTITY: camera_entity,
-                ATTR_RESTREAM_PROVIDER: provider,
-                ATTR_RESTREAM_URL: (
-                    f"<tested {provider} HLS or MJPEG URL for {primary_stream_name}>"
-                ),
-                ATTR_SNAPSHOT_FALLBACK: True,
-            },
-        },
-        "test_action": {
-            "service": SERVICE_TEST_RESTREAM_SOURCE,
-            "action": f"{DOMAIN}.{SERVICE_TEST_RESTREAM_SOURCE}",
-            "target": {ATTR_DEVICE_ID: receiver.device_id},
-            "data": {
-                ATTR_CAMERA_ENTITY: camera_entity,
-                ATTR_RESTREAM_PROVIDER: provider,
-                ATTR_RESTREAM_URL: primary_hls_url,
-                ATTR_CHECK_REACHABILITY: False,
-                ATTR_SAVE: False,
-            },
-        },
+        "save_action": save_action,
+        "test_action": test_action,
+        "fallback_test_action": fallback_test_action,
         "provider_help": {
             "status": metadata.get("status"),
             "next_step": metadata.get("next_step"),
@@ -2298,6 +2317,61 @@ def _restream_source_suggestion(
             ),
         },
     }
+
+
+def _restream_test_action_payload(
+    receiver: ReceiverEntry,
+    camera_entity: str,
+    provider: str,
+    restream_url: str,
+) -> dict[str, Any]:
+    return _service_action_payload(
+        SERVICE_TEST_RESTREAM_SOURCE,
+        receiver,
+        {
+            ATTR_CAMERA_ENTITY: camera_entity,
+            ATTR_RESTREAM_PROVIDER: provider,
+            ATTR_RESTREAM_URL: restream_url,
+            ATTR_CHECK_REACHABILITY: False,
+            ATTR_SAVE: False,
+        },
+    )
+
+
+def _manual_restream_setup_steps(
+    candidate_stream_names: list[str],
+    test_action: dict[str, Any],
+    fallback_test_action: dict[str, Any],
+    save_action: dict[str, Any],
+) -> list[dict[str, Any]]:
+    return [
+        {
+            "key": "choose_candidate_stream_name",
+            "label": "Choose the provider stream name",
+            "status": "ready",
+            "details": {
+                "candidate_stream_names": candidate_stream_names,
+            },
+        },
+        {
+            "key": "test_candidate_hls_url",
+            "label": "Test the first candidate HLS URL",
+            "status": "ready",
+            "action": test_action,
+        },
+        {
+            "key": "test_candidate_mjpeg_url",
+            "label": "If HLS fails, test the matching MJPEG URL",
+            "status": "fallback",
+            "action": fallback_test_action,
+        },
+        {
+            "key": "save_working_restream_source",
+            "label": "Save the first TV-safe URL that works",
+            "status": "waiting",
+            "action": save_action,
+        },
+    ]
 
 
 def _candidate_restream_names(camera_entity: str, camera_title: str) -> list[str]:
