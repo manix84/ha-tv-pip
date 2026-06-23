@@ -53,13 +53,13 @@ HA TV PiP Receiver is a local-first Android TV companion app for Home Assistant.
 Use Home Assistant automations to show camera streams, snapshots, and visual alerts on Android TV and Google TV devices. The receiver supports Android Picture-in-Picture where available and uses a local overlay fallback on devices that do not expose native PiP to third-party TV apps.
 
 Current features:
-- Home Assistant discovery and pairing
-- TV-visible pairing code
+- Home Assistant discovery and TV-visible pairing
 - Authenticated local receiver control
 - Camera stream popups
-- Snapshot popups
-- Snapshot fallback while video loads
-- Receiver status and diagnostics
+- Snapshot popups and snapshot fallback while video loads
+- Styled notification popups with title and message text
+- Receiver status, diagnostics, and compatibility guidance
+- Saved per-camera defaults for stream strategy and fallback behavior
 - Optional launcher hiding with Home Assistant recovery controls
 - Optional remote receiver mode using your own Home Assistant external URL
 
@@ -155,11 +155,11 @@ Graphic assets to prepare:
 
 - TV banner image.
 - App icon.
-- Feature graphic.
+- Feature graphic: `docs/assets/play-store-feature-graphic.jpg` is a product-led placeholder ready for Play Console preview.
 - At least 2 Android TV screenshots.
 - Optional tablet/phone screenshots only if Play Console requests them for listing completeness.
 
-Personal developer avatar/header graphics can be used for the Play developer profile or account presence if needed, but the app listing should remain product-led and use HA TV PiP-specific app graphics.
+Personal developer avatar/header graphics can be used for the Play developer profile or account presence if needed, but the app listing should remain product-led and use HA TV PiP-specific app graphics. The current developer profile assets are `docs/assets/avatar.png` and `docs/assets/header.jpeg`.
 
 Safety rules:
 
@@ -232,9 +232,9 @@ Initial internal testing notes:
 Initial Android TV receiver test release.
 
 - Pair with Home Assistant using a TV-visible code.
-- Show camera streams and snapshots from Home Assistant.
+- Show camera streams, snapshots, and styled notifications from Home Assistant.
 - Use native PiP where available or the overlay fallback on supported devices.
-- Manage receiver status, launcher visibility, and remote receiver setup.
+- Manage receiver status, launcher visibility, camera defaults, and remote receiver setup.
 ```
 
 Production release notes should include:

@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.39 - Play Store Asset Prep Polish 📺
+
+- Added a product-led 1024 x 500 Play Store feature graphic placeholder 🖼️
+- Updated Play Store listing drafts with styled notifications, camera defaults, and compatibility guidance 📝
+- Aligned Play Console prep docs with the current screenshots, developer header asset, and manual submission steps ✅
+
 ## 1.31.38 - Slideshow Timer Reset Fix ⏱️
 
 - Restarted the screenshot slideshow timer when a user manually selects a slide dot 🎞️

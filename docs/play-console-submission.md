@@ -38,8 +38,9 @@ Suggested Play Console values:
 - Privacy policy: `https://manix84.github.io/ha-tv-pip/privacy/`
 - Support email: TODO, choose the public support address to use for Play users.
 - Tags/positioning: Home Assistant, Android TV, Google TV, smart home, security camera, Picture-in-Picture, local-first.
+- Feature graphic: start with `docs/assets/play-store-feature-graphic.jpg`, then replace if Play Console preview shows it poorly.
 
-Keep the Play listing product-led. Personal profile graphics can be used for the developer profile or account banner, but the app listing should use the HA TV PiP icon, TV banner, feature graphic, and receiver screenshots.
+Keep the Play listing product-led. Personal profile graphics can be used for the developer profile or account banner, but the app listing should use the HA TV PiP icon, TV banner, feature graphic, and receiver screenshots. Current developer profile candidates are `docs/assets/avatar.png` and `docs/assets/header.jpeg`.
 
 ## Release Artifact 📦
 
@@ -108,11 +109,12 @@ For personal developer accounts, Google may require a closed-testing period befo
 
 1. Create the Play Console app.
 2. Enter the listing text from Fastlane metadata.
-3. Add the privacy URL.
-4. Complete data-safety, content-rating, app-access, and target-audience forms.
-5. Upload the latest release AAB to internal testing.
-6. Add internal testers.
-7. Run the pre-release QA checklist from `docs/release-qa.md`.
-8. Submit the internal test build.
-9. Record any Play warnings or policy questions in `docs/play-store.md`.
-
+3. Add the public support email chosen for Play users.
+4. Add the privacy URL.
+5. Upload the app icon, TV banner, feature graphic, and screenshots.
+6. Complete data-safety, content-rating, app-access, and target-audience forms.
+7. Upload the latest release AAB to internal testing.
+8. Add internal testers.
+9. Run the pre-release QA checklist from `docs/release-qa.md`.
+10. Submit the internal test build.
+11. Record any Play warnings or policy questions in `docs/play-store.md`.
