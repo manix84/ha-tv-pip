@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.24 - Copyable Restream Helper Actions 📋
+
+- Added copyable Home Assistant `action` keys to restream helper `save_action` and `test_action` payloads 🧰
+- Kept legacy `service` keys for compatibility with existing consumers 🔁
+- Updated tests and camera compatibility docs for consistent follow-up action payloads 🧪
+
 ## 1.31.23 - Restream Helper Presets 🧭
 
 - Made `suggest_restream_source` expose `go2rtc`, `frigate`, and `manual` helper presets in Home Assistant service metadata 🧰

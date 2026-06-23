@@ -2072,6 +2072,7 @@ def test_suggest_restream_source_returns_manual_go2rtc_plan() -> None:
     }
     assert result["save_action"] == {
         "service": "save_restream_source",
+        "action": "ha_tv_pip.save_restream_source",
         "target": {ATTR_DEVICE_ID: "device-1"},
         "data": {
             ATTR_CAMERA_ENTITY: "camera.front_door_bell_main",
@@ -2084,6 +2085,7 @@ def test_suggest_restream_source_returns_manual_go2rtc_plan() -> None:
     }
     assert result["test_action"] == {
         "service": "test_restream_source",
+        "action": "ha_tv_pip.test_restream_source",
         "target": {ATTR_DEVICE_ID: "device-1"},
         "data": {
             ATTR_CAMERA_ENTITY: "camera.front_door_bell_main",
@@ -2294,6 +2296,7 @@ def test_test_restream_source_returns_save_action_for_supported_hls(
         "next_step": "save_restream_source",
         "save_action": {
             "service": "save_restream_source",
+            "action": "ha_tv_pip.save_restream_source",
             "target": {ATTR_DEVICE_ID: "device-1"},
             "data": {
                 ATTR_CAMERA_ENTITY: "camera.front_door",
@@ -2442,6 +2445,7 @@ def test_setup_camera_can_validate_and_save_restream_source(
             "status": "complete",
             "action": {
                 "service": "save_restream_source",
+                "action": "ha_tv_pip.save_restream_source",
                 "target": {ATTR_DEVICE_ID: "device-1"},
                 "data": {
                     ATTR_CAMERA_ENTITY: "camera.front_door",
@@ -3160,6 +3164,7 @@ def test_camera_stream_test_recommends_restreaming_for_snapshot_only(
     ]
     assert result["restream_source_suggestion"]["save_action"] == {
         "service": "save_restream_source",
+        "action": "ha_tv_pip.save_restream_source",
         "target": {ATTR_DEVICE_ID: "device-1"},
         "data": {
             ATTR_CAMERA_ENTITY: "camera.front_door",

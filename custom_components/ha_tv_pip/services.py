@@ -1228,6 +1228,7 @@ async def async_handle_test_restream_source(
         }
         result["save_action"] = {
             "service": SERVICE_SAVE_RESTREAM_SOURCE,
+            "action": f"{DOMAIN}.{SERVICE_SAVE_RESTREAM_SOURCE}",
             "target": {ATTR_DEVICE_ID: receiver.device_id},
             "data": {
                 ATTR_CAMERA_ENTITY: camera_entity,
@@ -2249,6 +2250,7 @@ def _restream_source_suggestion(
         ],
         "save_action": {
             "service": SERVICE_SAVE_RESTREAM_SOURCE,
+            "action": f"{DOMAIN}.{SERVICE_SAVE_RESTREAM_SOURCE}",
             "target": {ATTR_DEVICE_ID: receiver.device_id},
             "data": {
                 ATTR_CAMERA_ENTITY: camera_entity,
@@ -2261,6 +2263,7 @@ def _restream_source_suggestion(
         },
         "test_action": {
             "service": SERVICE_TEST_RESTREAM_SOURCE,
+            "action": f"{DOMAIN}.{SERVICE_TEST_RESTREAM_SOURCE}",
             "target": {ATTR_DEVICE_ID: receiver.device_id},
             "data": {
                 ATTR_CAMERA_ENTITY: camera_entity,

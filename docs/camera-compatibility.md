@@ -99,7 +99,7 @@ data:
   restream_base_url: http://homeassistant.local:1984
 ```
 
-The response includes candidate stream names, go2rtc/Frigate-style HLS/MJPEG URL patterns, provider help, a `test_action` payload for validating the first HLS candidate, and a `save_action` payload to use after you have tested a working URL. `restream_provider` accepts the helper presets `go2rtc`, `frigate`, or `manual`; unknown provider labels fall back to generic manual placeholders. `restream_base_url` is optional; omit it to use the provider default suggestion. This is advisory only; it does not create provider streams automatically.
+The response includes candidate stream names, go2rtc/Frigate-style HLS/MJPEG URL patterns, provider help, a `test_action` payload for validating the first HLS candidate, and a `save_action` payload to use after you have tested a working URL. Helper payloads include both the legacy `service` key and a copyable Home Assistant `action` key. `restream_provider` accepts the helper presets `go2rtc`, `frigate`, or `manual`; unknown provider labels fall back to generic manual placeholders. `restream_base_url` is optional; omit it to use the provider default suggestion. This is advisory only; it does not create provider streams automatically.
 
 Before saving one candidate, validate it with:
 
@@ -115,7 +115,7 @@ data:
   save: false
 ```
 
-This action infers HLS or MJPEG from the URL, checks that the URL looks like a playable stream endpoint, checks the selected receiver's capability metadata, optionally checks reachability from Home Assistant, and returns a `save_action` payload when the candidate looks worth saving. Provider base URLs such as `http://go2rtc.local:1984` are accepted for validation but return `save_recommended: false`; use a playable endpoint such as `/api/stream.m3u8?src=<stream_name>` or `/api/stream.mjpeg?src=<stream_name>`. Keep `check_reachability: false` for candidate URLs that may only be reachable from the TV network. Set `save: true` to save the candidate as per-camera defaults in the same action when validation passes.
+This action infers HLS or MJPEG from the URL, checks that the URL looks like a playable stream endpoint, checks the selected receiver's capability metadata, optionally checks reachability from Home Assistant, and returns a `save_action` payload with `service`, `action`, `target`, and `data` when the candidate looks worth saving. Provider base URLs such as `http://go2rtc.local:1984` are accepted for validation but return `save_recommended: false`; use a playable endpoint such as `/api/stream.m3u8?src=<stream_name>` or `/api/stream.mjpeg?src=<stream_name>`. Keep `check_reachability: false` for candidate URLs that may only be reachable from the TV network. Set `save: true` to save the candidate as per-camera defaults in the same action when validation passes.
 
 When calibration or compatibility testing recommends restreaming, the action response includes the same guidance in `restream_source_suggestion` so you can move directly from a failed or snapshot-only live path to candidate manual restream values.
 
