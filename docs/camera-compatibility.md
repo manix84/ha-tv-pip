@@ -65,8 +65,9 @@ The `action_plan` block is the fastest path for normal users. It includes:
 - `primary_action_label`: human-readable next step.
 - `service`: the next HA TV PiP service to call.
 - `data`: a safe payload for that service. Direct restream URLs are not duplicated here; review `recommended_defaults` when a restream URL is involved.
+- `service_call`: a copyable Home Assistant action shape with `action`, `target.device_id`, and `data`.
 - `fields_to_try`: optional fields to adjust when live video needs another source.
-- `provider_help`: helper metadata for manual go2rtc URLs today, plus planned WebRTC/transcoding paths for future support.
+- `provider_help`: helper metadata for manual go2rtc/Frigate URLs today, plus planned WebRTC/transcoding paths for future support.
 - `notes`: short guidance explaining why that action was recommended.
 
 When the recommendation looks right, run the same action with `save: true`. The saved per-camera defaults can include stream type, stream camera entity, snapshot camera entity, snapshot fallback, duration, position, width, and height.

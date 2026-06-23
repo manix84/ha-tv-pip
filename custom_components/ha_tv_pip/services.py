@@ -1012,7 +1012,11 @@ async def _async_handle_camera_compatibility_workflow(
         }
     result = {
         **result,
-        "action_plan": _camera_compatibility_action_plan(request, result),
+        "action_plan": _camera_compatibility_action_plan(
+            request,
+            receiver,
+            result,
+        ),
     }
     if include_summary:
         result = {
@@ -2026,6 +2030,7 @@ def _camera_calibration_next_step(compatible: bool, saved: bool) -> str:
 
 def _camera_compatibility_action_plan(
     request: ShowCameraRequest,
+    receiver: ReceiverEntry,
     result: dict[str, Any],
 ) -> dict[str, Any]:
     """Return concrete next actions for a camera compatibility result."""
@@ -2041,6 +2046,11 @@ def _camera_compatibility_action_plan(
             "primary_action_label": "Use show_camera without repeating defaults",
             "service": SERVICE_SHOW_CAMERA,
             "data": camera_data,
+            "service_call": _service_call_payload(
+                SERVICE_SHOW_CAMERA,
+                receiver,
+                camera_data,
+            ),
             "notes": [
                 "Per-camera defaults are saved for this receiver.",
                 (
@@ -2063,6 +2073,14 @@ def _camera_compatibility_action_plan(
                 ATTR_CAMERA_ENTITY: request.camera_entity,
                 ATTR_STREAM_TYPE: STREAM_TYPE_SNAPSHOT,
             },
+            "service_call": _service_call_payload(
+                SERVICE_SET_CAMERA_DEFAULTS,
+                receiver,
+                {
+                    ATTR_CAMERA_ENTITY: request.camera_entity,
+                    ATTR_STREAM_TYPE: STREAM_TYPE_SNAPSHOT,
+                },
+            ),
             "fields_to_try": [
                 ATTR_STREAM_CAMERA_ENTITY,
                 ATTR_RESTREAM_URL,
@@ -2085,6 +2103,11 @@ def _camera_compatibility_action_plan(
             "primary_action_label": "Save the recommended per-camera defaults",
             "service": SERVICE_SET_CAMERA_DEFAULTS,
             "data": service_data,
+            "service_call": _service_call_payload(
+                SERVICE_SET_CAMERA_DEFAULTS,
+                receiver,
+                service_data,
+            ),
             "notes": [
                 "Review recommended_defaults before saving.",
                 (
@@ -2101,6 +2124,11 @@ def _camera_compatibility_action_plan(
         ),
         "service": SERVICE_CALIBRATE_CAMERA,
         "data": camera_data,
+        "service_call": _service_call_payload(
+            SERVICE_CALIBRATE_CAMERA,
+            receiver,
+            camera_data,
+        ),
         "fields_to_try": [
             ATTR_STREAM_CAMERA_ENTITY,
             ATTR_SNAPSHOT_CAMERA_ENTITY,
@@ -2118,6 +2146,18 @@ def _camera_compatibility_action_plan(
                 "configure a restream."
             ),
         ],
+    }
+
+
+def _service_call_payload(
+    service: str,
+    receiver: ReceiverEntry,
+    data: dict[str, Any],
+) -> dict[str, Any]:
+    return {
+        "action": f"{DOMAIN}.{service}",
+        "target": {ATTR_DEVICE_ID: receiver.device_id},
+        "data": data,
     }
 
 

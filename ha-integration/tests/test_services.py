@@ -2963,6 +2963,11 @@ def test_calibrate_camera_can_save_recommendation_with_summary(
         "primary_action_label": "Use show_camera without repeating defaults",
         "service": "show_camera",
         "data": {ATTR_CAMERA_ENTITY: "camera.front_door"},
+        "service_call": {
+            "action": "ha_tv_pip.show_camera",
+            "target": {ATTR_DEVICE_ID: "device-1"},
+            "data": {ATTR_CAMERA_ENTITY: "camera.front_door"},
+        },
         "notes": [
             "Per-camera defaults are saved for this receiver.",
             (
@@ -3091,6 +3096,14 @@ def test_camera_stream_test_recommends_restreaming_for_snapshot_only(
             ATTR_CAMERA_ENTITY: "camera.front_door",
             ATTR_STREAM_TYPE: "snapshot",
         },
+        "service_call": {
+            "action": "ha_tv_pip.set_camera_defaults",
+            "target": {ATTR_DEVICE_ID: "device-1"},
+            "data": {
+                ATTR_CAMERA_ENTITY: "camera.front_door",
+                ATTR_STREAM_TYPE: "snapshot",
+            },
+        },
         "fields_to_try": [
             ATTR_STREAM_CAMERA_ENTITY,
             ATTR_RESTREAM_URL,
@@ -3192,6 +3205,11 @@ def test_calibrate_camera_flags_restreaming_when_no_paths_work(
         ),
         "service": "calibrate_camera",
         "data": {ATTR_CAMERA_ENTITY: "camera.front_door"},
+        "service_call": {
+            "action": "ha_tv_pip.calibrate_camera",
+            "target": {ATTR_DEVICE_ID: "device-1"},
+            "data": {ATTR_CAMERA_ENTITY: "camera.front_door"},
+        },
         "fields_to_try": [
             ATTR_STREAM_CAMERA_ENTITY,
             ATTR_SNAPSHOT_CAMERA_ENTITY,

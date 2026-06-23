@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.20 - Copyable Compatibility Actions 📋
+
+- Added `service_call` payloads to camera compatibility `action_plan` responses so recommended next actions include `action`, `target.device_id`, and `data` 🧰
+- Kept the existing `service` and `data` fields for compatibility while making the response easier to paste into Home Assistant actions 🔎
+- Updated docs and tests for the richer action-plan payloads 🧪
+
 ## 1.31.19 - Frigate Restream Guidance 📹
 
 - Added Frigate as a manual restream helper path alongside go2rtc 🧰

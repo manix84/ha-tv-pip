@@ -216,7 +216,7 @@ data:
   save: false
 ```
 
-Inspect `summary`, `action_plan`, `recommendation_reason`, `restreaming_recommended`, `restreaming_reason`, `restreaming_next_step`, `restreaming_options`, and `recommended_defaults` in the action response. `action_plan` includes the suggested next HA TV PiP service and safe payload to use.
+Inspect `summary`, `action_plan`, `recommendation_reason`, `restreaming_recommended`, `restreaming_reason`, `restreaming_next_step`, `restreaming_options`, and `recommended_defaults` in the action response. `action_plan` includes the suggested next HA TV PiP service, a safe payload to use, and a complete `service_call` object with `action`, `target.device_id`, and `data`.
 
 Save the recommendation when it looks right:
 
