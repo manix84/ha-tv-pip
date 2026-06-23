@@ -547,5 +547,11 @@
         }
       }
     }
+  },
+  "issues": {
+    "receiver_version_mismatch": {
+      "title": "HA TV PiP receiver version mismatch",
+      "description": "{receiver} is running Android receiver version {receiver_version}, but the Home Assistant integration is version {integration_version}. Install the Android APK and Home Assistant integration from the same GitHub Release before troubleshooting playback, pairing, or remote receiver issues."
+    }
   }
 }

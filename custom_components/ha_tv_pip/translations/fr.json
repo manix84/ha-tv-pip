@@ -542,5 +542,11 @@
         }
       }
     }
+  },
+  "issues": {
+    "receiver_version_mismatch": {
+      "title": "Version du récepteur HA TV PiP incohérente",
+      "description": "{receiver} utilise la version {receiver_version} du récepteur Android, mais l'intégration Home Assistant est en version {integration_version}. Installe l'APK Android et l'intégration Home Assistant depuis la même GitHub Release avant de diagnostiquer les problèmes de lecture, d'association ou de récepteur distant."
+    }
   }
 }

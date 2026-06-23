@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.30 - Version Mismatch Repair Issue 🛠️
+
+- Added a Home Assistant repair issue when a receiver APK version does not match the installed integration version 🧭
+- Added Tier 1 translation strings for the version-mismatch repair message 🌍
+- Updated roadmap, troubleshooting, and integration docs for the actionable version-alignment workflow 📚
+
 ## 1.31.29 - Receiver Version Alignment Diagnostics 🧭
 
 - Added receiver and integration version alignment attributes to Home Assistant receiver status and compatibility diagnostics 🔎

@@ -1,12 +1,13 @@
 """Tests for HA TV PiP Home Assistant entities."""
 
 import asyncio
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, cast
 
 import custom_components.ha_tv_pip.binary_sensor as binary_sensor
 import custom_components.ha_tv_pip.button as button
 import custom_components.ha_tv_pip.diagnostics as diagnostics
+import custom_components.ha_tv_pip.repairs as repairs
 import custom_components.ha_tv_pip.sensor as sensor
 import custom_components.ha_tv_pip.switch as switch
 import custom_components.ha_tv_pip.version as version_helpers
@@ -411,6 +412,140 @@ def test_version_alignment_matches_v_prefixed_receiver_version(
             "Receiver APK and Home Assistant integration versions match."
         ),
     }
+
+
+def test_status_sensor_creates_version_mismatch_repair_issue(
+    monkeypatch: Any,
+) -> None:
+    async def fake_status(host: str, port: int) -> ReceiverStatus:
+        return _status()
+
+    async def fake_status_command(
+        receiver: Any,
+        remote: Any,
+        *,
+        prefer_remote: bool,
+    ) -> tuple[ReceiverStatus, str]:
+        return _status(), "local"
+
+    class FakeSeverity:
+        WARNING = "warning"
+
+    class FakeIssueRegistry:
+        IssueSeverity = FakeSeverity
+
+        def __init__(self) -> None:
+            self.created: list[dict[str, Any]] = []
+            self.deleted: list[tuple[Any, str, str]] = []
+
+        def async_create_issue(
+            self,
+            hass: Any,
+            domain: str,
+            issue_id: str,
+            **kwargs: Any,
+        ) -> None:
+            self.created.append(
+                {
+                    "hass": hass,
+                    "domain": domain,
+                    "issue_id": issue_id,
+                    **kwargs,
+                }
+            )
+
+        def async_delete_issue(self, hass: Any, domain: str, issue_id: str) -> None:
+            self.deleted.append((hass, domain, issue_id))
+
+    issue_registry = FakeIssueRegistry()
+    hass = FakeHass()
+
+    monkeypatch.setattr(sensor, "async_get_receiver_status", fake_status)
+    monkeypatch.setattr(
+        sensor,
+        "_async_get_receiver_status_command",
+        fake_status_command,
+    )
+    monkeypatch.setattr(repairs, "_issue_registry", lambda: issue_registry)
+
+    entity = sensor.ReceiverStatusSensor(_entry(), hass=hass)
+
+    asyncio.run(entity.async_update())
+
+    assert issue_registry.created == [
+        {
+            "hass": hass,
+            "domain": DOMAIN,
+            "issue_id": "receiver_version_mismatch_entry-1",
+            "is_fixable": False,
+            "severity": "warning",
+            "translation_key": "receiver_version_mismatch",
+            "translation_placeholders": {
+                "receiver": "Nursery TV",
+                "receiver_version": "0.24.0",
+                "integration_version": version_helpers.integration_version(),
+            },
+        }
+    ]
+    assert issue_registry.deleted == []
+
+
+def test_status_sensor_clears_version_mismatch_repair_issue(
+    monkeypatch: Any,
+) -> None:
+    integration_version = version_helpers.integration_version()
+
+    async def fake_status(host: str, port: int) -> ReceiverStatus:
+        status = _status()
+        return replace(status, version=f"v{integration_version}")
+
+    async def fake_status_command(
+        receiver: Any,
+        remote: Any,
+        *,
+        prefer_remote: bool,
+    ) -> tuple[ReceiverStatus, str]:
+        return replace(_status(), version=f"v{integration_version}"), "local"
+
+    class FakeIssueRegistry:
+        class IssueSeverity:
+            WARNING = "warning"
+
+        def __init__(self) -> None:
+            self.created: list[dict[str, Any]] = []
+            self.deleted: list[tuple[Any, str, str]] = []
+
+        def async_create_issue(
+            self,
+            hass: Any,
+            domain: str,
+            issue_id: str,
+            **kwargs: Any,
+        ) -> None:
+            self.created.append({"domain": domain, "issue_id": issue_id, **kwargs})
+
+        def async_delete_issue(self, hass: Any, domain: str, issue_id: str) -> None:
+            self.deleted.append((hass, domain, issue_id))
+
+    issue_registry = FakeIssueRegistry()
+    hass = FakeHass()
+
+    monkeypatch.setattr(sensor, "async_get_receiver_status", fake_status)
+    monkeypatch.setattr(
+        sensor,
+        "_async_get_receiver_status_command",
+        fake_status_command,
+    )
+    monkeypatch.setattr(repairs, "_issue_registry", lambda: issue_registry)
+
+    entity = sensor.ReceiverStatusSensor(_entry(), hass=hass)
+
+    asyncio.run(entity.async_update())
+
+    assert issue_registry.created == []
+    assert issue_registry.deleted == [
+        (hass, DOMAIN, "receiver_version_mismatch_entry-1")
+    ]
 
 
 def test_saved_camera_defaults_sensor_reports_empty_defaults() -> None:

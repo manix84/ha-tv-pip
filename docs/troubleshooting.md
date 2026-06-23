@@ -15,6 +15,8 @@ HA TV PiP is still in beta. The most useful support data is the Android receiver
 
 The receiver Status sensor and Receiver Compatibility sensor expose `integration_version`, `receiver_version`, `version_alignment`, `versions_match`, and `version_guidance` attributes. If `version_alignment` is `mismatch`, update the Android APK and HACS integration from the same GitHub Release before debugging deeper issues.
 
+Home Assistant also creates an HA TV PiP repair issue when a receiver reports a different Android APK version from the installed integration version. The issue clears after the versions match and receiver status refreshes.
+
 For HACS installs, use `v1.27.9` or newer. Earlier public beta builds can install but fail when opening the integration Configuration screen.
 
 ## Discovery Card Does Not Appear 🔎

@@ -56,6 +56,8 @@ For beta updates, update the HACS integration, restart Home Assistant, then inst
 
 The receiver Status sensor and Receiver Compatibility sensor expose `integration_version`, `receiver_version`, `version_alignment`, `versions_match`, and `version_guidance` attributes. Use those fields to confirm the HACS integration and Android APK came from the same release before debugging playback or pairing issues.
 
+If the installed integration and Android receiver versions do not match, Home Assistant also raises a repair issue with the receiver name and both versions. Updating both parts from the same release clears the issue after the receiver status is refreshed.
+
 Current beta features:
 
 - Local network discovery with Zeroconf / mDNS 🔎

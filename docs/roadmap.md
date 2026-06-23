@@ -871,6 +871,7 @@ Completed:
 - ✅ Copyable Home Assistant `action` keys in restream helper `save_action`, `test_action`, and `next_action` payloads while keeping legacy `service` keys for compatibility.
 - ✅ Complete follow-up `show_camera` payloads with receiver targets after saving or validating restream defaults.
 - ✅ Diagnostic entity categorization for detailed receiver, compatibility, command-result, connectivity, restreaming, and saved-defaults entities.
+- ✅ Receiver/integration version alignment diagnostics and Home Assistant repair issues so mismatched HACS/APK installs are visible and actionable.
 
 Still future:
 

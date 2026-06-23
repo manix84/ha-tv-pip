@@ -9,6 +9,7 @@ from .client import ReceiverClientError, ReceiverStatus, async_get_receiver_stat
 from .const import CONF_CAMERA_DEFAULTS, DOMAIN
 from .entity import ReceiverEntity
 from .remote import remote_registry
+from .repairs import async_update_version_alignment_issue
 from .restreaming import RESTREAMING_PROVIDER_STATUS, restreaming_provider_metadata
 from .services import (
     ATTR_DURATION_SECONDS,
@@ -125,12 +126,20 @@ class ReceiverPollingSensor(ReceiverEntity, SensorEntity):
         self._attr_native_value = self._native_value(status)
         self._attr_extra_state_attributes = self._extra_attributes(status)
         self._attr_extra_state_attributes["transport"] = transport
+        self._after_status_update(status, self._attr_extra_state_attributes)
 
     def _native_value(self, status: ReceiverStatus) -> str | None:
         raise NotImplementedError
 
     def _extra_attributes(self, status: ReceiverStatus) -> dict[str, Any]:
         return _status_attributes(status)
+
+    def _after_status_update(
+        self,
+        status: ReceiverStatus,
+        attributes: dict[str, Any],
+    ) -> None:
+        """Hook for sensors that need side effects after a successful poll."""
 
 
 class ReceiverStatusSensor(ReceiverPollingSensor):
@@ -141,6 +150,13 @@ class ReceiverStatusSensor(ReceiverPollingSensor):
 
     def _native_value(self, status: ReceiverStatus) -> str:
         return status.playback_state
+
+    def _after_status_update(
+        self,
+        status: ReceiverStatus,
+        attributes: dict[str, Any],
+    ) -> None:
+        async_update_version_alignment_issue(self.hass, self.entry, attributes)
 
 
 class ReceiverDisplayModeSensor(ReceiverPollingSensor):

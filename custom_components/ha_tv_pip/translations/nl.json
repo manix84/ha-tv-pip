@@ -542,5 +542,11 @@
         }
       }
     }
+  },
+  "issues": {
+    "receiver_version_mismatch": {
+      "title": "HA TV PiP ontvangerversie komt niet overeen",
+      "description": "{receiver} gebruikt Android-ontvangerversie {receiver_version}, maar de Home Assistant integratie is versie {integration_version}. Installeer de Android-APK en Home Assistant integratie uit dezelfde GitHub Release voordat je problemen met afspelen, koppelen of externe ontvangers onderzoekt."
+    }
   }
 }
