@@ -1,5 +1,10 @@
 # What's New ✨
 
+## 1.31.38 - Slideshow Timer Reset Fix ⏱️
+
+- Restarted the screenshot slideshow timer when a user manually selects a slide dot 🎞️
+- Kept the selected dot progress fill aligned with the current slide after manual navigation 🟦
+
 ## 1.31.37 - Web Screenshot Asset Optimization 🖼️
 
 - Switched photo-like website screenshots and generated visuals to smaller JPEG assets for faster page loads ⚡

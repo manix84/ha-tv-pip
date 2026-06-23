@@ -282,6 +282,7 @@ function App() {
   });
   const [exampleTab, setExampleTab] = useState<ExampleTab>("standard");
   const [activeScreenshotIndex, setActiveScreenshotIndex] = useState(0);
+  const [screenshotCycle, setScreenshotCycle] = useState(0);
 
   useEffect(() => {
     window.localStorage.setItem("ha-tv-pip-theme", themeMode);
@@ -323,6 +324,7 @@ function App() {
 
   useEffect(() => {
     setActiveScreenshotIndex(0);
+    setScreenshotCycle((cycle) => cycle + 1);
   }, [locale]);
 
   useEffect(() => {
@@ -335,7 +337,12 @@ function App() {
     }, 6000);
 
     return () => window.clearInterval(interval);
-  }, [screenshotItems.length]);
+  }, [screenshotCycle, screenshotItems.length]);
+
+  function handleScreenshotSelection(index: number) {
+    setActiveScreenshotIndex(index);
+    setScreenshotCycle((cycle) => cycle + 1);
+  }
 
   function handleLocaleSelection(localeCode: WebsiteLocale, href: string) {
     window.localStorage.setItem(localePreferenceKey, localeCode);
@@ -506,10 +513,18 @@ function App() {
                 aria-selected={index === activeScreenshotIndex}
                 className={styles.screenshotDot}
                 key={screenshot.title}
-                onClick={() => setActiveScreenshotIndex(index)}
+                onClick={() => handleScreenshotSelection(index)}
                 role="tab"
                 type="button"
-              />
+              >
+                {index === activeScreenshotIndex ? (
+                  <span
+                    aria-hidden="true"
+                    className={styles.screenshotDotProgress}
+                    key={screenshotCycle}
+                  />
+                ) : null}
+              </button>
             ))}
           </div>
         </div>

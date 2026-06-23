@@ -409,10 +409,9 @@
   width: 2rem;
 }
 
-.screenshotDot[aria-selected="true"]::after {
+.screenshotDotProgress {
   animation: screenshotProgress 6000ms linear forwards;
   background: var(--accent);
-  content: "";
   inset: 0;
   position: absolute;
   transform-origin: left center;
@@ -438,7 +437,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .screenshotDot[aria-selected="true"]::after {
+  .screenshotDotProgress {
     animation: none;
     transform: scaleX(1);
   }
