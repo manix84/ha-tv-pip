@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.16 - One-Step Restream Save 🧭
+
+- Added `save: true` to `ha_tv_pip.test_restream_source` so a valid manual restream URL can be tested and saved in one action 🧰
+- Returned `saved_as_defaults`, `saved_defaults`, and a minimal `show_camera` next action after a successful validate-and-save call 🔄
+- Updated Home Assistant action metadata, translations, docs, and tests for the simpler guided restream workflow 🧪
+
 ## 1.31.15 - Saved Defaults Sensor Refresh 🔄
 
 - Made the Saved Camera Defaults sensor refresh immediately when per-camera defaults are saved or cleared 🩺

@@ -14,6 +14,7 @@ from custom_components.ha_tv_pip.client import (
     ShowCameraCommand,
 )
 from custom_components.ha_tv_pip.const import (
+    CONF_CAMERA_DEFAULTS,
     CONF_DEFAULT_DURATION_SECONDS,
     CONF_DEFAULT_HEIGHT,
     CONF_DEFAULT_POSITION,
@@ -2172,8 +2173,70 @@ def test_test_restream_source_returns_save_action_for_supported_hls(
                     "http://go2rtc.local:1984/api/stream.m3u8?src=front_door"
                 ),
                 ATTR_SNAPSHOT_FALLBACK: True,
+                ATTR_STREAM_TYPE: "hls",
             },
         },
+    }
+
+
+def test_test_restream_source_can_save_supported_hls_defaults(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from custom_components.ha_tv_pip import services
+
+    monkeypatch.setattr(
+        services,
+        "_async_receiver_capabilities",
+        lambda receiver: asyncio.sleep(0, result=_capabilities()),
+    )
+    entry = FakeEntry(
+        entry_id="entry-1",
+        data={
+            CONF_DEVICE_ID: "device-1",
+            CONF_NAME: "Nursery TV",
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "token",
+        },
+        options={},
+    )
+    hass = FakeHass(
+        entries=[entry],
+        states={"camera.front_door": FakeState({"friendly_name": "Front Door"})},
+    )
+
+    result = asyncio.run(
+        services.async_handle_test_restream_source(
+            hass,
+            FakeCall(
+                data={
+                    ATTR_CAMERA_ENTITY: "camera.front_door",
+                    ATTR_RESTREAM_PROVIDER: "go2rtc",
+                    ATTR_RESTREAM_URL: (
+                        "http://go2rtc.local:1984/api/stream.m3u8?"
+                        "src=front_door"
+                    ),
+                    ATTR_SAVE: True,
+                },
+                target={ATTR_DEVICE_ID: "device-1"},
+            ),
+        )
+    )
+
+    expected_defaults = {
+        ATTR_RESTREAM_PROVIDER: "go2rtc",
+        ATTR_RESTREAM_URL: "http://go2rtc.local:1984/api/stream.m3u8?src=front_door",
+        ATTR_SNAPSHOT_FALLBACK: True,
+        ATTR_STREAM_TYPE: "hls",
+    }
+    assert result["saved_as_defaults"] is True
+    assert result["saved_defaults"] == expected_defaults
+    assert result["next_action"] == {
+        "service": "show_camera",
+        "data": {ATTR_CAMERA_ENTITY: "camera.front_door"},
+    }
+    assert entry.options == {
+        CONF_CAMERA_DEFAULTS: {"camera.front_door": expected_defaults}
     }
 
 

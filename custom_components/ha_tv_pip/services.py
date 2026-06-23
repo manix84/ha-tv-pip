@@ -589,6 +589,7 @@ async def async_register_services(hass: Any) -> None:
                     vol.Required(ATTR_RESTREAM_URL): str,
                     vol.Optional(ATTR_RESTREAM_PROVIDER, default="go2rtc"): str,
                     vol.Optional(ATTR_CHECK_REACHABILITY, default=False): bool,
+                    vol.Optional(ATTR_SAVE, default=False): bool,
                     vol.Optional(ATTR_SNAPSHOT_FALLBACK, default=True): bool,
                 }
             ),
@@ -1178,16 +1179,30 @@ async def async_handle_test_restream_source(
         ),
     }
     if save_recommended:
+        save_defaults = {
+            ATTR_RESTREAM_PROVIDER: provider,
+            ATTR_RESTREAM_URL: restream_url,
+            ATTR_SNAPSHOT_FALLBACK: snapshot_fallback,
+            ATTR_STREAM_TYPE: stream_type,
+        }
         result["save_action"] = {
             "service": SERVICE_SAVE_RESTREAM_SOURCE,
             "target": {ATTR_DEVICE_ID: receiver.device_id},
             "data": {
                 ATTR_CAMERA_ENTITY: camera_entity,
-                ATTR_RESTREAM_PROVIDER: provider,
-                ATTR_RESTREAM_URL: restream_url,
-                ATTR_SNAPSHOT_FALLBACK: snapshot_fallback,
+                **save_defaults,
             },
         }
+        if bool(data.get(ATTR_SAVE, False)):
+            _save_camera_defaults(hass, receiver, camera_entity, save_defaults)
+            result["saved_as_defaults"] = True
+            result["saved_defaults"] = save_defaults
+            result["next_action"] = {
+                "service": SERVICE_SHOW_CAMERA,
+                "data": {ATTR_CAMERA_ENTITY: camera_entity},
+            }
+    elif bool(data.get(ATTR_SAVE, False)):
+        result["saved_as_defaults"] = False
     return result
 
 

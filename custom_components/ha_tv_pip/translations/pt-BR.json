@@ -408,6 +408,9 @@
         "check_reachability": {
           "name": "Check reachability"
         },
+        "save": {
+          "name": "Save if valid"
+        },
         "snapshot_fallback": {
           "name": "Snapshot fallback"
         }

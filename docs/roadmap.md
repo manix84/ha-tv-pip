@@ -862,6 +862,7 @@ Completed:
 - ✅ Automatic `restream_source_suggestion` payloads in compatibility and calibration results when restreaming is recommended.
 - ✅ Optional `restream_base_url` support for restream source suggestions when go2rtc is not reachable at the default placeholder host.
 - ✅ `ha_tv_pip.test_restream_source` helper action for validating a candidate manual HLS/MJPEG restream URL before saving it.
+- ✅ `save: true` on `ha_tv_pip.test_restream_source` so a valid manual restream URL can be tested and saved in one action.
 - ✅ Diagnostic entity categorization for detailed receiver, compatibility, command-result, connectivity, restreaming, and saved-defaults entities.
 
 Still future:

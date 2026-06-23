@@ -104,6 +104,7 @@ SERVICE_EXAMPLES: dict[str, set[str]] = {
         "check_reachability",
         "restream_provider",
         "restream_url",
+        "save",
         "snapshot_fallback",
     },
 }

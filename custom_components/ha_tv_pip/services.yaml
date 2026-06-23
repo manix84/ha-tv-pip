@@ -842,6 +842,14 @@ test_restream_source:
       name: Check reachability
       description: Try a lightweight URL reachability check from Home Assistant.
       example: false
+    save:
+      required: false
+      default: false
+      selector:
+        boolean:
+      name: Save if valid
+      description: Save this restream source as per-camera defaults when validation passes.
+      example: true
     snapshot_fallback:
       required: false
       default: true
