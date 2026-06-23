@@ -2064,6 +2064,20 @@ def test_suggest_restream_source_returns_manual_go2rtc_plan() -> None:
             ATTR_SNAPSHOT_FALLBACK: True,
         },
     }
+    assert result["test_action"] == {
+        "service": "test_restream_source",
+        "target": {ATTR_DEVICE_ID: "device-1"},
+        "data": {
+            ATTR_CAMERA_ENTITY: "camera.front_door_bell_main",
+            ATTR_RESTREAM_PROVIDER: "go2rtc",
+            ATTR_RESTREAM_URL: (
+                "http://homeassistant.local:1984/api/stream.m3u8?"
+                "src=front_door_bell_main"
+            ),
+            ATTR_CHECK_REACHABILITY: False,
+            ATTR_SAVE: False,
+        },
+    }
     assert result["provider_help"] == _expected_restreaming_provider_help()
 
 
@@ -2149,6 +2163,15 @@ def test_suggest_restream_source_returns_manual_frigate_plan() -> None:
         ATTR_RESTREAM_PROVIDER: "frigate",
         ATTR_RESTREAM_URL: "<tested frigate HLS or MJPEG URL for front_door>",
         ATTR_SNAPSHOT_FALLBACK: True,
+    }
+    assert result["test_action"]["data"] == {
+        ATTR_CAMERA_ENTITY: "camera.front_door",
+        ATTR_RESTREAM_PROVIDER: "frigate",
+        ATTR_RESTREAM_URL: (
+            "http://frigate.local:1984/api/stream.m3u8?src=front_door"
+        ),
+        ATTR_CHECK_REACHABILITY: False,
+        ATTR_SAVE: False,
     }
 
 

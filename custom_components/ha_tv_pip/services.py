@@ -2207,6 +2207,7 @@ def _restream_source_suggestion(
         base_url=base_url,
     )
     primary_stream_name = candidate_stream_names[0]
+    primary_hls_url = url_patterns[0]["hls"] if url_patterns else ""
     return {
         "accepted": True,
         "camera_entity": camera_entity,
@@ -2233,6 +2234,17 @@ def _restream_source_suggestion(
                     f"<tested {provider} HLS or MJPEG URL for {primary_stream_name}>"
                 ),
                 ATTR_SNAPSHOT_FALLBACK: True,
+            },
+        },
+        "test_action": {
+            "service": SERVICE_TEST_RESTREAM_SOURCE,
+            "target": {ATTR_DEVICE_ID: receiver.device_id},
+            "data": {
+                ATTR_CAMERA_ENTITY: camera_entity,
+                ATTR_RESTREAM_PROVIDER: provider,
+                ATTR_RESTREAM_URL: primary_hls_url,
+                ATTR_CHECK_REACHABILITY: False,
+                ATTR_SAVE: False,
             },
         },
         "provider_help": {

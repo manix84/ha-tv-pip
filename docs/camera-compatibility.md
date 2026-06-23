@@ -98,7 +98,7 @@ data:
   restream_base_url: http://homeassistant.local:1984
 ```
 
-The response includes candidate stream names, go2rtc/Frigate-style HLS/MJPEG URL patterns, provider help, and a `save_action` payload to use after you have tested a working URL. `restream_base_url` is optional; omit it to use the provider default suggestion. This is advisory only; it does not create provider streams automatically.
+The response includes candidate stream names, go2rtc/Frigate-style HLS/MJPEG URL patterns, provider help, a `test_action` payload for validating the first HLS candidate, and a `save_action` payload to use after you have tested a working URL. `restream_base_url` is optional; omit it to use the provider default suggestion. This is advisory only; it does not create provider streams automatically.
 
 Before saving one candidate, validate it with:
 

@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.21 - Restream Test Follow-Up 🧪
+
+- Added `test_action` to `ha_tv_pip.suggest_restream_source` responses so users can validate the first suggested HLS candidate without assembling the next service call manually 🧰
+- Covered both go2rtc and Frigate helper paths in tests 🔎
+- Updated docs for the suggestion-to-validation workflow 📚
+
 ## 1.31.20 - Copyable Compatibility Actions 📋
 
 - Added `service_call` payloads to camera compatibility `action_plan` responses so recommended next actions include `action`, `target.device_id`, and `data` 🧰
