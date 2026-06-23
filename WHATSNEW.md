@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.28 - Android Workflow SDK Setup Fix 🛠️
+
+- Removed the obsolete Android SDK `tools` package from release and Android quality workflow setup 🧰
+- Kept explicit platform and build-tools installation in place for debug, release, lint, typecheck, test, and dry-run jobs ✅
+- Bumped the release so GitHub can publish a clean package after the `1.31.27` debug APK setup failure 🔁
+
 ## 1.31.27 - Guided Restream Setup Steps 🧭
 
 - Added ordered setup steps to `ha_tv_pip.suggest_restream_source` so manual go2rtc/Frigate setup has a clear HLS-first, MJPEG-fallback, save-source flow 🧰
