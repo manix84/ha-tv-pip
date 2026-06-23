@@ -160,6 +160,78 @@ jobs:
           path: dist/ha-tv-pip-android-release-v${{ needs.setup.outputs.version }}.apk
           if-no-files-found: error
 
+  android-bundle:
+    name: Android AAB Release 📦
+    runs-on: ubuntu-latest
+    needs: setup
+    env:
+      ANDROID_RELEASE_KEYSTORE_BASE64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_BASE64 }}
+      HA_TV_PIP_RELEASE_STORE_PASSWORD: ${{ secrets.ANDROID_RELEASE_STORE_PASSWORD }}
+      HA_TV_PIP_RELEASE_KEY_ALIAS: ${{ secrets.ANDROID_RELEASE_KEY_ALIAS }}
+      HA_TV_PIP_RELEASE_KEY_PASSWORD: ${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+
+      - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-36.1" "build-tools;37.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Check signing secret completeness
+        run: |
+          configured=0
+          for value in \
+            "$ANDROID_RELEASE_KEYSTORE_BASE64" \
+            "$HA_TV_PIP_RELEASE_STORE_PASSWORD" \
+            "$HA_TV_PIP_RELEASE_KEY_ALIAS" \
+            "$HA_TV_PIP_RELEASE_KEY_PASSWORD"; do
+            if [ -n "$value" ]; then
+              configured=$((configured + 1))
+            fi
+          done
+
+          if [ "$configured" -ne 0 ] && [ "$configured" -ne 4 ]; then
+            echo "Android release signing is partially configured. Set all signing secrets or none of them."
+            exit 1
+          fi
+
+      - name: Decode release keystore
+        if: env.ANDROID_RELEASE_KEYSTORE_BASE64 != ''
+        run: |
+          mkdir -p "$RUNNER_TEMP/ha-tv-pip-signing"
+          echo "$ANDROID_RELEASE_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/ha-tv-pip-signing/release.keystore"
+          echo "HA_TV_PIP_RELEASE_STORE_FILE=$RUNNER_TEMP/ha-tv-pip-signing/release.keystore" >> "$GITHUB_ENV"
+
+      - name: Build release AAB
+        run: npm run android:bundle:release
+
+      - name: Prepare release AAB asset
+        run: |
+          mkdir -p dist
+          cp android-tv-app/app/build/outputs/bundle/release/app-release.aab \
+            "dist/ha-tv-pip-android-release-v${{ needs.setup.outputs.version }}.aab"
+
+      - name: Upload release AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release-aab
+          path: dist/ha-tv-pip-android-release-v${{ needs.setup.outputs.version }}.aab
+          if-no-files-found: error
+
   ha-integration:
     name: HA Integration Release 🏠
     runs-on: ubuntu-latest
@@ -193,6 +265,7 @@ jobs:
       - setup
       - android-debug
       - android-release
+      - android-bundle
       - ha-integration
 
     steps:
@@ -220,6 +293,7 @@ jobs:
       - setup
       - android-debug
       - android-release
+      - android-bundle
       - ha-integration
       - release-check
 
@@ -285,6 +359,7 @@ jobs:
             gh release upload "$RELEASE_TAG" \
               "dist/ha-tv-pip-android-debug-v$RELEASE_VERSION.apk" \
               "dist/ha-tv-pip-android-release-v$RELEASE_VERSION.apk" \
+              "dist/ha-tv-pip-android-release-v$RELEASE_VERSION.aab" \
               "dist/ha-tv-pip-integration-v$RELEASE_VERSION.zip" \
               "dist/ha-tv-pip-integration.zip" \
               --clobber
@@ -296,6 +371,7 @@ jobs:
           gh release create "$RELEASE_TAG" \
             "dist/ha-tv-pip-android-debug-v$RELEASE_VERSION.apk" \
             "dist/ha-tv-pip-android-release-v$RELEASE_VERSION.apk" \
+            "dist/ha-tv-pip-android-release-v$RELEASE_VERSION.aab" \
             "dist/ha-tv-pip-integration-v$RELEASE_VERSION.zip" \
             "dist/ha-tv-pip-integration.zip" \
             --draft \
@@ -319,6 +395,7 @@ jobs:
       - setup
       - android-debug
       - android-release
+      - android-bundle
       - ha-integration
       - release-check
       - publish

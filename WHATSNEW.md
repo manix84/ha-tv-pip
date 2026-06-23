@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.32 - Play Store App Bundle Release Asset 📦
+
+- Added a dedicated Android App Bundle release job for future Play Console upload 🏗️
+- Added release asset validation for the generated `.aab` archive shape 🔎
+- Updated release and Play Store prep docs to distinguish user-installable APKs from Play Console AAB uploads 📚
+
 ## 1.31.31 - Play Store Metadata Drafts 📺
 
 - Added Fastlane-compatible English Play Store listing metadata drafts for the Android TV receiver app 📝

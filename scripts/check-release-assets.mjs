@@ -13,6 +13,7 @@ if (!version || typeof version !== "string") {
 const expectedAssets = {
   debugApk: `ha-tv-pip-android-debug-v${version}.apk`,
   releaseApk: `ha-tv-pip-android-release-v${version}.apk`,
+  releaseBundle: `ha-tv-pip-android-release-v${version}.aab`,
   manualIntegrationZip: `ha-tv-pip-integration-v${version}.zip`,
   hacsIntegrationZip: "ha-tv-pip-integration.zip"
 };
@@ -92,6 +93,21 @@ function checkApk(name) {
   }
 }
 
+function checkAab(name) {
+  const path = requireFile(name);
+  if (!existsSync(path)) {
+    return;
+  }
+
+  const entries = zipEntries(path);
+  expectEntry(entries, "BundleConfig.pb", name);
+  expectEntry(entries, "base/manifest/AndroidManifest.xml", name);
+
+  if (!entries.some((entry) => /^base\/dex\/classes(\d+)?\.dex$/.test(entry))) {
+    failures.push(`${name} is missing base dex classes`);
+  }
+}
+
 function checkManualIntegrationZip(name) {
   const path = requireFile(name);
   if (!existsSync(path)) {
@@ -162,6 +178,7 @@ function expectManifestVersion(path, manifestPath, archiveName) {
 
 checkApk(expectedAssets.debugApk);
 checkApk(expectedAssets.releaseApk);
+checkAab(expectedAssets.releaseBundle);
 checkManualIntegrationZip(expectedAssets.manualIntegrationZip);
 checkHacsIntegrationZip(expectedAssets.hacsIntegrationZip);
 

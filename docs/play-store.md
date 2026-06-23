@@ -193,9 +193,17 @@ Current output:
 android-tv-app/app/build/outputs/bundle/release/app-release.aab
 ```
 
+GitHub Releases also attach a Play Console-ready bundle named:
+
+```txt
+ha-tv-pip-android-release-vX.Y.Z.aab
+```
+
+The AAB is for Play Console upload only. Users should continue to sideload `ha-tv-pip-android-release-vX.Y.Z.apk` until Play Store distribution is active.
+
 Do not commit keystores, passwords, generated signing reports, or Play Console credentials.
 
-The current automation only signs the release artifact. Play Store upload remains a future task.
+The current automation builds the release APK and App Bundle, and signs them when Android release signing secrets are configured. Play Store upload remains a future task.
 
 ## Release Notes Guidance 📦
 
@@ -228,6 +236,7 @@ Production release notes should include:
 - Android release APK builds.
 - Android release APK is signed when signing secrets are configured.
 - Android App Bundle build exists.
+- GitHub Release includes `ha-tv-pip-android-release-vX.Y.Z.aab`.
 - Release artifact version matches root `package.json`.
 - `PRIVACY.md` matches Play Console privacy answers.
 - Store listing screenshots contain no sensitive user data.
