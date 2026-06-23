@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.33 - Website Privacy Page 🔒
+
+- Added a public website privacy policy page suitable for Play Console privacy-policy URL requirements 🌐
+- Added the Privacy footer link across Tier 1 website locales 🧭
+- Added website tests for privacy route generation and footer translation coverage 🧪
+
 ## 1.31.32 - Play Store App Bundle Release Asset 📦
 
 - Added a dedicated Android App Bundle release job for future Play Console upload 🏗️

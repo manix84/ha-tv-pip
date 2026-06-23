@@ -133,6 +133,7 @@ export const de = {
       development: "Entwicklungsdokumente",
       github: "GitHub",
       license: "Lizenz",
+      privacy: "Datenschutz",
       releases: "Releases",
       roadmap: "Roadmap",
       translations: "Übersetzungen",

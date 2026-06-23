@@ -29,7 +29,7 @@ export const pl = {
     featuresSection: { eyebrow: "Funkcje", title: "Budowane etapami, zaprojektowane jako jedno doświadczenie." },
     flow: { eyebrow: "Jak to działa", steps: ["Zdarzenie Home Assistant", "Integracja HA TV PiP", "Aplikacja odbiornika Android TV", "Popup kamery PiP"], title: "Lokalna ścieżka od zdarzenia do popupu PiP." },
     footerAriaLabel: "Linki w stopce",
-    footerLinks: { architecture: "Architektura", development: "Dokumentacja deweloperska", github: "GitHub", license: "Licencja", releases: "Wydania", roadmap: "Roadmap", translations: "Tłumaczenia", troubleshooting: "Rozwiązywanie problemów" },
+    footerLinks: { architecture: "Architektura", development: "Dokumentacja deweloperska", github: "GitHub", license: "Licencja", privacy: "Prywatność", releases: "Wydania", roadmap: "Roadmap", translations: "Tłumaczenia", troubleshooting: "Rozwiązywanie problemów" },
     hero: { alt: "Android TV w salonie pokazujący kamerę bezpieczeństwa w Picture-in-Picture", ctaPrimary: "Zobacz na GitHub", ctaSecondary: "Przeczytaj roadmapę", overlayKicker: "Odbiornik Android TV", overlayState: "Tryb PiP gotowy", overlayTitle: "Odtwarzanie testowego strumienia HLS", signal: "Lokalna ścieżka automatyzacji", subtitle: "HA TV PiP pozwala automatyzacjom Home Assistant otwierać kamery bezpieczeństwa, snapshoty i alerty w Picture-in-Picture na Android TV i Google TV.", title: "Pokaż kamery Home Assistant na swoim Android TV.", versionLabel: "Wersja" },
     languageAriaLabel: "Język",
     problem: { body: "Home Assistant wykrywa dzwonki, ruch, osoby i zdarzenia kamer, ale naturalne pokazanie ich na telewizorze nadal jest niewygodne.", eyebrow: "Problem", title: "Alerty smart home zasługują na lepszy moment na TV." },

@@ -29,7 +29,7 @@ export const nl = {
     featuresSection: { eyebrow: "Functies", title: "Gebouwd in fases, ontworpen als één ervaring." },
     flow: { eyebrow: "Zo werkt het", steps: ["Home Assistant-event", "HA TV PiP-integratie", "Android TV receiver-app", "PiP-camera-pop-up"], title: "Een local-first pad van event naar PiP-pop-up." },
     footerAriaLabel: "Footerlinks",
-    footerLinks: { architecture: "Architectuur", development: "Ontwikkeldocs", github: "GitHub", license: "Licentie", releases: "Releases", roadmap: "Roadmap", translations: "Vertalingen", troubleshooting: "Probleemoplossing" },
+    footerLinks: { architecture: "Architectuur", development: "Ontwikkeldocs", github: "GitHub", license: "Licentie", privacy: "Privacy", releases: "Releases", roadmap: "Roadmap", translations: "Vertalingen", troubleshooting: "Probleemoplossing" },
     hero: { alt: "Android TV in de woonkamer toont een beveiligingscamera in Picture-in-Picture", ctaPrimary: "Bekijk op GitHub", ctaSecondary: "Lees de roadmap", overlayKicker: "Android TV receiver", overlayState: "PiP-modus klaar", overlayTitle: "Test-HLS-stream speelt", signal: "Lokaal automatiseringspad", subtitle: "HA TV PiP laat Home Assistant-automatiseringen beveiligingscamera's, snapshots en meldingen openen in Picture-in-Picture op Android TV- en Google TV-apparaten.", title: "Toon Home Assistant-camera's op je Android TV.", versionLabel: "Versie" },
     languageAriaLabel: "Taal",
     problem: { body: "Home Assistant kan deurbellen, beweging, personen en camera-events detecteren, maar die events natuurlijk tonen op een tv blijft omslachtig.", eyebrow: "Het probleem", title: "Smart-home meldingen verdienen een beter tv-moment." },

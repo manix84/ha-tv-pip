@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy | HA TV PiP</title>
+    <meta
+      name="description"
+      content="Privacy policy for HA TV PiP Receiver and the Home Assistant integration."
+    />
+    <link rel="icon" href="../favicon.png" />
+    <style>
+      :root {
+        color-scheme: dark light;
+        --background: #071018;
+        --panel: rgba(255, 255, 255, 0.08);
+        --panel-border: rgba(255, 255, 255, 0.18);
+        --text: #f4f8fb;
+        --muted: #b9c7d3;
+        --accent: #35c7f3;
+      }
+
+      @media (prefers-color-scheme: light) {
+        :root {
+          --background: #edf7fb;
+          --panel: rgba(255, 255, 255, 0.72);
+          --panel-border: rgba(12, 33, 48, 0.16);
+          --text: #10202d;
+          --muted: #445d70;
+          --accent: #007faf;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        background:
+          radial-gradient(circle at top left, rgba(53, 199, 243, 0.22), transparent 34rem),
+          linear-gradient(145deg, var(--background), #102736);
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        line-height: 1.65;
+      }
+
+      main {
+        width: min(880px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 64px 0;
+      }
+
+      article {
+        padding: clamp(24px, 5vw, 48px);
+        border: 1px solid var(--panel-border);
+        border-radius: 18px;
+        background: var(--panel);
+        box-shadow: 0 24px 72px rgba(0, 0, 0, 0.24);
+        backdrop-filter: blur(18px);
+      }
+
+      h1,
+      h2 {
+        line-height: 1.1;
+      }
+
+      h1 {
+        margin: 0 0 16px;
+        font-size: clamp(2.4rem, 6vw, 4.5rem);
+      }
+
+      h2 {
+        margin: 36px 0 12px;
+        font-size: clamp(1.35rem, 3vw, 1.8rem);
+      }
+
+      p,
+      li {
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      a {
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      .kicker {
+        margin: 0 0 12px;
+        color: var(--accent);
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .updated {
+        margin-top: 28px;
+        font-size: 0.92rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <article>
+        <p class="kicker">HA TV PiP</p>
+        <h1>Privacy Policy</h1>
+        <p>
+          HA TV PiP is local-first software. It does not collect, sell, or share
+          personal data with the project maintainers.
+        </p>
+
+        <h2>Current App Behaviour</h2>
+        <p>
+          The Android TV app can play camera streams and snapshots, advertise
+          itself on the local network, accept paired local commands from Home
+          Assistant, and optionally connect outbound to the user's own Home
+          Assistant external URL for remote receiver mode.
+        </p>
+        <p>
+          HA TV PiP does not use analytics, telemetry, advertising SDKs, a HA TV
+          PiP cloud relay, or maintainer-operated services.
+        </p>
+
+        <h2>Data Collection</h2>
+        <p>The project maintainers receive no app telemetry or usage data.</p>
+        <p>
+          The Android app may write local Android log messages for development
+          and debugging, including playback state, PiP state, pairing state,
+          request paths, and errors. Pairing tokens are not logged. These logs
+          stay on the Android device unless a developer manually exports them
+          with Android tooling.
+        </p>
+
+        <h2>Network Access</h2>
+        <p>
+          The Android app uses network access to load configured HLS streams and
+          snapshots, advertise and serve its local control endpoint on the LAN,
+          receive paired local commands, and optionally maintain an outbound
+          WebSocket connection to the user's own Home Assistant instance for
+          remote receiver mode.
+        </p>
+        <p>
+          The Home Assistant integration stores receiver host, port, device id,
+          receiver name, version, pairing state, API version, and a local bearer
+          token in Home Assistant config entry data. Camera stream and snapshot
+          URLs are resolved inside Home Assistant and sent to paired receivers
+          when the user triggers an action.
+        </p>
+
+        <h2>Future Features</h2>
+        <p>
+          Privacy behaviour should be reviewed again before WebRTC, hosted relay,
+          external analytics, crash reporting SDKs, or any third-party telemetry
+          feature is released.
+        </p>
+
+        <p class="updated">
+          Source policy:
+          <a href="https://github.com/manix84/ha-tv-pip/blob/main/PRIVACY.md">
+            PRIVACY.md
+          </a>
+        </p>
+      </article>
+    </main>
+  </body>
+</html>

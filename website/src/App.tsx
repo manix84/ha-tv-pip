@@ -44,6 +44,7 @@ const footerLinkUrls = {
   development: developmentUrl,
   github: githubUrl,
   license: licenseUrl,
+  privacy: "privacy/",
   releases: releasesUrl,
   roadmap: roadmapUrl,
   translations: translationsUrl,
@@ -60,6 +61,7 @@ const overflowFooterLinks = [
   "roadmap",
   "translations",
   "troubleshooting",
+  "privacy",
 ] satisfies Array<keyof WebsiteContent["footerLinks"]>;
 
 export const localePreferenceKey = "ha-tv-pip-locale";
@@ -187,6 +189,20 @@ export function getLocaleHref(pathname: string, locale: WebsiteLocale): string {
 
 function localePath(locale: WebsiteLocale): string {
   return supportedLocales.find((item) => item.code === locale)?.path ?? "/";
+}
+
+export function getStaticPageHref(
+  pathname: string,
+  pagePath: string
+): string {
+  const segments = pathname.split("/").filter(Boolean);
+  const localeIndex = segments.findIndex((segment) =>
+    routedLocaleCodes.has(segment.toLowerCase() as WebsiteLocale)
+  );
+  const baseSegments =
+    localeIndex === -1 ? segments : segments.slice(0, localeIndex);
+
+  return `/${[...baseSegments, pagePath.replace(/^\/|\/$/g, "")].join("/")}/`;
 }
 
 const automationExample = `
@@ -563,7 +579,14 @@ function App() {
               </summary>
               <div className={styles.footerMoreMenu}>
                 {overflowFooterLinks.map((key) => (
-                  <a href={footerLinkUrls[key]} key={key}>
+                  <a
+                    href={
+                      key === "privacy"
+                        ? getStaticPageHref(window.location.pathname, "privacy")
+                        : footerLinkUrls[key]
+                    }
+                    key={key}
+                  >
                     {content.footerLinks[key]}
                   </a>
                 ))}

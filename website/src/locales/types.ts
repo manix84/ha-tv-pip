@@ -56,6 +56,7 @@ export type WebsiteContent = {
     development: string;
     github: string;
     license: string;
+    privacy: string;
     releases: string;
     roadmap: string;
     translations: string;

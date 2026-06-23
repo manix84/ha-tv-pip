@@ -87,6 +87,14 @@ Reference policy:
 PRIVACY.md
 ```
 
+Public Play Console URL after website deployment:
+
+```txt
+https://manix84.github.io/ha-tv-pip/privacy/
+```
+
+The deployed page is generated from `website/public/privacy/index.html` and should stay aligned with root `PRIVACY.md`.
+
 ## Data Safety Prep 🛡️
 
 Expected Play Console answers for the current implementation:

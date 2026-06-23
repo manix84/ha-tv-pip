@@ -168,6 +168,7 @@ export const en = {
       development: "Development docs",
       github: "GitHub",
       license: "License",
+      privacy: "Privacy",
       releases: "Releases",
       roadmap: "Roadmap",
       translations: "Translations",

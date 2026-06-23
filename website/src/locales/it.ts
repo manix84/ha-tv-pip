@@ -29,7 +29,7 @@ export const it = {
     featuresSection: { eyebrow: "Funzionalità", title: "Costruito a fasi, progettato come un'unica esperienza." },
     flow: { eyebrow: "Come funziona", steps: ["Evento Home Assistant", "Integrazione HA TV PiP", "App receiver Android TV", "Popup camera PiP"], title: "Un percorso local-first dall'evento al popup PiP." },
     footerAriaLabel: "Link footer",
-    footerLinks: { architecture: "Architettura", development: "Documenti sviluppo", github: "GitHub", license: "Licenza", releases: "Release", roadmap: "Roadmap", translations: "Traduzioni", troubleshooting: "Risoluzione problemi" },
+    footerLinks: { architecture: "Architettura", development: "Documenti sviluppo", github: "GitHub", license: "Licenza", privacy: "Privacy", releases: "Release", roadmap: "Roadmap", translations: "Traduzioni", troubleshooting: "Risoluzione problemi" },
     hero: { alt: "Android TV in salotto che mostra una camera di sicurezza in Picture-in-Picture", ctaPrimary: "Vedi su GitHub", ctaSecondary: "Leggi la roadmap", overlayKicker: "Receiver Android TV", overlayState: "Modalità PiP pronta", overlayTitle: "Stream HLS di test in riproduzione", signal: "Percorso automazione locale", subtitle: "HA TV PiP permette alle automazioni Home Assistant di aprire feed di sicurezza, snapshot e avvisi in Picture-in-Picture su Android TV e Google TV.", title: "Mostra le camere Home Assistant sulla tua Android TV.", versionLabel: "Versione" },
     languageAriaLabel: "Lingua",
     problem: { body: "Home Assistant può rilevare campanelli, movimento, persone ed eventi camera, ma mostrarli in modo naturale sulla TV è ancora scomodo.", eyebrow: "Il problema", title: "Gli avvisi smart home meritano un momento TV migliore." },

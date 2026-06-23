@@ -6,6 +6,7 @@ import {
   getLocaleHref,
   getLocaleFromPath,
   getPreferredLocale,
+  getStaticPageHref,
   supportedLocales,
   translationTiers,
   websiteContent,
@@ -77,6 +78,7 @@ describe("App content", () => {
       expect(content.deviceSupport.items).toHaveLength(4);
       expect(content.translations.tiers).toHaveLength(3);
       expect(content.statusLabels.complete).toBeTruthy();
+      expect(content.footerLinks.privacy).toBeTruthy();
 
       if (locale.code !== "en") {
         expect(content.hero.title).not.toBe(englishTitle);
@@ -96,6 +98,16 @@ describe("App content", () => {
     expect(getLocaleHref("/ha-tv-pip/de/", "fr")).toBe("/ha-tv-pip/fr/");
     expect(getLocaleHref("/ha-tv-pip/de/", "en")).toBe("/ha-tv-pip/");
     expect(getLocaleHref("/de/", "en")).toBe("/");
+  });
+
+  it("builds static page links outside locale route prefixes", () => {
+    expect(getStaticPageHref("/ha-tv-pip/", "privacy")).toBe(
+      "/ha-tv-pip/privacy/"
+    );
+    expect(getStaticPageHref("/ha-tv-pip/de/", "privacy")).toBe(
+      "/ha-tv-pip/privacy/"
+    );
+    expect(getStaticPageHref("/pt-br/", "privacy")).toBe("/privacy/");
   });
 
   it("uses saved language before browser detection", () => {
