@@ -90,6 +90,7 @@ export type WebsiteContent = {
     items: Array<{
       alt: string;
       description: string;
+      image: "dashboard" | "cameraPopup" | "cameraNotification" | "homepagePopup" | "homepageNotification";
       title: string;
     }>;
     title: string;

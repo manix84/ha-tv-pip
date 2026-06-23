@@ -5,10 +5,14 @@ This folder contains sanitized screenshots for project promotion and release mat
 ## Current Captures ✅
 
 - `android-tv-dashboard.png` — Android TV receiver dashboard on a connected Google TV device.
+- `android-tv-camera-popup.png` — cropped camera popup detail with no launcher context.
+- `android-tv-camera-notification.png` — cropped camera popup with notification title and message.
+- `android-tv-homepage-camera-popup.png` — full Google TV home screen with the camera popup visible and the profile avatar replaced.
+- `android-tv-homepage-camera-notification.png` — full Google TV home screen with the notification popup visible and the profile avatar replaced.
 
 ## Planned Captures 📋
 
-See `docs/play-store-assets.md` for the full Play Store screenshot and graphics checklist. The next captures should cover the receiver dashboard, pairing popup, PiP/overlay camera popup, snapshot popup, remote receiver state, and Home Assistant device controls using only non-sensitive test data.
+See `docs/play-store-assets.md` for the full Play Store screenshot and graphics checklist. The next captures should cover the pairing popup, snapshot popup, remote receiver state, and Home Assistant device controls using only non-sensitive test data.
 
 ## Privacy Notes 🔐
 

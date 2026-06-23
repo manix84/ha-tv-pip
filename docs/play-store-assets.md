@@ -74,6 +74,8 @@ Before committing screenshots:
 ## Current Repository Assets 📦
 
 - `docs/assets/screenshots/android-tv-dashboard.png` exists as a sanitized Android TV dashboard capture.
+- `docs/assets/screenshots/android-tv-camera-popup.png` and `android-tv-camera-notification.png` show cropped popup detail captures.
+- `docs/assets/screenshots/android-tv-homepage-camera-popup.png` and `android-tv-homepage-camera-notification.png` show full Google TV launcher captures with the profile avatar replaced.
 - `brand/`, `icon.png`, and `logo.png` support HACS / repository presentation.
 - Android launcher and TV banner assets live in the Android app resources.
 - Website imagery lives under `website/src/assets/`.
@@ -81,7 +83,7 @@ Before committing screenshots:
 
 ## Before Public Store Submission ✅
 
-- Add at least two strong Android TV screenshots.
+- Capture additional setup and Home Assistant screenshots.
 - Confirm the feature graphic matches the HA TV PiP brand rather than a generic smart-home graphic.
 - Confirm screenshots still match the current app UI.
 - Confirm no screenshot exposes private camera, network, or account data.

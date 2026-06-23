@@ -332,10 +332,10 @@
   object-position: center;
 }
 
-.screenshotGrid {
+.screenshotSlideshow {
   display: grid;
   gap: 1rem;
-  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
 }
 
 .screenshotCard {
@@ -346,13 +346,16 @@
   border-radius: 8px;
   box-shadow: var(--shadow);
   margin: 0;
+  max-width: 960px;
   overflow: hidden;
+  width: 100%;
 }
 
 .screenshotCard img {
   aspect-ratio: 16 / 9;
   display: block;
   object-fit: cover;
+  transition: opacity 180ms ease;
   width: 100%;
 }
 
@@ -372,6 +375,73 @@
   color: var(--text-muted);
   line-height: 1.6;
   margin: 0;
+}
+
+.screenshotControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: center;
+}
+
+.screenshotDot {
+  appearance: none;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: none;
+  cursor: pointer;
+  height: 0.75rem;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease,
+    width 180ms ease;
+  width: 0.75rem;
+}
+
+.screenshotDot[aria-selected="true"] {
+  background: var(--surface-strong);
+  border-color: var(--accent);
+  width: 2rem;
+}
+
+.screenshotDot[aria-selected="true"]::after {
+  animation: screenshotProgress 6000ms linear forwards;
+  background: var(--accent);
+  content: "";
+  inset: 0;
+  position: absolute;
+  transform-origin: left center;
+}
+
+.screenshotDot:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.screenshotDot:hover {
+  transform: translateY(-1px);
+}
+
+@keyframes screenshotProgress {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screenshotDot[aria-selected="true"]::after {
+    animation: none;
+    transform: scaleX(1);
+  }
 }
 
 .roadmap {

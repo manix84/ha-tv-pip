@@ -179,7 +179,36 @@ export const de = {
           alt: "HA TV PiP Receiver-Dashboard auf Android TV",
           description:
             "Das Receiver-Dashboard ist für D-Pad-Navigation, klaren Pairing-Status, sichtbare PiP-Steuerung und schnelle Setup-Hinweise ausgelegt.",
+          image: "dashboard",
           title: "Android-TV-Receiver-Dashboard",
+        },
+        {
+          alt: "Kamera-Popup von HA TV PiP als abgerundetes Overlay",
+          description:
+            "Kamera-Popups können als kompaktes abgerundetes Overlay erscheinen, damit Bewegungs-, Klingel- und Alarmereignisse den TV nicht übernehmen.",
+          image: "cameraPopup",
+          title: "Kamera-Popup im Detail",
+        },
+        {
+          alt: "Kamera-Popup mit Titel und Nachricht unter dem Feed",
+          description:
+            "Stilisierte Benachrichtigungen können Live-Kamera oder Snapshot mit Titel und Nachricht für reichere Home-Assistant-Alarme kombinieren.",
+          image: "cameraNotification",
+          title: "Kamera-Popup mit Benachrichtigungstext",
+        },
+        {
+          alt: "HA TV PiP Kamera-Popup über dem Google-TV-Startbildschirm",
+          description:
+            "Der Receiver kann Kamera-Popups über dem Android-TV- oder Google-TV-Launcher anzeigen, wenn der Overlay-Fallback verfügbar ist.",
+          image: "homepagePopup",
+          title: "Popup über dem TV-Startbildschirm",
+        },
+        {
+          alt: "HA TV PiP Kamera-Benachrichtigung über dem Google-TV-Startbildschirm",
+          description:
+            "Benachrichtigungstext kann zusammen mit der Kameraansicht erscheinen, damit eine Automation erklärt, warum der Feed angezeigt wurde.",
+          image: "homepageNotification",
+          title: "Benachrichtigung über dem TV-Startbildschirm",
         },
       ],
       title: "Echte Receiver-Bildschirme von Android TV.",

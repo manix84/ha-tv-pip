@@ -1,5 +1,12 @@
 # What's New ✨
 
+## 1.31.36 - Website Screenshot Slideshow 🎞️
+
+- Added cropped PiP and full Google TV homepage PiP screenshots to the promotional website 📺
+- Replaced the screenshot grid with an automatic slideshow and manual progress-dot controls 🟦
+- Added the dashboard and homepage PiP screenshots to the root README as a quick visual promo 🖼️
+- Updated screenshot asset documentation for website and Play Store preparation 📸
+
 ## 1.31.35 - Website Screenshot Section 📸
 
 - Added a real Android TV receiver dashboard screenshot to the promotional website 🖼️

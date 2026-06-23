@@ -1,7 +1,11 @@
 import { useEffect, useId, useState } from "react";
 import styles from "./App.module.scss";
 import controlMockup from "./assets/home-assistant-control.png";
+import cameraNotificationScreenshot from "./assets/ha-tv-pip-camera-notification.png";
+import cameraPopupScreenshot from "./assets/ha-tv-pip-camera-popup.png";
 import dashboardScreenshot from "./assets/ha-tv-pip-dashboard.png";
+import homepageNotificationScreenshot from "./assets/ha-tv-pip-homepage-camera-notification.png";
+import homepagePopupScreenshot from "./assets/ha-tv-pip-homepage-camera-popup.png";
 import networkMockup from "./assets/local-network-pip.png";
 import heroCleanMockup from "./assets/tv-pip-hero-clean.png";
 import phaseOnePromoMockup from "./assets/tv-pip-promo.png";
@@ -51,6 +55,14 @@ const footerLinkUrls = {
   translations: translationsUrl,
   troubleshooting: troubleshootingUrl,
 } satisfies Record<keyof WebsiteContent["footerLinks"], string>;
+
+const screenshotImages = {
+  cameraNotification: cameraNotificationScreenshot,
+  cameraPopup: cameraPopupScreenshot,
+  dashboard: dashboardScreenshot,
+  homepageNotification: homepageNotificationScreenshot,
+  homepagePopup: homepagePopupScreenshot,
+} satisfies Record<WebsiteContent["screenshots"]["items"][number]["image"], string>;
 const primaryFooterLinks = [
   "architecture",
   "development",
@@ -269,6 +281,7 @@ function App() {
       : "auto";
   });
   const [exampleTab, setExampleTab] = useState<ExampleTab>("standard");
+  const [activeScreenshotIndex, setActiveScreenshotIndex] = useState(0);
 
   useEffect(() => {
     window.localStorage.setItem("ha-tv-pip-theme", themeMode);
@@ -298,12 +311,31 @@ function App() {
   }, [locale]);
 
   const content = websiteContent[locale];
+  const screenshotItems = content.screenshots.items;
+  const activeScreenshot =
+    screenshotItems[activeScreenshotIndex % screenshotItems.length];
   const activeExample =
     exampleTab === "standard" ? automationExample : mjpegAutomationExample;
   const visualCards = content.visualCards.map((card, index) => ({
     ...card,
     image: index === 0 ? controlMockup : networkMockup,
   }));
+
+  useEffect(() => {
+    setActiveScreenshotIndex(0);
+  }, [locale]);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const interval = window.setInterval(() => {
+      setActiveScreenshotIndex((index) => (index + 1) % screenshotItems.length);
+    }, 6000);
+
+    return () => window.clearInterval(interval);
+  }, [screenshotItems.length]);
 
   function handleLocaleSelection(localeCode: WebsiteLocale, href: string) {
     window.localStorage.setItem(localePreferenceKey, localeCode);
@@ -452,16 +484,34 @@ function App() {
         id="screenshots"
         title={content.screenshots.title}
       >
-        <div className={styles.screenshotGrid}>
-          {content.screenshots.items.map((screenshot) => (
-            <figure className={styles.screenshotCard} key={screenshot.title}>
-              <img alt={screenshot.alt} src={dashboardScreenshot} />
-              <figcaption>
-                <strong>{screenshot.title}</strong>
-                <p>{screenshot.description}</p>
-              </figcaption>
-            </figure>
-          ))}
+        <div className={styles.screenshotSlideshow}>
+          <figure className={styles.screenshotCard}>
+            <img
+              alt={activeScreenshot.alt}
+              src={screenshotImages[activeScreenshot.image]}
+            />
+            <figcaption>
+              <strong>{activeScreenshot.title}</strong>
+              <p>{activeScreenshot.description}</p>
+            </figcaption>
+          </figure>
+          <div
+            aria-label={content.screenshots.title}
+            className={styles.screenshotControls}
+            role="tablist"
+          >
+            {screenshotItems.map((screenshot, index) => (
+              <button
+                aria-label={screenshot.title}
+                aria-selected={index === activeScreenshotIndex}
+                className={styles.screenshotDot}
+                key={screenshot.title}
+                onClick={() => setActiveScreenshotIndex(index)}
+                role="tab"
+                type="button"
+              />
+            ))}
+          </div>
         </div>
       </Section>
 

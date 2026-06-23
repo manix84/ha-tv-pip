@@ -214,7 +214,36 @@ export const en = {
           alt: "HA TV PiP receiver dashboard running on Android TV",
           description:
             "The receiver dashboard is designed for D-pad navigation, clear pairing state, visible PiP controls, and quick setup guidance.",
+          image: "dashboard",
           title: "Android TV receiver dashboard",
+        },
+        {
+          alt: "Camera popup from HA TV PiP shown as a rounded overlay",
+          description:
+            "Camera popups can use a compact rounded overlay so motion, doorbell, and alert events appear without taking over the TV.",
+          image: "cameraPopup",
+          title: "Camera popup detail",
+        },
+        {
+          alt: "Camera popup with title and message text below the feed",
+          description:
+            "Styled notifications can combine a live camera or snapshot with a title and message for richer Home Assistant alerts.",
+          image: "cameraNotification",
+          title: "Camera popup with notification text",
+        },
+        {
+          alt: "HA TV PiP camera popup displayed over the Google TV home screen",
+          description:
+            "The receiver can show camera popups over the Android TV or Google TV launcher when overlay fallback is available.",
+          image: "homepagePopup",
+          title: "Popup over the TV home screen",
+        },
+        {
+          alt: "HA TV PiP camera notification displayed over the Google TV home screen",
+          description:
+            "Notification text can sit with the camera view so an automation can explain why the feed appeared.",
+          image: "homepageNotification",
+          title: "Notification over the TV home screen",
         },
       ],
       title: "Real receiver screens from Android TV.",
