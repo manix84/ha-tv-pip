@@ -83,6 +83,7 @@ class LocalControlServer(
             request.method == "GET" && request.path == "/status" -> statusResponse()
             request.method == "POST" && request.path == "/pair/start" -> pairStartResponse(request.body)
             request.method == "POST" && request.path == "/pair/confirm" -> pairConfirmResponse(request.body)
+            request.method == "POST" && request.path == "/pair/reset" -> pairResetResponse(request)
             request.method == "POST" && request.path == "/show" -> showResponse(request)
             request.method == "POST" && request.path == "/close" -> closeResponse(request)
             request.method == "POST" && request.path == "/management/open" -> managementOpenResponse(request)
@@ -120,6 +121,7 @@ class LocalControlServer(
                         .put(endpoint("GET", "/status", "Receiver and playback status"))
                         .put(endpoint("POST", "/pair/start", "Start local pairing"))
                         .put(endpoint("POST", "/pair/confirm", "Confirm local pairing code"))
+                        .put(endpoint("POST", "/pair/reset", "Reset receiver pairing"))
                         .put(endpoint("POST", "/show", "Show a stream, snapshot, or notification"))
                         .put(endpoint("POST", "/close", "Close the active display"))
                         .put(endpoint("POST", "/management/open", "Open receiver management UI"))
@@ -186,6 +188,26 @@ class LocalControlServer(
                 .put("clientId", result.clientId)
                 .put("clientName", result.clientName)
                 .put("token", result.token)
+        )
+    }
+
+    private fun pairResetResponse(request: HttpRequest): HttpResponse {
+        val authFailure = authorizeRequest(body = request.body, request = request)
+        if (authFailure != null) return authFailure
+
+        PairingState.reset(context)
+        RemoteConnectionSettings.clear(context)
+        LauncherVisibility.setVisible(context, true)
+        onPairingChanged()
+        onRemoteSettingsChanged()
+        AppLog.pairingEvent("pairing_reset_remote", PairingStatus.Unpaired.wireName)
+        return HttpResponse.json(
+            status = 202,
+            body = JSONObject()
+                .put("accepted", true)
+                .put("pairingState", PairingStatus.Unpaired.wireName)
+                .put("launcherVisible", LauncherVisibility.isVisible(context))
+                .put("remoteEnabled", false)
         )
     }
 
@@ -418,6 +440,7 @@ class LocalControlServer(
             "/status",
             "/pair/start",
             "/pair/confirm",
+            "/pair/reset",
             "/show",
             "/close",
             "/management/open",
@@ -437,7 +460,7 @@ private fun allowedMethodsFor(path: String): JSONArray =
     JSONArray().apply {
         when (path) {
             "/", "/status" -> put("GET")
-            "/pair/start", "/pair/confirm", "/show", "/close", "/management/open", "/management/launcher", "/management/remote" -> put("POST")
+            "/pair/start", "/pair/confirm", "/pair/reset", "/show", "/close", "/management/open", "/management/launcher", "/management/remote" -> put("POST")
         }
     }
 
@@ -487,7 +510,8 @@ private fun parsePairingStartRequest(body: String): Result<PairingStartRequest> 
         val json = JSONObject(body.ifBlank { "{}" })
         PairingStartRequest(
             clientId = json.optString("clientId").ifBlank { "home-assistant" },
-            clientName = json.optString("clientName").ifBlank { "Home Assistant" }
+            clientName = json.optString("clientName").ifBlank { "Home Assistant" },
+            replaceExisting = json.optBoolean("replaceExisting", false)
         )
     }
 

@@ -70,8 +70,10 @@
     <string name="waiting_for_value">Oczekiwanie na: %1$s</string>
     <string name="paired_with_value">Sparowano z: %1$s</string>
     <string name="pairing_dialog_title">Sparuj ten odbiornik</string>
+    <string name="pairing_dialog_replace_title">Zastąpić parowanie odbiornika?</string>
     <string name="pairing_dialog_requested_by">Żądanie od: %1$s</string>
     <string name="pairing_dialog_instruction">Wpisz ten kod w Home Assistant, aby zakończyć parowanie.</string>
+    <string name="pairing_dialog_replace_instruction">Wpisz ten kod tylko wtedy, gdy zastępujesz bieżące parowanie Home Assistant. Po potwierdzeniu żądający będzie mógł sterować tym odbiornikiem.</string>
     <string name="pairing_dialog_expiry">Ten kod wygaśnie po kilku minutach. Możesz ukryć ten popup i kontynuować parowanie z poziomu panelu.</string>
     <string name="diagnostics_release_version">Wersja wydania</string>
     <string name="diagnostics_endpoint">Endpoint</string>

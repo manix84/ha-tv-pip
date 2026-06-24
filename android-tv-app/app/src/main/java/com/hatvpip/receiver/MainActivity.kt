@@ -435,7 +435,11 @@ private fun PairingCodeDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = stringResource(R.string.pairing_dialog_title),
+                text = if (pairingSnapshot.pendingReplacesExisting) {
+                    stringResource(R.string.pairing_dialog_replace_title)
+                } else {
+                    stringResource(R.string.pairing_dialog_title)
+                },
                 fontWeight = FontWeight.Bold
             )
         },
@@ -448,7 +452,11 @@ private fun PairingCodeDialog(
                     )
                 }
                 Text(
-                    text = stringResource(R.string.pairing_dialog_instruction),
+                    text = if (pairingSnapshot.pendingReplacesExisting) {
+                        stringResource(R.string.pairing_dialog_replace_instruction)
+                    } else {
+                        stringResource(R.string.pairing_dialog_instruction)
+                    },
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(

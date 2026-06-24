@@ -70,8 +70,10 @@
     <string name="waiting_for_value">Wacht op: %1$s</string>
     <string name="paired_with_value">Gekoppeld met: %1$s</string>
     <string name="pairing_dialog_title">Deze receiver koppelen</string>
+    <string name="pairing_dialog_replace_title">Receiverkoppeling vervangen?</string>
     <string name="pairing_dialog_requested_by">Aangevraagd door: %1$s</string>
     <string name="pairing_dialog_instruction">Voer deze code in Home Assistant in om het koppelen te voltooien.</string>
+    <string name="pairing_dialog_replace_instruction">Voer deze code alleen in als je de huidige Home Assistant-koppeling vervangt. Na bevestiging kan de aanvrager deze receiver bedienen.</string>
     <string name="pairing_dialog_expiry">Deze code verloopt na enkele minuten. Je kunt deze popup verbergen en verder koppelen via het dashboard.</string>
     <string name="diagnostics_release_version">Releaseversie</string>
     <string name="diagnostics_endpoint">Endpoint</string>

@@ -189,6 +189,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
                     receiver.port,
                     client_id=PAIRING_CLIENT_ID,
                     client_name=PAIRING_CLIENT_NAME,
+                    replace_existing=True,
                 )
             except ReceiverClientError as error:
                 _LOGGER.warning("Unable to start HA TV PiP pairing: %s", error)

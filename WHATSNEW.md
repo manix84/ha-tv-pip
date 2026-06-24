@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.43 - Home Assistant Unpair Sync 🔐
+
+- Added an authenticated receiver reset endpoint so Home Assistant can tell the Android TV app when a receiver config entry is deleted 🔁
+- Cleared receiver pairing, remote setup, and restored the launcher icon when Home Assistant removes a reachable receiver 🧹
+- Allowed Home Assistant setup to replace a stale app-side pairing with a new TV-visible code if the TV missed the delete notification 📺
+
 ## 1.31.42 - Play Version Code Automation 📦
 
 - Updated the Android App Bundle with a new Play Console version code so `1.31.42` can be uploaded after the earlier `versionCode 1` test build ✅

@@ -12,8 +12,10 @@ from custom_components.ha_tv_pip.client import (
     async_close_receiver,
     async_get_receiver_status,
     async_open_receiver,
+    async_reset_receiver_pairing,
     async_set_launcher_visible,
     async_set_remote_configuration,
+    async_start_pairing,
     show_camera_payload,
 )
 
@@ -98,6 +100,39 @@ def test_post_json_sends_snapshot_stream_type(monkeypatch) -> None:  # type: ign
     )
 
     assert '"streamType": "snapshot"' in captured["body"]
+
+
+def test_async_start_pairing_can_request_replacement(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    captured = {}
+
+    async def fake_to_thread(func, *args):  # type: ignore[no-untyped-def]
+        captured.update({"path": args[2], "payload": args[3]})
+        return {"pairingState": "pending", "expiresInSeconds": 300}
+
+    monkeypatch.setattr(
+        "custom_components.ha_tv_pip.client.asyncio.to_thread",
+        fake_to_thread,
+    )
+
+    result = asyncio.run(
+        async_start_pairing(
+            "10.0.0.236",
+            8765,
+            client_id="home-assistant",
+            client_name="Home Assistant",
+            replace_existing=True,
+        )
+    )
+
+    assert result.pairing_state == "pending"
+    assert captured == {
+        "path": "/pair/start",
+        "payload": {
+            "clientId": "home-assistant",
+            "clientName": "Home Assistant",
+            "replaceExisting": True,
+        },
+    }
 
 
 def test_show_camera_payload_can_send_mjpeg_stream_type() -> None:
@@ -477,6 +512,24 @@ def test_async_open_receiver_returns_accepted(monkeypatch) -> None:  # type: ign
     )
 
     assert asyncio.run(async_open_receiver("10.0.0.236", 8765, token="token")) is True
+
+
+def test_async_reset_receiver_pairing_returns_accepted(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    async def fake_to_thread(func, *args):  # type: ignore[no-untyped-def]
+        assert args[2] == "/pair/reset"
+        assert args[3] == {}
+        assert args[4] == "token"
+        return {"accepted": True}
+
+    monkeypatch.setattr(
+        "custom_components.ha_tv_pip.client.asyncio.to_thread",
+        fake_to_thread,
+    )
+
+    assert (
+        asyncio.run(async_reset_receiver_pairing("10.0.0.236", 8765, token="token"))
+        is True
+    )
 
 
 def test_async_set_launcher_visible_returns_receiver_state(monkeypatch) -> None:  # type: ignore[no-untyped-def]

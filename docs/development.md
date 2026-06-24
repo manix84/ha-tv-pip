@@ -279,9 +279,14 @@ The Android receiver exposes authenticated endpoints for paired clients:
 ```txt
 POST /management/open
 POST /management/launcher
+POST /pair/reset
 ```
 
 `/management/open` reopens the receiver UI on the TV.
+
+`/pair/reset` clears the paired Home Assistant token, clears remote receiver settings, and restores the launcher icon. Home Assistant calls this as a best-effort cleanup when a receiver config entry is deleted; deletion still succeeds if the TV is offline.
+
+`/pair/start` accepts `replaceExisting: true` during Home Assistant setup. This lets a user with access to the TV replace a stale app-side pairing if Home Assistant previously deleted the config entry while the TV was unreachable. The existing token remains valid until the replacement code is confirmed.
 
 `/management/launcher` accepts:
 

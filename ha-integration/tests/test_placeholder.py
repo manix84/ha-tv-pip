@@ -4,12 +4,17 @@ import types
 from dataclasses import dataclass
 from typing import Any
 
-from custom_components.ha_tv_pip import async_setup_entry, async_unload_entry
+from custom_components.ha_tv_pip import (
+    async_remove_entry,
+    async_setup_entry,
+    async_unload_entry,
+)
 from custom_components.ha_tv_pip.const import (
     CONF_DEVICE_ID,
     CONF_HOST,
     CONF_NAME,
     CONF_PORT,
+    CONF_TOKEN,
     CONF_VERSION,
     DOMAIN,
 )
@@ -124,4 +129,66 @@ def test_config_entry_unload_hook_removes_entry() -> None:
     hass.data[DOMAIN] = {"entries": {"entry-1": entry}}
 
     assert asyncio.run(async_unload_entry(hass=hass, entry=entry)) is True
+    assert hass.data[DOMAIN]["entries"] == {}
+
+
+def test_config_entry_remove_hook_resets_receiver_pairing(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    captured = {}
+
+    async def fake_reset_receiver_pairing(host: str, port: int, *, token: str) -> bool:
+        captured.update({"host": host, "port": port, "token": token})
+        return True
+
+    monkeypatch.setattr(
+        "custom_components.ha_tv_pip.async_reset_receiver_pairing",
+        fake_reset_receiver_pairing,
+    )
+
+    hass = FakeHass()
+    entry = FakeConfigEntry(
+        entry_id="entry-1",
+        data={
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "pairing-token",
+        },
+    )
+    hass.data[DOMAIN] = {"entries": {"entry-1": entry}}
+
+    asyncio.run(async_remove_entry(hass=hass, entry=entry))
+
+    assert captured == {
+        "host": "10.0.0.236",
+        "port": 8765,
+        "token": "pairing-token",
+    }
+    assert hass.data[DOMAIN]["entries"] == {}
+
+
+def test_config_entry_remove_hook_continues_when_receiver_is_unavailable(
+    monkeypatch: Any,
+) -> None:
+    from custom_components.ha_tv_pip.client import ReceiverClientError
+
+    async def fake_reset_receiver_pairing(host: str, port: int, *, token: str) -> bool:
+        raise ReceiverClientError("offline")
+
+    monkeypatch.setattr(
+        "custom_components.ha_tv_pip.async_reset_receiver_pairing",
+        fake_reset_receiver_pairing,
+    )
+
+    hass = FakeHass()
+    entry = FakeConfigEntry(
+        entry_id="entry-1",
+        data={
+            CONF_HOST: "10.0.0.236",
+            CONF_PORT: 8765,
+            CONF_TOKEN: "pairing-token",
+        },
+    )
+    hass.data[DOMAIN] = {"entries": {"entry-1": entry}}
+
+    asyncio.run(async_remove_entry(hass=hass, entry=entry))
+
     assert hass.data[DOMAIN]["entries"] == {}

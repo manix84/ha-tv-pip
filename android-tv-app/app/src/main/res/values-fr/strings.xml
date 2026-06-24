@@ -70,8 +70,10 @@
     <string name="waiting_for_value">En attente de : %1$s</string>
     <string name="paired_with_value">Associé à : %1$s</string>
     <string name="pairing_dialog_title">Associer ce récepteur</string>
+    <string name="pairing_dialog_replace_title">Remplacer l’association du récepteur ?</string>
     <string name="pairing_dialog_requested_by">Demandé par : %1$s</string>
     <string name="pairing_dialog_instruction">Saisissez ce code dans Home Assistant pour terminer l’association.</string>
+    <string name="pairing_dialog_replace_instruction">Saisissez ce code uniquement si vous remplacez l’association Home Assistant actuelle. Après confirmation, le demandeur pourra contrôler ce récepteur.</string>
     <string name="pairing_dialog_expiry">Ce code expire après quelques minutes. Vous pouvez masquer ce popup et continuer l’association depuis le tableau de bord.</string>
     <string name="diagnostics_release_version">Version de release</string>
     <string name="diagnostics_endpoint">Point de terminaison</string>

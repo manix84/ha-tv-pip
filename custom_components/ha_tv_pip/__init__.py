@@ -4,11 +4,13 @@
 
 from typing import Any
 
+from .client import ReceiverClientError, async_reset_receiver_pairing
 from .const import (
     CONF_DEVICE_ID,
     CONF_HOST,
     CONF_NAME,
     CONF_PORT,
+    CONF_TOKEN,
     CONF_VERSION,
     DOMAIN,
     PLATFORMS,
@@ -61,3 +63,19 @@ async def async_unload_entry(hass: Any, entry: Any) -> bool:
             return False
     hass.data.get(DOMAIN, {}).get("entries", {}).pop(entry.entry_id, None)
     return True
+
+
+async def async_remove_entry(hass: Any, entry: Any) -> None:
+    """Notify a receiver when its Home Assistant config entry is deleted."""
+
+    host = str(entry.data.get(CONF_HOST, "")).strip()
+    port = int(entry.data.get(CONF_PORT, 0) or 0)
+    token = str(entry.data.get(CONF_TOKEN, "")).strip()
+
+    if host and port and token:
+        try:
+            await async_reset_receiver_pairing(host, port, token=token)
+        except ReceiverClientError:
+            pass
+
+    hass.data.get(DOMAIN, {}).get("entries", {}).pop(entry.entry_id, None)

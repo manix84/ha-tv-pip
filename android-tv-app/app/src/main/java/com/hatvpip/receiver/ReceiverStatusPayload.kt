@@ -27,6 +27,7 @@ object ReceiverStatusPayload {
                 JSONObject()
                     .put("state", pairing.state.wireName)
                     .put("pendingClientName", pairing.pendingClientName)
+                    .put("pendingReplacesExisting", pairing.pendingReplacesExisting)
                     .put("pairedClientName", pairing.pairedClientName)
             )
             .put("apiVersion", 1)

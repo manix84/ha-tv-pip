@@ -188,13 +188,16 @@ async def async_start_pairing(
     *,
     client_id: str,
     client_name: str,
+    replace_existing: bool = False,
 ) -> PairingStartResult:
     """Ask the receiver to show a pairing code on the TV."""
 
-    payload = {
+    payload: dict[str, Any] = {
         "clientId": client_id,
         "clientName": client_name,
     }
+    if replace_existing:
+        payload["replaceExisting"] = True
     response = await asyncio.to_thread(
         _post_json,
         host,
@@ -240,6 +243,20 @@ async def async_confirm_pairing(
         client_id=str(response.get("clientId", client_id)),
         client_name=str(response.get("clientName", client_name)),
     )
+
+
+async def async_reset_receiver_pairing(host: str, port: int, *, token: str) -> bool:
+    """Ask the paired receiver to forget this Home Assistant pairing."""
+
+    response = await asyncio.to_thread(
+        _post_json,
+        host,
+        port,
+        "/pair/reset",
+        {},
+        token,
+    )
+    return bool(response.get("accepted", False))
 
 
 async def async_show_camera(

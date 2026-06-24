@@ -107,6 +107,12 @@ If the receiver app is hidden from the Android TV launcher:
 - If pairing has been reset or was never completed, restart the receiver app or service; the launcher icon is restored automatically when no paired Home Assistant client exists.
 - PiP, snapshot, and notification commands should not require the user to manually open the app first after normal receiver startup behavior is available on the TV.
 
+## Receiver Still Shows Paired After Deleting In Home Assistant 🔐
+
+When a HA TV PiP receiver config entry is deleted, Home Assistant asks the paired Android TV receiver to clear its pairing and remote setup before forgetting the entry. This works only while the TV is reachable on the local network.
+
+If the TV was offline or unreachable during deletion, the Android app may still show the previous Home Assistant pairing. Add the receiver in Home Assistant again and enter the new TV-visible code; the app allows this replacement pairing when you have access to the TV. The TV prompt is labeled as a pairing replacement and should only be accepted if you started the add flow yourself. You can also open the receiver app on the TV and use `Reset Pairing`.
+
 ## Remote Receiver Not Connected 🌍
 
 - Confirm the Home Assistant external URL is reachable from the TV network.

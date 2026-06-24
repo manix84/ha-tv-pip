@@ -9,6 +9,7 @@ data class PairingSnapshot(
     val pairingRequired: Boolean,
     val pendingCode: String? = null,
     val pendingClientName: String? = null,
+    val pendingReplacesExisting: Boolean = false,
     val pairedClientName: String? = null
 )
 
@@ -20,7 +21,8 @@ enum class PairingStatus(val wireName: String) {
 
 data class PairingStartRequest(
     val clientId: String,
-    val clientName: String
+    val clientName: String,
+    val replaceExisting: Boolean = false
 )
 
 data class PairingConfirmRequest(
@@ -49,8 +51,21 @@ object PairingState {
     fun snapshot(context: Context, nowMillis: Long = System.currentTimeMillis()): PairingSnapshot {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val pairedClientName = prefs.getString(KEY_CLIENT_NAME, null)
-        if (pairedClientName != null && prefs.getString(KEY_TOKEN, null) != null) {
-            pending = null
+        val hasStoredPairing = pairedClientName != null && prefs.getString(KEY_TOKEN, null) != null
+        val activePending = pending?.takeIf { it.expiresAtMillis > nowMillis }
+        if (activePending != null) {
+            return PairingSnapshot(
+                state = PairingStatus.Pending,
+                pairingRequired = !hasStoredPairing,
+                pendingCode = activePending.code,
+                pendingClientName = activePending.clientName,
+                pendingReplacesExisting = activePending.replaceExisting,
+                pairedClientName = pairedClientName
+            )
+        }
+
+        pending = null
+        if (hasStoredPairing) {
             return PairingSnapshot(
                 state = PairingStatus.Paired,
                 pairingRequired = false,
@@ -58,20 +73,9 @@ object PairingState {
             )
         }
 
-        val activePending = pending?.takeIf { it.expiresAtMillis > nowMillis }
-        if (activePending == null) {
-            pending = null
-            return PairingSnapshot(
-                state = PairingStatus.Unpaired,
-                pairingRequired = true
-            )
-        }
-
         return PairingSnapshot(
-            state = PairingStatus.Pending,
-            pairingRequired = true,
-            pendingCode = activePending.code,
-            pendingClientName = activePending.clientName
+            state = PairingStatus.Unpaired,
+            pairingRequired = true
         )
     }
 
@@ -81,13 +85,14 @@ object PairingState {
         nowMillis: Long = System.currentTimeMillis()
     ): Result<PairingSnapshot> {
         val current = snapshot(context, nowMillis)
-        if (current.state == PairingStatus.Paired) {
+        if (current.state == PairingStatus.Paired && !request.replaceExisting) {
             return Result.failure(IllegalStateException("already_paired"))
         }
 
         pending = PendingPairing(
             clientId = request.clientId,
             clientName = request.clientName,
+            replaceExisting = request.replaceExisting,
             code = generateCode(),
             expiresAtMillis = nowMillis + PAIRING_CODE_TTL_MS
         )
@@ -177,6 +182,7 @@ object PairingState {
     private data class PendingPairing(
         val clientId: String,
         val clientName: String,
+        val replaceExisting: Boolean,
         val code: String,
         val expiresAtMillis: Long
     )

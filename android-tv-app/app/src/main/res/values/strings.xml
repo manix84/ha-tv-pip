@@ -80,8 +80,10 @@
     <string name="waiting_for_value">Waiting for: %1$s</string>
     <string name="paired_with_value">Paired with: %1$s</string>
     <string name="pairing_dialog_title">Pair this receiver</string>
+    <string name="pairing_dialog_replace_title">Replace receiver pairing?</string>
     <string name="pairing_dialog_requested_by">Requested by: %1$s</string>
     <string name="pairing_dialog_instruction">Enter this code in Home Assistant to finish pairing.</string>
+    <string name="pairing_dialog_replace_instruction">Enter this code only if you are replacing the current Home Assistant pairing. Confirming it will let the requester control this receiver.</string>
     <string name="pairing_dialog_expiry">This code expires after a few minutes. You can hide this popup and keep pairing from the dashboard.</string>
 
     <string name="diagnostics_release_version">Release version</string>

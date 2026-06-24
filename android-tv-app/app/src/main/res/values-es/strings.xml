@@ -70,8 +70,10 @@
     <string name="waiting_for_value">Esperando a: %1$s</string>
     <string name="paired_with_value">Emparejado con: %1$s</string>
     <string name="pairing_dialog_title">Emparejar este receptor</string>
+    <string name="pairing_dialog_replace_title">¿Reemplazar el emparejamiento del receptor?</string>
     <string name="pairing_dialog_requested_by">Solicitado por: %1$s</string>
     <string name="pairing_dialog_instruction">Introduce este código en Home Assistant para terminar el emparejamiento.</string>
+    <string name="pairing_dialog_replace_instruction">Introduce este código solo si vas a reemplazar el emparejamiento actual de Home Assistant. Al confirmarlo, el solicitante podrá controlar este receptor.</string>
     <string name="pairing_dialog_expiry">Este código caduca después de unos minutos. Puedes ocultar esta ventana y continuar el emparejamiento desde el panel.</string>
     <string name="diagnostics_release_version">Versión de lanzamiento</string>
     <string name="diagnostics_endpoint">Endpoint</string>

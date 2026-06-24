@@ -70,8 +70,10 @@
     <string name="waiting_for_value">Wartet auf: %1$s</string>
     <string name="paired_with_value">Gekoppelt mit: %1$s</string>
     <string name="pairing_dialog_title">Diesen Receiver koppeln</string>
+    <string name="pairing_dialog_replace_title">Receiver-Kopplung ersetzen?</string>
     <string name="pairing_dialog_requested_by">Angefordert von: %1$s</string>
     <string name="pairing_dialog_instruction">Gib diesen Code in Home Assistant ein, um die Kopplung abzuschließen.</string>
+    <string name="pairing_dialog_replace_instruction">Gib diesen Code nur ein, wenn du die aktuelle Home Assistant-Kopplung ersetzen möchtest. Nach der Bestätigung kann der Anforderer diesen Receiver steuern.</string>
     <string name="pairing_dialog_expiry">Dieser Code läuft nach einigen Minuten ab. Du kannst dieses Popup ausblenden und die Kopplung im Dashboard fortsetzen.</string>
     <string name="diagnostics_release_version">Release-Version</string>
     <string name="diagnostics_endpoint">Endpunkt</string>
