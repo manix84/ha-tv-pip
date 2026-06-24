@@ -108,7 +108,7 @@ curl -X POST http://ANDROID_TV_IP:8765/show \
 ```
 
 Stage 4 requires pairing before `/show` and `/close`. Start pairing from Home Assistant or call `/pair/start`; the pairing code is shown on the TV only and is not returned over HTTP.
-During an active pairing request, the app shows a TV-side pairing popup with the code. If the popup is dismissed, the same code remains visible in the Pairing dashboard section until it expires or pairing completes.
+Starting pairing opens the receiver management screen automatically so the TV-side pairing popup is visible even if the launcher was not already open. If the popup is dismissed, the same code remains visible in the Pairing dashboard section until it expires or pairing completes.
 
 Duplicate `/show` requests replace the current playback or overlay. `durationSeconds` is enforced for both full-screen playback and the overlay fallback.
 `/status` also reports endpoint diagnostics, including control uptime, request count, the previous request, and a nested `playback` object with display mode, stream type, media URL, preview URL, playable fallback URL/type, error detail, and update time.
@@ -149,6 +149,7 @@ Use the returned token as `Authorization: Bearer TOKEN` for `/show` and `/close`
 ## Receiver Management Testing 🧰
 
 Paired Home Assistant instances can open the receiver UI and hide or restore the launcher icon through authenticated management endpoints.
+The launcher icon can only be hidden after pairing is complete, because Home Assistant is then available as the recovery path. If pairing is reset or missing, the receiver restores the launcher icon automatically on app/service startup so Android Settings and the TV launcher can reopen the app.
 
 ```sh
 curl -X POST http://ANDROID_TV_IP:8765/management/open \

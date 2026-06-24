@@ -104,6 +104,7 @@ If the receiver app is hidden from the Android TV launcher:
 
 - Use the Home Assistant receiver device's Open Launcher button.
 - Or open Android Settings > Apps > HA TV PiP.
+- If pairing has been reset or was never completed, restart the receiver app or service; the launcher icon is restored automatically when no paired Home Assistant client exists.
 - PiP, snapshot, and notification commands should not require the user to manually open the app first after normal receiver startup behavior is available on the TV.
 
 ## Remote Receiver Not Connected 🌍

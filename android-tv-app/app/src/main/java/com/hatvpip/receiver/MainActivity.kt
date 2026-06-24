@@ -178,7 +178,9 @@ class MainActivity : ComponentActivity() {
 
     private fun resetPairing() {
         PairingState.reset(this)
+        LauncherVisibility.setVisible(this, true)
         pairingSnapshot = PairingState.snapshot(this)
+        launcherVisible = LauncherVisibility.isVisible(this)
         AppLog.pairingEvent("pairing_reset", pairingSnapshot?.state?.wireName ?: "unknown")
         startService(
             Intent(this, LocalControlService::class.java)
@@ -187,7 +189,9 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun updateLauncherVisibility(visible: Boolean) {
-        LauncherVisibility.setVisible(this, visible)
+        val pairingStatus = PairingState.snapshot(this).state
+        val nextVisible = LauncherVisibilityPolicy.visibilityForRequest(visible, pairingStatus)
+        LauncherVisibility.setVisible(this, nextVisible)
         launcherVisible = LauncherVisibility.isVisible(this)
         AppLog.lifecycleEvent(
             event = "launcher_visibility_changed",
@@ -381,6 +385,7 @@ private fun MainScreen(
             )
 
             ReceiverManagementPanel(
+                pairingSnapshot = pairingSnapshot,
                 launcherVisible = launcherVisible,
                 sectionFocusRequester = launcherSectionFocusRequester,
                 launcherButtonFocusRequester = launcherButtonFocusRequester,
@@ -1107,6 +1112,7 @@ private fun StatusPill(
 
 @Composable
 private fun ReceiverManagementPanel(
+    pairingSnapshot: PairingSnapshot?,
     launcherVisible: Boolean,
     sectionFocusRequester: FocusRequester,
     launcherButtonFocusRequester: FocusRequester,
@@ -1133,6 +1139,16 @@ private fun ReceiverManagementPanel(
             color = MaterialTheme.colorScheme.onSurface,
             fontSize = 15.sp
         )
+        val canHideLauncher = LauncherVisibilityPolicy.canHideLauncher(
+            pairingSnapshot?.state ?: PairingStatus.Unpaired
+        )
+        if (launcherVisible && !canHideLauncher) {
+            Text(
+                text = stringResource(R.string.launcher_pair_before_hiding),
+                color = MaterialTheme.colorScheme.onSurface,
+                fontSize = 15.sp
+            )
+        }
         TvActionButton(
             text = if (launcherVisible) {
                 stringResource(R.string.action_hide_launcher_icon)
@@ -1140,6 +1156,7 @@ private fun ReceiverManagementPanel(
                 stringResource(R.string.action_show_launcher_icon)
             },
             onClick = { onSetLauncherVisible(!launcherVisible) },
+            enabled = !launcherVisible || canHideLauncher,
             focusRequester = launcherButtonFocusRequester,
             upFocusRequester = sectionFocusRequester,
             downFocusRequester = downFocusRequester,
@@ -1249,6 +1266,7 @@ private fun TvActionButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     focusRequester: FocusRequester? = null,
     upFocusRequester: FocusRequester? = null,
     downFocusRequester: FocusRequester? = null,
@@ -1260,6 +1278,7 @@ private fun TvActionButton(
 
     Button(
         onClick = onClick,
+        enabled = enabled,
         modifier = modifier
             .then(focusRequester?.let { Modifier.focusRequester(it) } ?: Modifier)
             .focusProperties {
@@ -1275,7 +1294,9 @@ private fun TvActionButton(
         ),
         colors = ButtonDefaults.buttonColors(
             containerColor = if (isFocused) colors.tertiary else colors.primary,
-            contentColor = if (isFocused) colors.onTertiary else colors.onPrimary
+            contentColor = if (isFocused) colors.onTertiary else colors.onPrimary,
+            disabledContainerColor = colors.surfaceVariant,
+            disabledContentColor = colors.onSurfaceVariant
         )
     ) {
         Text(

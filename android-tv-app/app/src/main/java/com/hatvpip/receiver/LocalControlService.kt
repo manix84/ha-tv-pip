@@ -16,6 +16,7 @@ class LocalControlService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        restoreLauncherIfPairingRequiresIt()
         startForeground(NOTIFICATION_ID, buildNotification())
         ReceiverServiceRuntimeState.markForegroundStarted()
         discoveryAdvertiser = DiscoveryAdvertiser(applicationContext)
@@ -55,6 +56,7 @@ class LocalControlService : Service() {
             startReason
         )
         if (intent?.action == ACTION_PAIRING_CHANGED) {
+            restoreLauncherIfPairingRequiresIt()
             refreshDiscovery()
             remoteReceiverClient?.reconnect()
         }
@@ -169,6 +171,15 @@ class LocalControlService : Service() {
 
     private fun refreshDiscovery() {
         discoveryAdvertiser?.refresh()
+    }
+
+    private fun restoreLauncherIfPairingRequiresIt() {
+        val pairing = PairingState.snapshot(applicationContext)
+        val launcherVisible = LauncherVisibility.isVisible(applicationContext)
+        if (LauncherVisibilityPolicy.shouldRestoreLauncher(pairing.state, launcherVisible)) {
+            LauncherVisibility.setVisible(applicationContext, true)
+            AppLog.lifecycleEvent("launcher_visibility_restored", pairing.state.wireName)
+        }
     }
 
     private fun openManagement() {

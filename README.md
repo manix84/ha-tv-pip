@@ -146,7 +146,7 @@ curl -X POST http://ANDROID_TV_IP:8765/close \
 ```
 
 The receiver requires pairing before `/show` and `/close`. Start pairing from Home Assistant or with `POST /pair/start`; the pairing code is shown on the TV only.
-During an active pairing request, the TV app also shows a pairing popup with the six-digit code. If that popup is dismissed, the code remains visible in the Pairing dashboard section until the pairing session expires or completes.
+Starting pairing opens the receiver app automatically so the TV-side pairing popup with the six-digit code is visible. If that popup is dismissed, the code remains visible in the Pairing dashboard section until the pairing session expires or completes.
 
 ## Local Discovery MVP 🔎
 
@@ -261,7 +261,7 @@ Future roadmap:
 - Default HACS repository inclusion so HA TV PiP can be installed without adding a custom repository 🧩
 - Long-term official Home Assistant integration track, including config-flow polish, repairs, diagnostics, translations, tests, and architecture review readiness 🏠
 - Play Store distribution for the Android TV app, including Console submission, listing assets, data-safety review, screenshots, and tester guidance once Google developer account verification is complete 📺
-- Receiver management improvements, including hiding the launcher icon safely while keeping receiver control available after TV restarts 🕹️
+- Receiver management improvements, including hiding the launcher icon only after pairing and restoring it automatically if pairing is missing 🕹️
 - Fire TV / Vega OS receiver support so HA TV PiP is not limited to Android TV and Google TV devices 🔥
 - Exploratory Apple TV support, likely as a separate receiver design because tvOS has different background, PiP, and distribution constraints 🍎
 - Broader localization beyond Tier 1 languages, with native-speaker review before wide public release 🌍

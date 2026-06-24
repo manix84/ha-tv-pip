@@ -260,7 +260,7 @@ POST /pair/start
 POST /pair/confirm
 ```
 
-`/pair/start` opens a short pairing window and shows the code on the TV screen only. The HTTP response deliberately does not include the code, so LAN clients must have access to the TV display to pair.
+`/pair/start` opens a short pairing window, launches the receiver UI, and shows the code on the TV screen only. The HTTP response deliberately does not include the code, so LAN clients must have access to the TV display to pair.
 
 After `/pair/confirm` succeeds, `/show` and `/close` require:
 
@@ -298,7 +298,7 @@ Home Assistant represents this as:
 
 Launcher controls are marked as Home Assistant config entities so they are visually separated from day-to-day PiP controls where Home Assistant supports that grouping.
 
-If the launcher icon is hidden, users can recover through Home Assistant's Open Launcher control or Android Settings > Apps > HA TV PiP. The Android app registers boot and package-replaced receivers so the local control service can start after restart without manually opening the app first.
+The launcher icon can only be hidden after pairing is complete. If the launcher icon is hidden, users can recover through Home Assistant's Open Launcher control or Android Settings > Apps > HA TV PiP. If pairing is reset or missing, the Android app restores the launcher icon automatically during app/service startup. The Android app registers boot and package-replaced receivers so the local control service can start after restart without manually opening the app first.
 
 ## Remote Receiver Development 🌍
 

@@ -151,6 +151,7 @@ class LocalControlServer(
         }
         AppLog.pairingEvent("pairing_started", pairing.state.wireName)
         onPairingChanged()
+        onOpenManagement()
 
         return HttpResponse.json(
             status = 202,
@@ -277,7 +278,9 @@ class LocalControlServer(
                 body = JSONObject().put("error", "`visible` boolean is required")
             )
         }
-        LauncherVisibility.setVisible(context, visible)
+        val pairingStatus = PairingState.snapshot(context).state
+        val nextVisible = LauncherVisibilityPolicy.visibilityForRequest(visible, pairingStatus)
+        LauncherVisibility.setVisible(context, nextVisible)
         return HttpResponse.json(
             status = 202,
             body = JSONObject()

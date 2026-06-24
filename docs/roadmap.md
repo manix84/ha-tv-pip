@@ -566,7 +566,7 @@ Include:
 - Home Assistant exposes PiP controls separately from launcher controls where Home Assistant supports config entity grouping.
 - Home Assistant exposes a Hide Launcher switch and Open Launcher button.
 - Android boot and package-replaced receivers request local control service startup so paired commands can work after restart without manually opening the app.
-- Users can recover access without ADB through Home Assistant's Open Launcher control or Android Settings > Apps > HA TV PiP.
+- Users can recover access without ADB through Home Assistant's Open Launcher control or Android Settings > Apps > HA TV PiP; unpaired receivers restore the launcher icon automatically.
 
 ---
 
@@ -677,7 +677,7 @@ This was also the main translation implementation pass. Tier 1 languages are com
 - Section cards now use a TV-friendly glass treatment with clearer focus states.
 - All dashboard sections are focusable containers, with D-pad navigation moving from section to controls and back in a predictable order.
 - `Reset Pairing` and `Clear Remote` now show confirmation warnings before taking destructive action.
-- Active pairing requests now show a TV-side pairing popup with the six-digit code while keeping the code visible in the Pairing dashboard section as a fallback.
+- Active pairing requests now open the receiver app and show a TV-side pairing popup with the six-digit code while keeping the code visible in the Pairing dashboard section as a fallback.
 - Play Store listing copy, privacy wording, screenshot/graphics checklist, signing guidance, and release-note guidance are documented in `docs/play-store.md`.
 
 ## Remote Setup Direction

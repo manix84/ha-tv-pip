@@ -75,6 +75,7 @@
     <string name="last_error_value">Last error: %1$s</string>
     <string name="launcher_icon_value">Launcher icon: %1$s</string>
     <string name="launcher_help">If hidden, Home Assistant can reopen this screen with the Open Launcher button. You can also recover from Android Settings &gt; Apps &gt; HA TV PiP.</string>
+    <string name="launcher_pair_before_hiding">Pair this receiver before hiding the launcher icon.</string>
     <string name="pairing_code_value">Pairing code: %1$s</string>
     <string name="waiting_for_value">Waiting for: %1$s</string>
     <string name="paired_with_value">Paired with: %1$s</string>
