@@ -65,6 +65,7 @@
     <string name="last_error_value">Ostatni błąd: %1$s</string>
     <string name="launcher_icon_value">Ikona launchera: %1$s</string>
     <string name="launcher_help">Jeśli jest ukryta, Home Assistant może ponownie otworzyć ten ekran przyciskiem Otwórz launcher. Możesz też odzyskać dostęp przez Ustawienia Androida &gt; Aplikacje &gt; HA TV PiP.</string>
+    <string name="launcher_pair_before_hiding">Sparuj ten odbiornik, zanim ukryjesz ikonę launchera.</string>
     <string name="pairing_code_value">Kod parowania: %1$s</string>
     <string name="waiting_for_value">Oczekiwanie na: %1$s</string>
     <string name="paired_with_value">Sparowano z: %1$s</string>

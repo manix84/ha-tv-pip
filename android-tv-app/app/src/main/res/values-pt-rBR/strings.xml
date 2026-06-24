@@ -65,6 +65,7 @@
     <string name="last_error_value">Último erro: %1$s</string>
     <string name="launcher_icon_value">Ícone do inicializador: %1$s</string>
     <string name="launcher_help">Se estiver oculto, o Home Assistant pode reabrir esta tela com o botão Abrir inicializador. Você também pode recuperar pelo Android Configurações &gt; Apps &gt; HA TV PiP.</string>
+    <string name="launcher_pair_before_hiding">Pareie este receptor antes de ocultar o ícone do inicializador.</string>
     <string name="pairing_code_value">Código de pareamento: %1$s</string>
     <string name="waiting_for_value">Aguardando: %1$s</string>
     <string name="paired_with_value">Pareado com: %1$s</string>

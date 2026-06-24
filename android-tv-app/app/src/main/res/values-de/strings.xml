@@ -65,6 +65,7 @@
     <string name="last_error_value">Letzter Fehler: %1$s</string>
     <string name="launcher_icon_value">Launcher-Symbol: %1$s</string>
     <string name="launcher_help">Wenn es ausgeblendet ist, kann Home Assistant diesen Bildschirm mit der Schaltfläche „Launcher öffnen“ wieder öffnen. Du kannst die App auch über Android-Einstellungen &gt; Apps &gt; HA TV PiP wiederfinden.</string>
+    <string name="launcher_pair_before_hiding">Kopple diesen Empfänger, bevor du das Launcher-Symbol ausblendest.</string>
     <string name="pairing_code_value">Kopplungscode: %1$s</string>
     <string name="waiting_for_value">Wartet auf: %1$s</string>
     <string name="paired_with_value">Gekoppelt mit: %1$s</string>

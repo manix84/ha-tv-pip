@@ -117,6 +117,16 @@ export function bumpSemver(version, bumpType) {
   throw new Error(`Unsupported version bump: ${bumpType}`);
 }
 
+export function androidVersionCodeForVersion(version) {
+  const parsed = parseSemver(version);
+  for (const [name, value] of Object.entries(parsed)) {
+    if (value > 999) {
+      throw new Error(`Android versionCode mapping requires ${name} <= 999: ${version}`);
+    }
+  }
+  return (parsed.major * 1_000_000) + (parsed.minor * 1_000) + parsed.patch;
+}
+
 export function runGit(args, options = {}) {
   const result = spawnSync("git", args, {
     encoding: "utf8",

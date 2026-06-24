@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.42 - Play Version Code Automation 📦
+
+- Updated the Android App Bundle with a new Play Console version code so `1.31.42` can be uploaded after the earlier `versionCode 1` test build ✅
+- Added an explicit release-prep command for future Android `versionCode` updates so Play uploads keep increasing without burning codes on every commit 🔢
+- Added a release workflow check to catch Android `versionCode` drift before release artifacts are published 🧪
+
 ## 1.31.41 - Receiver Launcher Recovery Fix 🕹️
 
 - Prevented hiding the Android TV launcher icon until receiver pairing is complete 🔐

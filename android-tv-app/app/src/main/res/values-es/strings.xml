@@ -65,6 +65,7 @@
     <string name="last_error_value">Último error: %1$s</string>
     <string name="launcher_icon_value">Icono del lanzador: %1$s</string>
     <string name="launcher_help">Si está oculto, Home Assistant puede reabrir esta pantalla con el botón Abrir lanzador. También puedes recuperarlo desde Ajustes de Android &gt; Aplicaciones &gt; HA TV PiP.</string>
+    <string name="launcher_pair_before_hiding">Empareja este receptor antes de ocultar el icono del lanzador.</string>
     <string name="pairing_code_value">Código de emparejamiento: %1$s</string>
     <string name="waiting_for_value">Esperando a: %1$s</string>
     <string name="paired_with_value">Emparejado con: %1$s</string>

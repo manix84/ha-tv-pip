@@ -1,6 +1,6 @@
 {
   "name": "ha-tv-pip",
-  "version": "1.31.41",
+  "version": "1.31.42",
   "private": true,
   "description": "Monorepo for the HA TV PiP Android TV receiver and future Home Assistant integration.",
   "license": "MIT",
@@ -32,6 +32,8 @@
     "version:major": "node scripts/bump-version.mjs major",
     "version:minor": "node scripts/bump-version.mjs minor",
     "version:patch": "node scripts/bump-version.mjs patch",
+    "version:android-code": "node scripts/sync-android-version-code.mjs",
+    "version:android-code:check": "node scripts/sync-android-version-code.mjs --check",
     "version:precommit": "node scripts/precommit-version-bump.mjs",
     "android:test": "npm --prefix android-tv-app run test",
     "website:build": "npm --prefix website run build",

@@ -65,6 +65,7 @@
     <string name="last_error_value">Dernière erreur : %1$s</string>
     <string name="launcher_icon_value">Icône du lanceur : %1$s</string>
     <string name="launcher_help">Si elle est masquée, Home Assistant peut rouvrir cet écran avec le bouton Ouvrir le lanceur. Vous pouvez aussi récupérer l’accès via Paramètres Android &gt; Applications &gt; HA TV PiP.</string>
+    <string name="launcher_pair_before_hiding">Associez ce récepteur avant de masquer l’icône du lanceur.</string>
     <string name="pairing_code_value">Code d’association : %1$s</string>
     <string name="waiting_for_value">En attente de : %1$s</string>
     <string name="paired_with_value">Associé à : %1$s</string>

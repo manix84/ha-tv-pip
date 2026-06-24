@@ -58,9 +58,10 @@ Do not upload the APK to Play Console. APKs remain useful for sideloading and de
 Before upload:
 
 1. Confirm the release version matches root `package.json`.
-2. Confirm the GitHub Release includes the signed release APK, debug APK, AAB, and Home Assistant integration zips.
-3. Confirm the Android receiver version and HACS integration version match.
-4. Confirm `npm run check` passed before the release was published.
+2. Run `npm run version:android-code` before building the release artifacts, then confirm the Android `versionCode` is higher than any version code already uploaded to Play Console.
+3. Confirm the GitHub Release includes the signed release APK, debug APK, AAB, and Home Assistant integration zips.
+4. Confirm the Android receiver version and HACS integration version match.
+5. Confirm `npm run check` passed before the release was published.
 
 ## App Access And Reviewer Notes 🔎
 

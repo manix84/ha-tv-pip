@@ -65,6 +65,7 @@
     <string name="last_error_value">Ultimo errore: %1$s</string>
     <string name="launcher_icon_value">Icona launcher: %1$s</string>
     <string name="launcher_help">Se nascosta, Home Assistant può riaprire questa schermata con il pulsante Apri launcher. Puoi anche recuperarla da Impostazioni Android &gt; App &gt; HA TV PiP.</string>
+    <string name="launcher_pair_before_hiding">Associa questo ricevitore prima di nascondere l’icona launcher.</string>
     <string name="pairing_code_value">Codice di associazione: %1$s</string>
     <string name="waiting_for_value">In attesa di: %1$s</string>
     <string name="paired_with_value">Associato con: %1$s</string>

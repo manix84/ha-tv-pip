@@ -8,6 +8,7 @@ Run from the repository root:
 
 ```sh
 npm run check
+npm run version:android-code
 npm run website:build
 npm run package:integration
 npm run android:assemble:debug
@@ -97,4 +98,3 @@ Use non-sensitive cameras, public test streams, or staged test content.
 - Confirm release notes in GitHub Release use `WHATSNEW.md`.
 - Confirm root README install guidance still starts with user setup, not development instructions.
 - Confirm Play Store prep docs are current before uploading an AAB.
-

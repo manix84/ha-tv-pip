@@ -65,6 +65,7 @@
     <string name="last_error_value">Laatste fout: %1$s</string>
     <string name="launcher_icon_value">Launchericoon: %1$s</string>
     <string name="launcher_help">Als dit verborgen is, kan Home Assistant dit scherm opnieuw openen met de knop Launcher openen. Je kunt ook herstellen via Android-instellingen &gt; Apps &gt; HA TV PiP.</string>
+    <string name="launcher_pair_before_hiding">Koppel deze ontvanger voordat je het launchericoon verbergt.</string>
     <string name="pairing_code_value">Koppelcode: %1$s</string>
     <string name="waiting_for_value">Wacht op: %1$s</string>
     <string name="paired_with_value">Gekoppeld met: %1$s</string>

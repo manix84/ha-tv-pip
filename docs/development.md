@@ -449,6 +449,14 @@ The root `package.json` version remains the source of truth. When a bump happens
 - Android `versionName` in `android-tv-app/app/build.gradle.kts`
 - Home Assistant `manifest.json`, once it exists
 
+Android Play `versionCode` is intentionally synced during release preparation rather than every pre-commit bump, so Play Console upload codes only advance when publishing release artifacts:
+
+```sh
+npm run version:android-code
+```
+
+The release workflow runs `npm run version:android-code:check` before building artifacts and fails if the committed AAB version code is stale.
+
 ### PATCH Bumps 🩹
 
 PATCH bumps are automatic for normal runtime implementation changes under:
@@ -756,6 +764,7 @@ Verify release packaging expectations:
 - Versioned integration zip internal path: `custom_components/ha_tv_pip/`.
 - Stable HACS zip internal path: integration files at archive root.
 - Root `package.json`, Android `versionName`, HA `manifest.json`, and project `package.json` files all match.
+- Android Play `versionCode` was synced with `npm run version:android-code` before building release artifacts.
 - HACS install/update can open the receiver Configuration screen without a `500` error.
 - Receiver device exposes Status, Receiver Version, Receiver Compatibility, Last Command Result, Last Camera Compatibility, Camera Restreaming Recommended, and Last Camera Result entities.
 
