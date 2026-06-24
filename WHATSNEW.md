@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.40 - Play Console Screenshot Assets 📱
+
+- Added two Play Console-compatible portrait screenshots for the required generic phone/tablet screenshot slot 📸
+- Added a crisp 1280 x 720 Play Store TV banner and updated the Android TV banner resource 📺
+- Updated Play Store prep docs with the exact asset paths to upload in Play Console 🧭
+
 ## 1.31.39 - Play Store Asset Prep Polish 📺
 
 - Added a product-led 1024 x 500 Play Store feature graphic placeholder 🖼️

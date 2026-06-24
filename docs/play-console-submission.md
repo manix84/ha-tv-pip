@@ -38,7 +38,10 @@ Suggested Play Console values:
 - Privacy policy: `https://manix84.github.io/ha-tv-pip/privacy/`
 - Support email: TODO, choose the public support address to use for Play users.
 - Tags/positioning: Home Assistant, Android TV, Google TV, smart home, security camera, Picture-in-Picture, local-first.
+- App icon: `docs/assets/play-store-app-icon.png`.
 - Feature graphic: start with `docs/assets/play-store-feature-graphic.jpg`, then replace if Play Console preview shows it poorly.
+- TV banner: `docs/assets/play-store-tv-banner.png`.
+- Phone/tablet screenshots, if Play Console requires that section: `docs/assets/play-store-phone-screenshot-01.png` and `docs/assets/play-store-phone-screenshot-02.png`.
 
 Keep the Play listing product-led. Personal profile graphics can be used for the developer profile or account banner, but the app listing should use the HA TV PiP icon, TV banner, feature graphic, and receiver screenshots. Current developer profile candidates are `docs/assets/avatar.png` and `docs/assets/header.jpeg`.
 

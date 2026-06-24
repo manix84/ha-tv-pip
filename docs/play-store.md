@@ -153,11 +153,11 @@ Capture real Android TV / Google TV screenshots for:
 
 Graphic assets to prepare:
 
-- TV banner image.
+- TV banner image: `docs/assets/play-store-tv-banner.png`.
 - App icon.
 - Feature graphic: `docs/assets/play-store-feature-graphic.jpg` is a product-led placeholder ready for Play Console preview.
 - At least 2 Android TV screenshots.
-- Optional tablet/phone screenshots only if Play Console requests them for listing completeness.
+- Generic phone/tablet screenshot slots, if required by Play Console: use `docs/assets/play-store-phone-screenshot-01.png` and `docs/assets/play-store-phone-screenshot-02.png`. These are explainer screenshots, not fake phone UI.
 
 Personal developer avatar/header graphics can be used for the Play developer profile or account presence if needed, but the app listing should remain product-led and use HA TV PiP-specific app graphics. The current developer profile assets are `docs/assets/avatar.png` and `docs/assets/header.jpeg`.
 

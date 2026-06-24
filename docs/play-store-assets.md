@@ -6,8 +6,8 @@ This checklist tracks Play Store listing assets, promotional graphics, and safe 
 
 Use product-focused HA TV PiP assets for the public app listing:
 
-- App icon: current HA TV PiP icon assets in the Android project and root brand folders.
-- TV banner: current Android TV banner assets in the Android project.
+- App icon: `docs/assets/play-store-app-icon.png` is a 512 x 512 Play Console app icon.
+- TV banner: `docs/assets/play-store-tv-banner.png` is a 1280 x 720 Android TV banner. The same image is used by the Android app resource at `android-tv-app/app/src/main/res/drawable-nodpi/ic_banner.png`.
 - Feature graphic: `docs/assets/play-store-feature-graphic.jpg` is a 1024 x 500 product-led placeholder derived from the HA TV PiP hero visual.
 - Screenshots: capture from the Android TV receiver and Home Assistant integration using non-sensitive data.
 
@@ -38,6 +38,11 @@ Optional supporting screenshots:
 - Home Assistant device page showing PiP controls.
 - Home Assistant service UI for `ha_tv_pip.show_camera`.
 - Website landing page hero.
+
+Play Console may still require generic phone/tablet screenshot slots even though HA TV PiP is an Android TV receiver app. Use the generated portrait explainer screenshots rather than fake phone UI:
+
+- `docs/assets/play-store-phone-screenshot-01.png`
+- `docs/assets/play-store-phone-screenshot-02.png`
 
 ## Privacy Rules 🔐
 
@@ -77,7 +82,10 @@ Before committing screenshots:
 - `docs/assets/screenshots/android-tv-camera-popup.png` and `android-tv-camera-notification.png` show cropped popup detail captures.
 - `docs/assets/screenshots/android-tv-homepage-camera-popup.png` and `android-tv-homepage-camera-notification.png` show full Google TV launcher captures with the profile avatar replaced.
 - `docs/assets/screenshots/android-tv-homepage-camera-popup.jpg` and `android-tv-homepage-camera-notification.jpg` are web-optimized README copies; use the PNGs if Play Console accepts the larger source captures cleanly.
+- `docs/assets/play-store-app-icon.png` is a 512 x 512 Play Console app icon.
 - `docs/assets/play-store-feature-graphic.jpg` is a 1024 x 500 Play Store feature graphic placeholder.
+- `docs/assets/play-store-tv-banner.png` is a 1280 x 720 Play Store TV banner.
+- `docs/assets/play-store-phone-screenshot-01.png` and `play-store-phone-screenshot-02.png` satisfy Play Console's generic phone/tablet screenshot requirement while clearly presenting HA TV PiP as an Android TV receiver.
 - `brand/`, `icon.png`, and `logo.png` support HACS / repository presentation.
 - Android launcher and TV banner assets live in the Android app resources.
 - Website imagery lives under `website/src/assets/`.
@@ -87,5 +95,6 @@ Before committing screenshots:
 
 - Capture additional setup and Home Assistant screenshots.
 - Confirm the feature graphic matches the HA TV PiP brand and still looks acceptable in Play Console preview.
+- Confirm the generated phone/tablet screenshots are accepted by Play Console and do not imply that HA TV PiP is a phone app.
 - Confirm screenshots still match the current app UI.
 - Confirm no screenshot exposes private camera, network, or account data.
