@@ -93,7 +93,7 @@ custom_components/ha_tv_pip/brand/
 
 This integration includes `icon.png`, `icon@2x.png`, `logo.png`, and `logo@2x.png`.
 
-The repository root also contains `brand/icon.png` and `brand/logo.png` for HACS repository presentation.
+The integration root also carries `icon.png` and `logo.png` aliases for older/simple presentation paths. The repository root contains matching `brand/icon.png`, `brand/logo.png`, `icon.png`, and `logo.png` files for HACS repository presentation.
 
 ## Quality Checks ✅
 

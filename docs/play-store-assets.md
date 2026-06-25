@@ -86,7 +86,7 @@ Before committing screenshots:
 - `docs/assets/play-store-feature-graphic.jpg` is a 1024 x 500 Play Store feature graphic placeholder.
 - `docs/assets/play-store-tv-banner.png` is a 1280 x 720 Play Store TV banner.
 - `docs/assets/play-store-phone-screenshot-01.png` and `play-store-phone-screenshot-02.png` satisfy Play Console's generic phone/tablet screenshot requirement while clearly presenting HA TV PiP as an Android TV receiver.
-- `brand/`, `icon.png`, and `logo.png` support HACS / repository presentation.
+- `brand/`, `icon.png`, and `logo.png` support HACS / repository presentation. The installed integration also ships `custom_components/ha_tv_pip/brand/` plus root icon/logo aliases for Home Assistant local brand image support and older/simple fallbacks.
 - Android launcher and TV banner assets live in the Android app resources.
 - Website imagery lives under `website/src/assets/`.
 - Play listing text lives under `android-tv-app/fastlane/metadata/`.

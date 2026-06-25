@@ -19,6 +19,12 @@ const expectedAssets = {
 };
 
 const failures = [];
+const integrationBrandEntries = [
+  "icon.png",
+  "icon@2x.png",
+  "logo.png",
+  "logo@2x.png"
+];
 
 function assetPath(name) {
   return join(distDir, name);
@@ -72,6 +78,12 @@ function expectEntry(entries, entry, archiveName) {
   }
 }
 
+function expectBrandEntries(entries, prefix, archiveName) {
+  for (const entry of integrationBrandEntries) {
+    expectEntry(entries, `${prefix}brand/${entry}`, archiveName);
+  }
+}
+
 function expectNoEntry(entries, predicate, message) {
   if (entries.some(predicate)) {
     failures.push(message);
@@ -120,6 +132,9 @@ function checkManualIntegrationZip(name) {
   expectEntry(entries, manifestPath, name);
   expectEntry(entries, "custom_components/ha_tv_pip/config_flow.py", name);
   expectEntry(entries, "custom_components/ha_tv_pip/README.md", name);
+  expectEntry(entries, "custom_components/ha_tv_pip/icon.png", name);
+  expectEntry(entries, "custom_components/ha_tv_pip/logo.png", name);
+  expectBrandEntries(entries, "custom_components/ha_tv_pip/", name);
   expectNoEntry(
     entries,
     (entry) => entry === "manifest.json",
@@ -141,7 +156,8 @@ function checkHacsIntegrationZip(name) {
   expectEntry(entries, "config_flow.py", name);
   expectEntry(entries, "README.md", name);
   expectEntry(entries, "icon.png", name);
-  expectEntry(entries, "brand/icon.png", name);
+  expectEntry(entries, "logo.png", name);
+  expectBrandEntries(entries, "", name);
   expectNoEntry(
     entries,
     (entry) => entry.startsWith("custom_components/"),
