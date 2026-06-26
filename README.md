@@ -206,11 +206,11 @@ ha-tv-pip-integration-vX.Y.Z.zip
 ha-tv-pip-integration.zip
 ```
 
-The release APK is the recommended sideload artifact for normal users. The debug APK remains available for troubleshooting and development. The AAB is generated for future Play Console upload. The stable `ha-tv-pip-integration.zip` asset is for HACS. That zip contains the integration files at archive root because HACS extracts `zip_release` assets directly into `config/custom_components/ha_tv_pip/`.
+The release APK is the recommended sideload artifact for normal users. The debug APK remains available for troubleshooting and development. The AAB is generated for Play Console upload when that release workflow path is enabled. The stable `ha-tv-pip-integration.zip` asset is for HACS. That zip contains the integration files at archive root because HACS extracts `zip_release` assets directly into `config/custom_components/ha_tv_pip/`.
 
 Published GitHub Releases are treated as immutable. If a release for the current version already exists, bump the root `package.json` version before producing another release.
 
-Play Store deployment is not implemented yet. Release-prep notes for listing copy, privacy wording, screenshots, signing, release notes, app-submission fields, data safety, and QA live in `docs/play-store.md`, `docs/play-console-submission.md`, `docs/play-store-data-safety.md`, `docs/play-store-assets.md`, and `docs/release-qa.md`.
+Play Store upload is available as an opt-in release workflow step. Release-prep notes for listing copy, privacy wording, screenshots, signing, release notes, app-submission fields, data safety, and QA live in `docs/play-store.md`, `docs/play-console-submission.md`, `docs/play-store-data-safety.md`, `docs/play-store-assets.md`, and `docs/release-qa.md`. F-Droid release prep lives in `docs/fdroid.md`.
 
 Beta install/update validation for `1.27.0` confirmed:
 
@@ -261,6 +261,7 @@ Future roadmap:
 - Default HACS repository inclusion so HA TV PiP can be installed without adding a custom repository 🧩
 - Long-term official Home Assistant integration track, including config-flow polish, repairs, diagnostics, translations, tests, and architecture review readiness 🏠
 - Play Store distribution for the Android TV app, including Console submission, listing assets, data-safety review, screenshots, and tester guidance once Google developer account verification is complete 📺
+- F-Droid main repository inclusion for users who prefer a FOSS app store distribution path 📦
 - Receiver management improvements, including hiding the launcher icon only after pairing and restoring it automatically if pairing is missing 🕹️
 - Fire TV / Vega OS receiver support so HA TV PiP is not limited to Android TV and Google TV devices 🔥
 - Exploratory Apple TV support, likely as a separate receiver design because tvOS has different background, PiP, and distribution constraints 🍎
@@ -303,6 +304,7 @@ ha-tv-pip/
 │   ├── architecture.md
 │   ├── roadmap.md
 │   ├── development.md
+│   ├── fdroid.md
 │   ├── home-assistant-official-readiness.md
 │   ├── play-store.md
 │   ├── troubleshooting.md

@@ -14,6 +14,8 @@
     "android:lint": "npm --prefix android-tv-app run lint",
     "android:typecheck": "npm --prefix android-tv-app run typecheck",
     "check": "npm run version:check && npm run lint && npm run typecheck && npm run test",
+    "fdroid:changelog": "node scripts/sync-fdroid-changelog.mjs",
+    "fdroid:changelog:check": "node scripts/sync-fdroid-changelog.mjs --check",
     "ha:check": "npm --prefix ha-integration run check",
     "ha:build:dry-run": "npm run package:integration",
     "ha:install": "node scripts/install-ha-python-tools.mjs",

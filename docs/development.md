@@ -462,6 +462,14 @@ npm run version:android-code
 
 The release workflow runs `npm run version:android-code:check` before building artifacts and fails if the committed AAB version code is stale.
 
+F-Droid changelog files are named by Android `versionCode` and generated from the matching `WHATSNEW.md` section:
+
+```sh
+npm run fdroid:changelog
+```
+
+The release workflow runs `npm run fdroid:changelog:check` before building artifacts and fails if the current versionCode changelog is missing or stale.
+
 ### PATCH Bumps 🩹
 
 PATCH bumps are automatic for normal runtime implementation changes under:
@@ -687,7 +695,7 @@ The versioned zip is the human-readable/manual-install release asset. The stable
 
 When code is pushed or merged into `main`, `.github/workflows/release.yml`:
 
-1. Runs `Setup release metadata 🧭` to read the release version from root `package.json` and run the version consistency check.
+1. Runs `Setup release metadata 🧭` to read the release version from root `package.json`, run version consistency checks, validate Android `versionCode`, and confirm the matching F-Droid changelog exists.
 2. Runs `Android APK Debug 🤖` to build and stage the debug APK.
 3. Runs `Android APK Release 🤖` to build and stage the release APK.
 4. Runs `Android AAB Release 📦` to build and stage the release Android App Bundle for Play Console upload.
