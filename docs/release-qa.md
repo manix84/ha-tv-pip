@@ -1,6 +1,6 @@
 # Release QA Checklist ✅
 
-Use this checklist before a GitHub beta release, HACS update, or Play Console test upload.
+Use this checklist before a GitHub beta release, HACS update, Play Console test upload, or F-Droid submission update.
 
 ## Automated Checks 🤖
 
@@ -9,12 +9,14 @@ Run from the repository root:
 ```sh
 npm run check
 npm run version:android-code
+npm run fdroid:changelog
 npm run website:build
 npm run package:integration
 npm run android:assemble:debug
 npm run android:assemble:release
 npm run android:bundle:release
 npm run package:release:check
+npm run fdroid:changelog:check
 ```
 
 If Android SDK tools are not on the shell path, prefix commands with:
@@ -34,6 +36,16 @@ For version `X.Y.Z`, the release should contain:
 - `ha-tv-pip-integration.zip`
 
 The stable `ha-tv-pip-integration.zip` file is the HACS `zip_release` asset. The AAB is for Play Console upload only.
+
+## F-Droid Checks 📦
+
+Before submitting or updating F-Droid metadata:
+
+- Confirm `docs/fdroiddata/metadata/com.hatvpip.receiver.yml` matches the current release version and `versionCode`.
+- Confirm `android-tv-app/fastlane/metadata/android/en-US/changelogs/<versionCode>.txt` exists and is under 500 characters.
+- Confirm the release commit is tagged as `vX.Y.Z`.
+- Confirm the first F-Droid submission uses F-Droid signing, not developer-signed binary verification.
+- Confirm release notes explain that switching between GitHub/Play and F-Droid builds requires uninstalling the receiver app and pairing again.
 
 ## Android Receiver Smoke Test 📺
 

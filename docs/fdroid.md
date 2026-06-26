@@ -65,9 +65,40 @@ metadata/com.hatvpip.receiver.yml
 
 ## Signing
 
-Default F-Droid publishing signs APKs with F-Droid's key. Users who installed the GitHub or Play build cannot update in-place to an F-Droid-signed build; they must uninstall and reinstall.
+Initial F-Droid submission uses the default F-Droid signing model. F-Droid will build the APK from source and sign it with F-Droid's key.
+
+The `fdroiddata` metadata intentionally does not include `Binaries` or `AllowedAPKSigningKeys` yet. That keeps the first submission focused on proving F-Droid can build the app from source.
+
+### Channel Switching
+
+The Android package name remains:
+
+```txt
+com.hatvpip.receiver
+```
+
+GitHub/Play builds and F-Droid builds will have different signing keys. Android does not allow an installed app to be updated by an APK signed with a different key, even when the package name is the same.
+
+Users switching between GitHub/Play and F-Droid builds must:
+
+1. Uninstall the currently installed receiver app.
+2. Install the receiver from the new channel.
+3. Delete the stale receiver entry in Home Assistant.
+4. Pair the receiver again from Home Assistant.
+
+Uninstalling the Android receiver clears local pairing tokens and receiver settings. The Home Assistant integration may still have the old config entry until the user deletes and re-adds it.
+
+### Future Developer-Signed Path
 
 Developer-signed F-Droid publishing requires reproducible APK builds and extra `fdroiddata` signature metadata. Treat that as a later hardening pass after the first F-Droid build succeeds.
+
+Future work for developer-signed reproducible builds:
+
+1. Build a signed GitHub release APK from a clean tagged checkout.
+2. Confirm the same tag builds an equivalent unsigned APK in an F-Droid build environment.
+3. Extract the release APK signing certificate fingerprint.
+4. Add `Binaries` and `AllowedAPKSigningKeys` to `fdroiddata`.
+5. Use F-Droid signature copying only after reproducibility is confirmed.
 
 ## Submission Checklist
 
@@ -80,3 +111,5 @@ Developer-signed F-Droid publishing requires reproducible APK builds and extra `
 - Run `fdroid checkupdates --allow-dirty com.hatvpip.receiver`.
 - Run or let GitLab CI run `fdroid build com.hatvpip.receiver`.
 - Open a merge request against `fdroid/fdroiddata`.
+
+Do not add developer-signed binary verification metadata to the first submission unless reproducible builds have already been proven.
