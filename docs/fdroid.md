@@ -51,35 +51,16 @@ The GitHub release workflow runs the check before building release artifacts.
 
 ## Draft fdroiddata Metadata
 
-Initial metadata for `fdroiddata/metadata/com.hatvpip.receiver.yml`:
+Initial metadata is tracked in this repository at:
 
-```yaml
-Categories:
-  - Connectivity
-  - Multimedia
-License: MIT
-AuthorName: HA TV PiP contributors
-WebSite: https://manix84.github.io/ha-tv-pip/
-SourceCode: https://github.com/manix84/ha-tv-pip
-IssueTracker: https://github.com/manix84/ha-tv-pip/issues
-Changelog: https://github.com/manix84/ha-tv-pip/blob/main/WHATSNEW.md
+```txt
+docs/fdroiddata/metadata/com.hatvpip.receiver.yml
+```
 
-RepoType: git
-Repo: https://github.com/manix84/ha-tv-pip.git
+Copy it into a fork of `fdroiddata` at:
 
-Builds:
-  - versionName: 1.31.44
-    versionCode: 1031044
-    commit: v1.31.44
-    subdir: android-tv-app
-    gradle:
-      - yes
-
-AutoUpdateMode: Version v%v
-UpdateCheckMode: Tags
-UpdateCheckData: android-tv-app/app/build.gradle.kts|versionCode = (\d+)|.|versionName = "([^"]+)"
-CurrentVersion: 1.31.44
-CurrentVersionCode: 1031044
+```txt
+metadata/com.hatvpip.receiver.yml
 ```
 
 ## Signing
@@ -94,7 +75,7 @@ Developer-signed F-Droid publishing requires reproducible APK builds and extra `
 - Confirm `npm run fdroid:changelog:check` passes.
 - Confirm `npm run android:assemble:release` builds from a clean checkout without local signing secrets.
 - Fork `fdroiddata`.
-- Add `metadata/com.hatvpip.receiver.yml`.
+- Copy `docs/fdroiddata/metadata/com.hatvpip.receiver.yml` to `metadata/com.hatvpip.receiver.yml` in the `fdroiddata` fork.
 - Run `fdroid lint com.hatvpip.receiver`.
 - Run `fdroid checkupdates --allow-dirty com.hatvpip.receiver`.
 - Run or let GitLab CI run `fdroid build com.hatvpip.receiver`.

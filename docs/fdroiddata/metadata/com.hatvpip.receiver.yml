@@ -1,0 +1,26 @@
+Categories:
+  - Connectivity
+  - Multimedia
+License: MIT
+AuthorName: HA TV PiP contributors
+WebSite: https://manix84.github.io/ha-tv-pip/
+SourceCode: https://github.com/manix84/ha-tv-pip
+IssueTracker: https://github.com/manix84/ha-tv-pip/issues
+Changelog: https://github.com/manix84/ha-tv-pip/blob/main/WHATSNEW.md
+
+RepoType: git
+Repo: https://github.com/manix84/ha-tv-pip.git
+
+Builds:
+  - versionName: 1.31.44
+    versionCode: 1031044
+    commit: v1.31.44
+    subdir: android-tv-app
+    gradle:
+      - yes
+
+AutoUpdateMode: Version v%v
+UpdateCheckMode: Tags
+UpdateCheckData: android-tv-app/app/build.gradle.kts|versionCode = (\d+)|.|versionName = "([^"]+)"
+CurrentVersion: 1.31.44
+CurrentVersionCode: 1031044
