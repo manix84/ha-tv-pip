@@ -6,7 +6,9 @@ AuthorName: HA TV PiP contributors
 WebSite: https://manix84.github.io/ha-tv-pip/
 SourceCode: https://github.com/manix84/ha-tv-pip
 IssueTracker: https://github.com/manix84/ha-tv-pip/issues
-Changelog: https://github.com/manix84/ha-tv-pip/blob/main/WHATSNEW.md
+Changelog: https://github.com/manix84/ha-tv-pip/blob/HEAD/WHATSNEW.md
+
+AutoName: HA TV PiP Receiver
 
 RepoType: git
 Repo: https://github.com/manix84/ha-tv-pip.git
@@ -18,9 +20,11 @@ Builds:
     subdir: android-tv-app
     gradle:
       - yes
+    output: app/build/outputs/apk/release/app-release-unsigned.apk
 
 AutoUpdateMode: Version v%v
 UpdateCheckMode: Tags
-UpdateCheckData: android-tv-app/app/build.gradle.kts|versionCode = (\d+)|.|versionName = "([^"]+)"
+UpdateCheckData: android-tv-app/app/build.gradle.kts|versionCode = (\d+)|.|versionName
+  = "([^"]+)"
 CurrentVersion: 1.31.44
 CurrentVersionCode: 1031044

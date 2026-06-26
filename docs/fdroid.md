@@ -113,3 +113,27 @@ Future work for developer-signed reproducible builds:
 - Open a merge request against `fdroid/fdroiddata`.
 
 Do not add developer-signed binary verification metadata to the first submission unless reproducible builds have already been proven.
+
+## Local Validation Notes
+
+Step 4 local validation for `1.31.44` used a temporary `fdroiddata` checkout and `fdroidserver 2.4.5`.
+
+Validated commands:
+
+```sh
+fdroid lint com.hatvpip.receiver
+fdroid checkupdates --allow-dirty com.hatvpip.receiver
+fdroid build -v -l com.hatvpip.receiver
+```
+
+Results:
+
+- `fdroid lint com.hatvpip.receiver` passed.
+- `fdroid checkupdates --allow-dirty com.hatvpip.receiver` exited successfully. The local `fdroiddata` config printed unrelated `serverwebroot` environment warnings.
+- `fdroid build -v -l com.hatvpip.receiver` built `1.31.44` successfully from tag `v1.31.44`.
+
+Local setup notes:
+
+- The pip-installed `fdroidserver` package did not include `gradlew-fdroid`, so local validation used the helper from `https://gitlab.com/fdroid/gradlew-fdroid`.
+- Docker was installed but not running locally, so the official container/buildserver route was not used.
+- The F-Droid scanner removed the checked-in Gradle wrapper as expected; the build succeeded through F-Droid's own Gradle helper.
