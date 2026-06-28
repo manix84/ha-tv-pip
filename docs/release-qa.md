@@ -1,6 +1,6 @@
 # Release QA Checklist ✅
 
-Use this checklist before a GitHub beta release, HACS update, Play Console test upload, or F-Droid submission update.
+Use this checklist before a GitHub beta release, HACS update, Play Console test upload, F-Droid submission update, or Samsung distribution investigation.
 
 ## Automated Checks 🤖
 
@@ -49,6 +49,15 @@ Before submitting or updating F-Droid metadata:
 - Confirm `AllowedAPKSigningKeys` matches the release APK signer fingerprint.
 - Confirm the signed release APK does not include the rejected `Dependency metadata` APK signing block.
 - Confirm the release AAB builds for Play Store upload after `dependenciesInfo.includeInBundle = false`.
+
+## Samsung Checks 📺
+
+Before attempting Samsung distribution:
+
+- Confirm `docs/samsung-store.md` reflects the latest Seller Portal findings.
+- Confirm whether Galaxy Store Seller Portal accepts Leanback-only Android TV APKs before preparing any upload.
+- Confirm the current signed release APK is reused if Galaxy Store accepts the receiver; do not create a Samsung-specific APK without a documented store requirement.
+- Confirm Samsung Smart TV / TV Seller Office work is tracked as a separate Tizen receiver investigation, not as an Android APK/AAB release task.
 
 ## Android Receiver Smoke Test 📺
 
