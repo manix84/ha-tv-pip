@@ -788,7 +788,7 @@ Provide a static project landing page suitable for GitHub Pages.
 
 These should not block the MVP.
 
-- Fire TV / Vega OS receiver app.
+- Fire TV / Amazon Appstore distribution investigation and Vega OS receiver research.
 - Samsung Galaxy Store distribution investigation and Samsung Tizen receiver research.
 - LG webOS receiver research.
 - Roku receiver research.
@@ -886,7 +886,8 @@ HA TV PiP should avoid assuming Android TV and Google TV are the only possible r
 Platform priority:
 
 - ✅ Primary: Android TV and Google TV are the current supported receiver app targets.
-- ⏭️ Next likely: Fire TV and Vega OS are the most natural next platform family because they are closer to the Android receiver model and may be able to share protocol concepts, pairing flow, and Home Assistant integration behavior.
+- ⏭️ Next likely: Fire TV / Fire OS is the most natural next platform family because it is closest to the Android receiver model and may be able to reuse the signed Android APK, protocol concepts, pairing flow, and Home Assistant integration behavior.
+- 🔬 Research: Vega OS should be investigated separately because it may require a different app model from Android Fire OS.
 - 🔬 Research: Samsung Galaxy Store, Samsung Tizen, LG webOS, Roku, and Apple TV / tvOS should be investigated before committing to implementation. Samsung Galaxy Store may or may not accept the current Leanback-only Android receiver; Samsung Smart TVs need a separate Tizen receiver design. Other TV platforms may need separate receiver designs because background execution, local network APIs, overlays, PiP behavior, and app distribution are platform-specific.
 - 👀 Watchlist: VIDAA, TiVo OS / Xperi TV OS, and operator TV platforms should be tracked but should not take early engineering time unless a clear distribution path and receiver capability model emerges.
 
@@ -895,6 +896,8 @@ Samsung distribution is tracked in `docs/samsung-store.md`. Galaxy Store should 
 Roku is valuable, especially in the US, but it should be treated as a research track. Roku uses its own BrightScript / SceneGraph app model, and HA TV PiP needs proof that Roku can support a useful local receiver, popup, or notification behaviour before it becomes a committed target.
 
 Apple TV support is desirable but exploratory. tvOS has different constraints around background execution, Picture-in-Picture behavior, app distribution, and local-network control, so it may require a separate receiver design rather than a direct port.
+
+Fire TV and Vega OS distribution is tracked in `docs/fire-tv.md`. Fire OS should start as an Amazon Appstore eligibility and physical-device compatibility pass for the existing signed Android APK. Vega OS should be treated as a separate receiver research track until Amazon's tooling proves the app lifecycle, local network, and video presentation model.
 
 Future platform work should keep the local receiver protocol platform-neutral so Home Assistant can target receiver capabilities rather than Android-specific behavior.
 

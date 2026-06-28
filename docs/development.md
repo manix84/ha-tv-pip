@@ -660,6 +660,8 @@ The defaults upload to the internal testing track as a draft release. Set `PLAY_
 
 F-Droid distribution uses reproducible-build verification against the signed GitHub release APK. The `fdroiddata` metadata points `Binaries` at the GitHub release APK and pins `AllowedAPKSigningKeys` to the Android release signing certificate fingerprint. Keep the Android release signing key backed up and private; losing it breaks future F-Droid updates with the same signing identity.
 
+Fire TV distribution is documented in `docs/fire-tv.md`. The current Android receiver should reuse the signed release APK for the first Amazon Appstore / Fire OS investigation. Do not create a Fire-specific APK, Amazon-specific version code, or Appstore upload automation until a manual Fire TV submission proves the artifact, device targeting, listing fields, and review requirements. Vega OS is a separate platform investigation, not a guaranteed APK/AAB target.
+
 Samsung distribution is documented in `docs/samsung-store.md`. The current Android TV receiver should not get a Samsung-specific APK or upload automation until Galaxy Store Seller Portal is proven to accept Leanback-only Android TV APKs. Samsung Smart TV / TV Seller Office support is a separate Tizen receiver investigation, not an APK/AAB release workflow extension.
 
 ## Integration Local Packaging
@@ -710,6 +712,8 @@ When code is pushed or merged into `main`, `.github/workflows/release.yml`:
 9. Runs `Cleanup 🧹` as a final visible workflow stage.
 
 The `Android APK Release 🤖` job signs and verifies the release APK when all Android signing secrets are available. The `Android AAB Release 📦` job uses the same signing configuration and uploads a release App Bundle for Play Console preparation. If signing secrets are absent, the workflow uploads unsigned Android artifacts under the same release asset names so beta release validation can continue. Partial signing configuration fails the Android release jobs. Play Store upload should only be enabled after signing secrets are configured, because Play Console rejects unsigned or wrongly signed app bundles.
+
+Amazon Appstore automation is intentionally absent. If Fire OS accepts the existing Android TV receiver, add automation only after one manual Developer Console submission proves the signed APK or AAB choice, listing metadata, device targeting, and review requirements. The App Submission API and AAB support have different constraints, so do not assume Play Store upload automation maps directly to Amazon.
 
 Galaxy Store automation is intentionally absent. If Samsung accepts the existing Android TV receiver, add automation only after one manual Seller Portal submission proves the signed APK, listing metadata, device targeting, and review requirements.
 

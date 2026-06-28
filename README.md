@@ -210,7 +210,7 @@ The release APK is the recommended sideload artifact for normal users. The debug
 
 Published GitHub Releases are treated as immutable. If a release for the current version already exists, bump the root `package.json` version before producing another release.
 
-Play Store upload is available as an opt-in release workflow step. Release-prep notes for listing copy, privacy wording, screenshots, signing, release notes, app-submission fields, data safety, and QA live in `docs/play-store.md`, `docs/play-console-submission.md`, `docs/play-store-data-safety.md`, `docs/play-store-assets.md`, and `docs/release-qa.md`. F-Droid release prep lives in `docs/fdroid.md`. Samsung Galaxy Store and Samsung TV Seller Office investigation notes live in `docs/samsung-store.md`.
+Play Store upload is available as an opt-in release workflow step. Release-prep notes for listing copy, privacy wording, screenshots, signing, release notes, app-submission fields, data safety, and QA live in `docs/play-store.md`, `docs/play-console-submission.md`, `docs/play-store-data-safety.md`, `docs/play-store-assets.md`, and `docs/release-qa.md`. F-Droid release prep lives in `docs/fdroid.md`. Fire TV and Vega OS prep lives in `docs/fire-tv.md`. Samsung Galaxy Store and Samsung TV Seller Office investigation notes live in `docs/samsung-store.md`.
 
 Beta install/update validation for `1.27.0` confirmed:
 
@@ -262,6 +262,7 @@ Future roadmap:
 - Long-term official Home Assistant integration track, including config-flow polish, repairs, diagnostics, translations, tests, and architecture review readiness 🏠
 - Play Store distribution for the Android TV app, including Console submission, listing assets, data-safety review, screenshots, and tester guidance once Google developer account verification is complete 📺
 - F-Droid main repository inclusion for users who prefer a FOSS app store distribution path 📦
+- Fire TV / Amazon Appstore investigation for the existing Android receiver, plus separate Vega OS receiver research 🔥
 - Samsung Galaxy Store investigation for the Android receiver, plus separate Samsung Smart TV / Tizen receiver research 📺
 - Receiver management improvements, including hiding the launcher icon only after pairing and restoring it automatically if pairing is missing 🕹️
 - Fire TV / Vega OS receiver support so HA TV PiP is not limited to Android TV and Google TV devices 🔥
@@ -271,7 +272,8 @@ Future roadmap:
 Device support plan:
 
 - ✅ Primary: Android TV and Google TV are the current supported receiver targets 📺
-- ⏭️ Next likely: Fire TV and Vega OS, because they are closest to the Android receiver model 🔥
+- ⏭️ Next likely: Fire TV / Fire OS, because it is closest to the Android receiver model and may reuse the signed Android APK 🔥
+- 🔬 Research: Vega OS, because it may need a separate receiver model from Android Fire OS 🔬
 - 🔬 Research: Samsung Tizen, LG webOS, Roku, and Apple TV / tvOS, because each may need a separate receiver design around its own app, PiP, overlay, local-network, and background-execution rules 🔬
 - 👀 Watchlist: VIDAA, TiVo OS / Xperi TV OS, and operator TV platforms, to revisit if a clear distribution path and useful receiver capability model emerges 👀
 

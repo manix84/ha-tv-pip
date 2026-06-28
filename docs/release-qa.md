@@ -1,6 +1,6 @@
 # Release QA Checklist ✅
 
-Use this checklist before a GitHub beta release, HACS update, Play Console test upload, F-Droid submission update, or Samsung distribution investigation.
+Use this checklist before a GitHub beta release, HACS update, Play Console test upload, F-Droid submission update, Fire TV investigation, or Samsung distribution investigation.
 
 ## Automated Checks 🤖
 
@@ -58,6 +58,17 @@ Before attempting Samsung distribution:
 - Confirm whether Galaxy Store Seller Portal accepts Leanback-only Android TV APKs before preparing any upload.
 - Confirm the current signed release APK is reused if Galaxy Store accepts the receiver; do not create a Samsung-specific APK without a documented store requirement.
 - Confirm Samsung Smart TV / TV Seller Office work is tracked as a separate Tizen receiver investigation, not as an Android APK/AAB release task.
+
+## Fire TV Checks 🔥
+
+Before attempting Amazon Appstore / Fire TV distribution:
+
+- Confirm `docs/fire-tv.md` reflects the latest Amazon Developer Console findings.
+- Confirm Amazon Appstore device filtering shows Fire TV devices as compatible with the current manifest.
+- Confirm whether the first submission should use the signed release APK or the release AAB.
+- Confirm the signed release APK is reused if Amazon accepts it; do not create a Fire-specific APK without a documented Appstore requirement.
+- Confirm a physical Fire TV smoke test covers pairing, notification popup, snapshot popup, HLS/MJPEG stream playback, launcher recovery, reboot recovery, and overlay/PiP behavior.
+- Confirm Vega OS work is tracked as a separate receiver investigation, not as an Android APK/AAB release task.
 
 ## Android Receiver Smoke Test 📺
 
