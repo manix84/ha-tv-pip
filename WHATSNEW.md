@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.45 - F-Droid APK Signing Block Fix 📦
+
+- Removed Android Gradle dependency metadata from signed release APKs so F-Droid's APK scanner accepts the release binary ✅
+- Bumped the Android receiver version and Play/F-Droid version code for a fresh immutable release artifact 🔢
+- Kept F-Droid reproducible-build metadata aligned with the release signing certificate fingerprint 🔐
+
 ## 1.31.44 - Play Store Upload Automation 📲
 
 - Added an opt-in release workflow job to upload the signed Android App Bundle to Play Console after release assets pass validation 📦

@@ -1,0 +1,3 @@
+- Removed Android Gradle dependency metadata from signed release APKs so F-Droid's APK scanner accepts the release binary ✅
+- Bumped the Android receiver version and Play/F-Droid version code for a fresh immutable release artifact 🔢
+- Kept F-Droid reproducible-build metadata aligned with the release signing certificate fingerprint 🔐
