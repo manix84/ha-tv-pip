@@ -1,5 +1,10 @@
 # What's New ✨
 
+## 1.31.46 - PiP Footer Blur Fix 🪟
+
+- Limited Android backdrop blur to the transparent text footer below camera popups so the video area no longer blurs the whole screen behind it 📺
+- Kept text-only notifications and over-video text overlays on their existing glass-style blur path 🔎
+
 ## 1.31.45 - F-Droid APK Signing Block Fix 📦
 
 - Removed Android Gradle dependency metadata from signed release APKs so F-Droid's APK scanner accepts the release binary ✅

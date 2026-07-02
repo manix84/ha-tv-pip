@@ -12,6 +12,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
@@ -31,6 +32,7 @@ import java.net.URL
 class OverlayPlayerService : Service() {
     private lateinit var windowManager: WindowManager
     private var overlayView: ViewGroup? = null
+    private var textOverlayView: ViewGroup? = null
     private var player: ExoPlayer? = null
     private var errorTextView: TextView? = null
     private var title: String = ""
@@ -120,6 +122,11 @@ class OverlayPlayerService : Service() {
             removeOverlay()
         }
 
+        if (streamType != StreamType.Notification && showNotification && !style.textOverlay) {
+            showMediaWithFooterOverlay()
+            return
+        }
+
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             background = roundedBackground()
@@ -155,20 +162,10 @@ class OverlayPlayerService : Service() {
             }
         }
 
-        val params = WindowManager.LayoutParams(
-            overlayWidth(),
-            overlayHeight(),
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
-            PixelFormat.TRANSLUCENT
-        ).apply {
-            gravity = overlayGravity()
-            x = OVERLAY_MARGIN_PX
-            y = OVERLAY_MARGIN_PX
+        val params = overlayLayoutParams(overlayHeight(), OVERLAY_MARGIN_PX)
+        if (streamType == StreamType.Notification) {
+            applyBackgroundBlur(params)
         }
-        applyBackgroundBlur(params)
 
         runCatching {
             windowManager.addView(root, params)
@@ -186,6 +183,90 @@ class OverlayPlayerService : Service() {
             player = null
             stopSelf()
         }
+    }
+
+    private fun showMediaWithFooterOverlay() {
+        val mediaRoot = FrameLayout(this).apply {
+            background = roundedBackground()
+            clipToOutline = true
+        }
+        if (streamType == StreamType.Snapshot) {
+            addSnapshotView(mediaRoot, url, updateStateOnLoad = true)
+        } else if (streamType == StreamType.Mjpeg) {
+            addMjpegView(mediaRoot)
+        } else {
+            addPlayerView(mediaRoot)
+        }
+        errorTextView = buildErrorTextView()
+        mediaRoot.addView(errorTextView)
+
+        val footer = buildNotificationContent(fillHeight = false).apply {
+            background = glassTextBackground()
+        }
+        val footerHeight = measureFooterHeight(footer)
+        val mediaHeight = style.height
+            ?.let { (it - footerHeight).coerceAtLeast(MIN_MEDIA_HEIGHT_PX) }
+            ?: OVERLAY_HEIGHT_PX
+        val mediaYOffset = if (isBottomPosition()) {
+            OVERLAY_MARGIN_PX + footerHeight
+        } else {
+            OVERLAY_MARGIN_PX
+        }
+        val footerYOffset = if (isBottomPosition()) {
+            OVERLAY_MARGIN_PX
+        } else {
+            OVERLAY_MARGIN_PX + mediaHeight
+        }
+        val mediaParams = overlayLayoutParams(mediaHeight, mediaYOffset)
+        val footerParams = overlayLayoutParams(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            footerYOffset
+        )
+        applyBackgroundBlur(footerParams)
+
+        runCatching {
+            windowManager.addView(mediaRoot, mediaParams)
+            overlayView = mediaRoot
+            windowManager.addView(footer, footerParams)
+            textOverlayView = footer
+            updatePlaybackState(
+                status = if (streamType == StreamType.Notification) PlaybackStatus.Ready else PlaybackStatus.Buffering,
+                isPlaying = false,
+                errorMessage = null
+            )
+            AppLog.playbackStart(url)
+            scheduleAutoClose()
+        }.onFailure { error ->
+            AppLog.error("Unable to show overlay fallback", error)
+            runCatching { windowManager.removeView(mediaRoot) }
+            runCatching { windowManager.removeView(footer) }
+            player?.release()
+            player = null
+            stopSelf()
+        }
+    }
+
+    private fun overlayLayoutParams(height: Int, yOffset: Int): WindowManager.LayoutParams =
+        WindowManager.LayoutParams(
+            overlayWidth(),
+            height,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            gravity = overlayGravity()
+            x = OVERLAY_MARGIN_PX
+            y = yOffset
+        }
+
+    private fun measureFooterHeight(footer: View): Int {
+        footer.measure(
+            View.MeasureSpec.makeMeasureSpec(overlayWidth(), View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        return footer.measuredHeight.coerceAtLeast(MIN_FOOTER_HEIGHT_PX)
     }
 
     private fun roundedBackground(): GradientDrawable =
@@ -578,7 +659,11 @@ class OverlayPlayerService : Service() {
         overlayView?.let { view ->
             runCatching { windowManager.removeView(view) }
         }
+        textOverlayView?.let { view ->
+            runCatching { windowManager.removeView(view) }
+        }
         overlayView = null
+        textOverlayView = null
         errorTextView = null
         player?.release()
         player = null
@@ -621,6 +706,10 @@ class OverlayPlayerService : Service() {
             NotificationPosition.BottomLeft -> Gravity.BOTTOM or Gravity.START
         }
 
+    private fun isBottomPosition(): Boolean =
+        style.position == NotificationPosition.BottomRight ||
+            style.position == NotificationPosition.BottomLeft
+
     private fun overlayWidth(): Int =
         style.width ?: if (streamType == StreamType.Notification) {
             NOTIFICATION_WIDTH_PX
@@ -656,6 +745,8 @@ class OverlayPlayerService : Service() {
         const val ACTION_STOP = "com.hatvpip.receiver.action.STOP_OVERLAY"
         private const val OVERLAY_WIDTH_PX = 640
         private const val OVERLAY_HEIGHT_PX = 360
+        private const val MIN_MEDIA_HEIGHT_PX = 120
+        private const val MIN_FOOTER_HEIGHT_PX = 1
         private const val NOTIFICATION_WIDTH_PX = 512
         private const val NOTIFICATION_CORNER_RADIUS_PX = 18f
         private const val OVERLAY_BACKGROUND_BLUR_RADIUS_PX = 28
