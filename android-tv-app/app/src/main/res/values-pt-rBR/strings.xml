@@ -11,6 +11,7 @@
     <string name="section_setup_guide">Guia de configuração</string>
     <string name="section_status_overview">Resumo de status</string>
     <string name="section_troubleshooting">Solução de problemas</string>
+    <string name="section_receiver_name">Receiver name</string>
     <string name="action_play_test_video">Reproduzir vídeo de teste</string>
     <string name="action_overlay_settings">Configurações de sobreposição</string>
     <string name="action_stop_overlay">Parar sobreposição</string>
@@ -21,6 +22,8 @@
     <string name="action_hide_launcher_icon">Ocultar ícone do inicializador</string>
     <string name="action_show_launcher_icon">Mostrar ícone do inicializador</string>
     <string name="action_reset_pairing">Redefinir pareamento</string>
+    <string name="action_save_receiver_name">Save Name</string>
+    <string name="action_reset_receiver_name">Use Android Name</string>
     <string name="action_cancel">Cancelar</string>
     <string name="action_keep_waiting">Continuar aguardando</string>
     <string name="confirm_clear_remote_title">Limpar as configurações do receptor remoto?</string>
@@ -61,6 +64,11 @@
     <string name="label_home_assistant_url">URL do Home Assistant</string>
     <string name="label_access_token">Token de acesso</string>
     <string name="label_long_lived_access_token">Token de acesso de longa duração</string>
+    <string name="label_receiver_name">Receiver name</string>
+    <string name="label_current_receiver_name">Current name</string>
+    <string name="label_android_device_name">Android name</string>
+    <string name="label_custom_receiver_name">Custom name</string>
+    <string name="receiver_name_help">Use a unique receiver name when Android reports the same TV name for multiple devices. Discovery and Home Assistant status will use this name.</string>
     <string name="state_value">Estado: %1$s</string>
     <string name="last_error_value">Último erro: %1$s</string>
     <string name="launcher_icon_value">Ícone do inicializador: %1$s</string>

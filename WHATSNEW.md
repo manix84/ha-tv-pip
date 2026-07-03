@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.47 - Receiver Rename Controls 📺
+
+- Added TV-side receiver name controls so duplicate Android device names like `Living Room TV` can be disambiguated directly in the receiver dashboard 🏷️
+- Made discovery, status payloads, and remote receiver registration use the saved receiver name while preserving the Android system name for reset/troubleshooting 🔎
+- Added paired management API helpers so Home Assistant clients can set or clear the receiver display name when supported 🧰
+
 ## 1.31.46 - PiP Footer Blur Fix 🪟
 
 - Limited Android backdrop blur to the transparent text footer below camera popups so the video area no longer blurs the whole screen behind it 📺

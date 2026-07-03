@@ -8,7 +8,10 @@ object ReceiverDeviceInfo {
         Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
             ?: "unknown"
 
-    fun deviceName(context: Context): String =
+    fun systemDeviceName(context: Context): String =
         Settings.Global.getString(context.contentResolver, Settings.Global.DEVICE_NAME)
             ?: "Android TV"
+
+    fun deviceName(context: Context): String =
+        ReceiverNameSettings.displayName(context)
 }

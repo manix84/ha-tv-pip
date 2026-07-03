@@ -29,6 +29,7 @@ object ReceiverCapabilities {
             .put("styledNotifications", true)
             .put("mediaWithNotificationText", true)
             .put("launcherManagement", true)
+            .put("receiverNameManagement", true)
             .put("localPairing", true)
             .put("remoteReceiverSettings", true)
 }

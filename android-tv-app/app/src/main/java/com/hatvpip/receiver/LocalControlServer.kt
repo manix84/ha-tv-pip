@@ -23,6 +23,7 @@ class LocalControlServer(
     private val onOpenManagement: () -> Unit,
     private val onRemoteSettingsChanged: () -> Unit = {},
     private val onPairingChanged: () -> Unit = {},
+    private val onDeviceNameChanged: () -> Unit = {},
     private val onStarted: (Int) -> Unit = {}
 ) {
     @Volatile
@@ -87,6 +88,7 @@ class LocalControlServer(
             request.method == "POST" && request.path == "/show" -> showResponse(request)
             request.method == "POST" && request.path == "/close" -> closeResponse(request)
             request.method == "POST" && request.path == "/management/open" -> managementOpenResponse(request)
+            request.method == "POST" && request.path == "/management/name" -> managementNameResponse(request)
             request.method == "POST" && request.path == "/management/launcher" -> managementLauncherResponse(request)
             request.method == "POST" && request.path == "/management/remote" -> managementRemoteResponse(request)
             request.path in KNOWN_ENDPOINTS -> HttpResponse.json(
@@ -125,6 +127,7 @@ class LocalControlServer(
                         .put(endpoint("POST", "/show", "Show a stream, snapshot, or notification"))
                         .put(endpoint("POST", "/close", "Close the active display"))
                         .put(endpoint("POST", "/management/open", "Open receiver management UI"))
+                        .put(endpoint("POST", "/management/name", "Set or reset receiver display name"))
                         .put(endpoint("POST", "/management/launcher", "Show or hide launcher icon"))
                         .put(endpoint("POST", "/management/remote", "Store remote receiver settings"))
                 )
@@ -288,6 +291,40 @@ class LocalControlServer(
         )
     }
 
+    private fun managementNameResponse(request: HttpRequest): HttpResponse {
+        val authFailure = authorizeRequest(body = request.body, request = request)
+        if (authFailure != null) return authFailure
+
+        val json = runCatching { JSONObject(request.body.ifBlank { "{}" }) }.getOrElse {
+            return HttpResponse.json(
+                status = 400,
+                body = JSONObject().put("error", "Invalid receiver name payload")
+            )
+        }
+        val customName = if (json.optBoolean("clear", false)) {
+            ReceiverNameSettings.clear(context)
+            null
+        } else {
+            val name = json.optString("name").trim()
+            runCatching { ReceiverNameSettings.save(context, name) }.getOrElse { error ->
+                return HttpResponse.json(
+                    status = 400,
+                    body = JSONObject().put("error", error.message ?: "Invalid receiver name")
+                )
+            }
+        }
+        onDeviceNameChanged()
+
+        return HttpResponse.json(
+            status = 202,
+            body = JSONObject()
+                .put("accepted", true)
+                .put("deviceName", ReceiverDeviceInfo.deviceName(context))
+                .put("systemName", ReceiverDeviceInfo.systemDeviceName(context))
+                .put("customName", customName)
+        )
+    }
+
     private fun managementLauncherResponse(request: HttpRequest): HttpResponse {
         val authFailure = authorizeRequest(body = request.body, request = request)
         if (authFailure != null) return authFailure
@@ -444,6 +481,7 @@ class LocalControlServer(
             "/show",
             "/close",
             "/management/open",
+            "/management/name",
             "/management/launcher",
             "/management/remote"
         )

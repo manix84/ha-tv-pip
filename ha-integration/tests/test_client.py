@@ -8,12 +8,14 @@ from custom_components.ha_tv_pip.client import (
     _error_message,
     _get_json,
     _post_json,
+    async_clear_receiver_name,
     async_clear_remote_configuration,
     async_close_receiver,
     async_get_receiver_status,
     async_open_receiver,
     async_reset_receiver_pairing,
     async_set_launcher_visible,
+    async_set_receiver_name,
     async_set_remote_configuration,
     async_start_pairing,
     show_camera_payload,
@@ -263,6 +265,7 @@ def test_async_get_receiver_status_parses_response(monkeypatch) -> None:  # type
                 "styledNotifications": True,
                 "mediaWithNotificationText": True,
                 "launcherManagement": True,
+                "receiverNameManagement": True,
                 "localPairing": True,
                 "remoteReceiverSettings": True,
             },
@@ -325,6 +328,7 @@ def test_async_get_receiver_status_parses_response(monkeypatch) -> None:  # type
     assert status.capabilities.styled_notifications is True
     assert status.capabilities.media_with_notification_text is True
     assert status.capabilities.launcher_management is True
+    assert status.capabilities.receiver_name_management is True
     assert status.capabilities.local_pairing is True
     assert status.capabilities.remote_receiver_settings is True
     assert status.control_running is True
@@ -551,6 +555,55 @@ def test_async_set_launcher_visible_returns_receiver_state(monkeypatch) -> None:
             )
         )
         is False
+    )
+
+
+def test_async_set_receiver_name_returns_receiver_name(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    async def fake_to_thread(func, *args):  # type: ignore[no-untyped-def]
+        assert args[2] == "/management/name"
+        assert args[3] == {"name": "Living Room Chromecast"}
+        assert args[4] == "pairing-token"
+        return {"accepted": True, "deviceName": "Living Room Chromecast"}
+
+    monkeypatch.setattr(
+        "custom_components.ha_tv_pip.client.asyncio.to_thread",
+        fake_to_thread,
+    )
+
+    assert (
+        asyncio.run(
+            async_set_receiver_name(
+                "10.0.0.236",
+                8765,
+                token="pairing-token",
+                name="Living Room Chromecast",
+            )
+        )
+        == "Living Room Chromecast"
+    )
+
+
+def test_async_clear_receiver_name_returns_receiver_name(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    async def fake_to_thread(func, *args):  # type: ignore[no-untyped-def]
+        assert args[2] == "/management/name"
+        assert args[3] == {"clear": True}
+        assert args[4] == "pairing-token"
+        return {"accepted": True, "deviceName": "Living Room TV"}
+
+    monkeypatch.setattr(
+        "custom_components.ha_tv_pip.client.asyncio.to_thread",
+        fake_to_thread,
+    )
+
+    assert (
+        asyncio.run(
+            async_clear_receiver_name(
+                "10.0.0.236",
+                8765,
+                token="pairing-token",
+            )
+        )
+        == "Living Room TV"
     )
 
 

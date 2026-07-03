@@ -95,6 +95,7 @@ def _status() -> ReceiverStatus:
             styled_notifications=True,
             media_with_notification_text=True,
             launcher_management=True,
+            receiver_name_management=True,
             local_pairing=True,
             remote_receiver_settings=True,
         ),

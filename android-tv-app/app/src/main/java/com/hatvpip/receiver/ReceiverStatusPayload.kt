@@ -21,6 +21,14 @@ object ReceiverStatusPayload {
             .put("version", BuildConfig.VERSION_NAME)
             .put("deviceId", ReceiverDeviceInfo.stableDeviceId(context))
             .put("deviceName", ReceiverDeviceInfo.deviceName(context))
+            .put(
+                "device",
+                JSONObject()
+                    .put("id", ReceiverDeviceInfo.stableDeviceId(context))
+                    .put("name", ReceiverDeviceInfo.deviceName(context))
+                    .put("systemName", ReceiverDeviceInfo.systemDeviceName(context))
+                    .put("customName", ReceiverNameSettings.customName(context))
+            )
             .put("pairingRequired", pairing.pairingRequired)
             .put(
                 "pairing",

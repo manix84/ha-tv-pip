@@ -1,0 +1,2 @@
+- Limited Android backdrop blur to the transparent text footer below camera popups so the video area no longer blurs the whole screen behind it 📺
+- Kept text-only notifications and over-video text overlays on their existing glass-style blur path 🔎

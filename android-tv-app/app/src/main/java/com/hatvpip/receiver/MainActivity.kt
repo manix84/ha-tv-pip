@@ -72,6 +72,9 @@ class MainActivity : ComponentActivity() {
     private var controlSnapshot by mutableStateOf(ControlRuntimeState.snapshot())
     private var discoverySnapshot by mutableStateOf(DiscoveryRuntimeState.snapshot())
     private var pairingSnapshot by mutableStateOf<PairingSnapshot?>(null)
+    private var receiverDisplayName by mutableStateOf("")
+    private var receiverSystemName by mutableStateOf("")
+    private var receiverCustomName by mutableStateOf<String?>(null)
     private var launcherVisible by mutableStateOf(true)
     private var remoteConfig by mutableStateOf(RemoteConnectionConfig("", ""))
     private var remoteSnapshot by mutableStateOf(RemoteConnectionRuntimeState.snapshot())
@@ -81,6 +84,9 @@ class MainActivity : ComponentActivity() {
             controlSnapshot = ControlRuntimeState.snapshot()
             discoverySnapshot = DiscoveryRuntimeState.snapshot()
             pairingSnapshot = PairingState.snapshot(this@MainActivity)
+            receiverDisplayName = ReceiverDeviceInfo.deviceName(this@MainActivity)
+            receiverSystemName = ReceiverDeviceInfo.systemDeviceName(this@MainActivity)
+            receiverCustomName = ReceiverNameSettings.customName(this@MainActivity)
             launcherVisible = LauncherVisibility.isVisible(this@MainActivity)
             remoteConfig = RemoteConnectionSettings.load(this@MainActivity)
             remoteSnapshot = RemoteConnectionRuntimeState.snapshot()
@@ -108,11 +114,16 @@ class MainActivity : ComponentActivity() {
                         controlSnapshot = controlSnapshot,
                         discoverySnapshot = discoverySnapshot,
                         pairingSnapshot = pairingSnapshot,
+                        receiverDisplayName = receiverDisplayName,
+                        receiverSystemName = receiverSystemName,
+                        receiverCustomName = receiverCustomName,
                         launcherVisible = launcherVisible,
                         remoteConfig = remoteConfig,
                         remoteSnapshot = remoteSnapshot,
                         onRequestOverlayPermission = ::openOverlayPermissionSettings,
                         onStopOverlay = ::stopOverlayFallback,
+                        onSaveReceiverName = ::saveReceiverName,
+                        onResetReceiverName = ::resetReceiverName,
                         onResetPairing = ::resetPairing,
                         onSetLauncherVisible = ::updateLauncherVisibility,
                         onSaveRemoteConfig = ::saveRemoteConnectionConfig,
@@ -149,6 +160,9 @@ class MainActivity : ComponentActivity() {
         controlSnapshot = ControlRuntimeState.snapshot()
         discoverySnapshot = DiscoveryRuntimeState.snapshot()
         pairingSnapshot = PairingState.snapshot(this)
+        receiverDisplayName = ReceiverDeviceInfo.deviceName(this)
+        receiverSystemName = ReceiverDeviceInfo.systemDeviceName(this)
+        receiverCustomName = ReceiverNameSettings.customName(this)
         launcherVisible = LauncherVisibility.isVisible(this)
         remoteConfig = RemoteConnectionSettings.load(this)
         remoteSnapshot = RemoteConnectionRuntimeState.snapshot()
@@ -174,6 +188,35 @@ class MainActivity : ComponentActivity() {
             Intent(this, OverlayPlayerService::class.java)
                 .setAction(OverlayPlayerService.ACTION_STOP)
         )
+    }
+
+    private fun saveReceiverName(name: String) {
+        runCatching {
+            ReceiverNameSettings.save(this, name)
+        }.onFailure { error ->
+            AppLog.error("Unable to save receiver name", error)
+            return
+        }
+        refreshReceiverNameState()
+        startService(
+            Intent(this, LocalControlService::class.java)
+                .setAction(LocalControlService.ACTION_DEVICE_NAME_CHANGED)
+        )
+    }
+
+    private fun resetReceiverName() {
+        ReceiverNameSettings.clear(this)
+        refreshReceiverNameState()
+        startService(
+            Intent(this, LocalControlService::class.java)
+                .setAction(LocalControlService.ACTION_DEVICE_NAME_CHANGED)
+        )
+    }
+
+    private fun refreshReceiverNameState() {
+        receiverDisplayName = ReceiverDeviceInfo.deviceName(this)
+        receiverSystemName = ReceiverDeviceInfo.systemDeviceName(this)
+        receiverCustomName = ReceiverNameSettings.customName(this)
     }
 
     private fun resetPairing() {
@@ -234,11 +277,16 @@ private fun MainScreen(
     controlSnapshot: ControlServerSnapshot,
     discoverySnapshot: DiscoverySnapshot,
     pairingSnapshot: PairingSnapshot?,
+    receiverDisplayName: String,
+    receiverSystemName: String,
+    receiverCustomName: String?,
     launcherVisible: Boolean,
     remoteConfig: RemoteConnectionConfig,
     remoteSnapshot: RemoteConnectionSnapshot,
     onRequestOverlayPermission: () -> Unit,
     onStopOverlay: () -> Unit,
+    onSaveReceiverName: (String) -> Unit,
+    onResetReceiverName: () -> Unit,
     onResetPairing: () -> Unit,
     onSetLauncherVisible: (Boolean) -> Unit,
     onSaveRemoteConfig: (RemoteConnectionConfig) -> Unit,
@@ -250,6 +298,9 @@ private fun MainScreen(
     val overlaySettingsFocusRequester = remember { FocusRequester() }
     val stopOverlayFocusRequester = remember { FocusRequester() }
     val setupSectionFocusRequester = remember { FocusRequester() }
+    val receiverNameSectionFocusRequester = remember { FocusRequester() }
+    val receiverNameSaveFocusRequester = remember { FocusRequester() }
+    val receiverNameResetFocusRequester = remember { FocusRequester() }
     val statusSectionFocusRequester = remember { FocusRequester() }
     val pairingSectionFocusRequester = remember { FocusRequester() }
     val resetPairingFocusRequester = remember { FocusRequester() }
@@ -320,6 +371,7 @@ private fun MainScreen(
             horizontalAlignment = Alignment.Start
         ) {
             ReceiverHeader(
+                displayName = receiverDisplayName,
                 pairingSnapshot = pairingSnapshot,
                 remoteConfig = remoteConfig,
                 remoteSnapshot = remoteSnapshot,
@@ -360,7 +412,20 @@ private fun MainScreen(
             SetupGuidePanel(
                 sectionFocusRequester = setupSectionFocusRequester,
                 upFocusRequester = primaryLastButtonFocusRequester,
-                downFocusRequester = statusSectionFocusRequester
+                downFocusRequester = receiverNameSectionFocusRequester
+            )
+
+            ReceiverNamePanel(
+                displayName = receiverDisplayName,
+                systemName = receiverSystemName,
+                customName = receiverCustomName,
+                sectionFocusRequester = receiverNameSectionFocusRequester,
+                saveFocusRequester = receiverNameSaveFocusRequester,
+                resetFocusRequester = receiverNameResetFocusRequester,
+                upFocusRequester = setupSectionFocusRequester,
+                downFocusRequester = statusSectionFocusRequester,
+                onSaveReceiverName = onSaveReceiverName,
+                onResetReceiverName = onResetReceiverName
             )
 
             StatusOverview(
@@ -371,7 +436,7 @@ private fun MainScreen(
                 remoteConfig = remoteConfig,
                 remoteSnapshot = remoteSnapshot,
                 sectionFocusRequester = statusSectionFocusRequester,
-                upFocusRequester = setupSectionFocusRequester,
+                upFocusRequester = receiverNameSectionFocusRequester,
                 downFocusRequester = statusDownFocusRequester
             )
 
@@ -526,6 +591,7 @@ private fun GuidanceText(text: String) {
 
 @Composable
 private fun ReceiverHeader(
+    displayName: String,
     pairingSnapshot: PairingSnapshot?,
     remoteConfig: RemoteConnectionConfig,
     remoteSnapshot: RemoteConnectionSnapshot,
@@ -544,6 +610,12 @@ private fun ReceiverHeader(
                 text = stringResource(R.string.main_title),
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 34.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = displayName,
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
             )
             Text(
@@ -622,6 +694,84 @@ private fun PrimaryActions(
                     upFocusRequester = upFromStopOverlayFocusRequester,
                     downFocusRequester = downFromStopOverlayFocusRequester,
                     minWidth = 180
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ReceiverNamePanel(
+    displayName: String,
+    systemName: String,
+    customName: String?,
+    sectionFocusRequester: FocusRequester,
+    saveFocusRequester: FocusRequester,
+    resetFocusRequester: FocusRequester,
+    upFocusRequester: FocusRequester,
+    downFocusRequester: FocusRequester,
+    onSaveReceiverName: (String) -> Unit,
+    onResetReceiverName: () -> Unit
+) {
+    var name by remember(displayName) { mutableStateOf(displayName) }
+    val canSave = name.trim().isNotBlank() && name.trim() != displayName
+
+    SectionCard(
+        title = stringResource(R.string.section_receiver_name),
+        focusRequester = sectionFocusRequester,
+        upFocusRequester = upFocusRequester,
+        downFocusRequester = when {
+            canSave -> saveFocusRequester
+            customName != null -> resetFocusRequester
+            else -> downFocusRequester
+        }
+    ) {
+        Text(
+            text = stringResource(R.string.receiver_name_help),
+            color = MaterialTheme.colorScheme.onSurface,
+            fontSize = 15.sp
+        )
+        RemoteConfigDetailRow(
+            label = stringResource(R.string.label_current_receiver_name),
+            value = displayName
+        )
+        RemoteConfigDetailRow(
+            label = stringResource(R.string.label_android_device_name),
+            value = systemName
+        )
+        if (customName != null) {
+            RemoteConfigDetailRow(
+                label = stringResource(R.string.label_custom_receiver_name),
+                value = customName
+            )
+        }
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .bringIntoViewOnFocus(),
+            label = { Text(stringResource(R.string.label_receiver_name)) },
+            singleLine = true
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+            TvActionButton(
+                text = stringResource(R.string.action_save_receiver_name),
+                onClick = { onSaveReceiverName(name) },
+                enabled = canSave,
+                focusRequester = saveFocusRequester,
+                upFocusRequester = sectionFocusRequester,
+                downFocusRequester = if (customName != null) resetFocusRequester else downFocusRequester,
+                minWidth = 220
+            )
+            if (customName != null) {
+                TvActionButton(
+                    text = stringResource(R.string.action_reset_receiver_name),
+                    onClick = onResetReceiverName,
+                    focusRequester = resetFocusRequester,
+                    upFocusRequester = saveFocusRequester,
+                    downFocusRequester = downFocusRequester,
+                    minWidth = 220
                 )
             }
         }

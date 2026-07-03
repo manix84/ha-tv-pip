@@ -11,6 +11,7 @@
     <string name="section_setup_guide">Przewodnik konfiguracji</string>
     <string name="section_status_overview">Przegląd stanu</string>
     <string name="section_troubleshooting">Rozwiązywanie problemów</string>
+    <string name="section_receiver_name">Receiver name</string>
     <string name="action_play_test_video">Odtwórz film testowy</string>
     <string name="action_overlay_settings">Ustawienia nakładki</string>
     <string name="action_stop_overlay">Zatrzymaj nakładkę</string>
@@ -21,6 +22,8 @@
     <string name="action_hide_launcher_icon">Ukryj ikonę launchera</string>
     <string name="action_show_launcher_icon">Pokaż ikonę launchera</string>
     <string name="action_reset_pairing">Resetuj parowanie</string>
+    <string name="action_save_receiver_name">Save Name</string>
+    <string name="action_reset_receiver_name">Use Android Name</string>
     <string name="action_cancel">Anuluj</string>
     <string name="action_keep_waiting">Czekaj dalej</string>
     <string name="confirm_clear_remote_title">Wyczyścić ustawienia odbiornika zdalnego?</string>
@@ -61,6 +64,11 @@
     <string name="label_home_assistant_url">Adres URL Home Assistant</string>
     <string name="label_access_token">Token dostępu</string>
     <string name="label_long_lived_access_token">Długoterminowy token dostępu</string>
+    <string name="label_receiver_name">Receiver name</string>
+    <string name="label_current_receiver_name">Current name</string>
+    <string name="label_android_device_name">Android name</string>
+    <string name="label_custom_receiver_name">Custom name</string>
+    <string name="receiver_name_help">Use a unique receiver name when Android reports the same TV name for multiple devices. Discovery and Home Assistant status will use this name.</string>
     <string name="state_value">Stan: %1$s</string>
     <string name="last_error_value">Ostatni błąd: %1$s</string>
     <string name="launcher_icon_value">Ikona launchera: %1$s</string>

@@ -32,6 +32,7 @@ class LocalControlService : Service() {
             onOpenManagement = ::openManagement,
             onRemoteSettingsChanged = ::refreshRemoteSettings,
             onPairingChanged = ::refreshDiscovery,
+            onDeviceNameChanged = ::refreshReceiverName,
             onStarted = { port ->
                 discoveryAdvertiser?.start(port)
             }
@@ -62,6 +63,9 @@ class LocalControlService : Service() {
         }
         if (intent?.action == ACTION_REMOTE_SETTINGS_CHANGED) {
             remoteReceiverClient?.reconnect()
+        }
+        if (intent?.action == ACTION_DEVICE_NAME_CHANGED) {
+            refreshReceiverName()
         }
         return START_STICKY
     }
@@ -197,9 +201,15 @@ class LocalControlService : Service() {
         remoteReceiverClient?.reconnect()
     }
 
+    private fun refreshReceiverName() {
+        refreshDiscovery()
+        remoteReceiverClient?.reconnect()
+    }
+
     companion object {
         const val ACTION_PAIRING_CHANGED = "com.hatvpip.receiver.PAIRING_CHANGED"
         const val ACTION_REMOTE_SETTINGS_CHANGED = "com.hatvpip.receiver.REMOTE_SETTINGS_CHANGED"
+        const val ACTION_DEVICE_NAME_CHANGED = "com.hatvpip.receiver.DEVICE_NAME_CHANGED"
         const val EXTRA_START_REASON = "com.hatvpip.receiver.START_REASON"
         const val START_REASON_REQUESTED = "requested"
         const val START_REASON_SYSTEM_RESTART = "system_restart"

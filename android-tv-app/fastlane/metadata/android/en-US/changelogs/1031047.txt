@@ -1,0 +1,3 @@
+- Added TV-side receiver name controls so duplicate Android device names like `Living Room TV` can be disambiguated directly in the receiver dashboard 🏷️
+- Made discovery, status payloads, and remote receiver registration use the saved receiver name while preserving the Android system name for reset/troubleshooting 🔎
+- Added paired management API helpers so Home Assistant clients can set or clear the receiver display name when supported 🧰

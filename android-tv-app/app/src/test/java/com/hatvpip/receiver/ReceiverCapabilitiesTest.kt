@@ -24,6 +24,7 @@ class ReceiverCapabilitiesTest {
         assertTrue(capabilities.getBoolean("styledNotifications"))
         assertTrue(capabilities.getBoolean("mediaWithNotificationText"))
         assertTrue(capabilities.getBoolean("launcherManagement"))
+        assertTrue(capabilities.getBoolean("receiverNameManagement"))
         assertTrue(capabilities.getBoolean("localPairing"))
         assertTrue(capabilities.getBoolean("remoteReceiverSettings"))
     }

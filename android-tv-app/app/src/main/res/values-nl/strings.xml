@@ -11,6 +11,7 @@
     <string name="section_setup_guide">Installatiegids</string>
     <string name="section_status_overview">Statusoverzicht</string>
     <string name="section_troubleshooting">Probleemoplossing</string>
+    <string name="section_receiver_name">Receiver name</string>
     <string name="action_play_test_video">Testvideo afspelen</string>
     <string name="action_overlay_settings">Overlay-instellingen</string>
     <string name="action_stop_overlay">Overlay stoppen</string>
@@ -21,6 +22,8 @@
     <string name="action_hide_launcher_icon">Launchericoon verbergen</string>
     <string name="action_show_launcher_icon">Launchericoon tonen</string>
     <string name="action_reset_pairing">Koppeling resetten</string>
+    <string name="action_save_receiver_name">Save Name</string>
+    <string name="action_reset_receiver_name">Use Android Name</string>
     <string name="action_cancel">Annuleren</string>
     <string name="action_keep_waiting">Blijven wachten</string>
     <string name="confirm_clear_remote_title">Remote receiver-instellingen wissen?</string>
@@ -61,6 +64,11 @@
     <string name="label_home_assistant_url">Home Assistant-URL</string>
     <string name="label_access_token">Toegangstoken</string>
     <string name="label_long_lived_access_token">Langlevend toegangstoken</string>
+    <string name="label_receiver_name">Receiver name</string>
+    <string name="label_current_receiver_name">Current name</string>
+    <string name="label_android_device_name">Android name</string>
+    <string name="label_custom_receiver_name">Custom name</string>
+    <string name="receiver_name_help">Use a unique receiver name when Android reports the same TV name for multiple devices. Discovery and Home Assistant status will use this name.</string>
     <string name="state_value">Status: %1$s</string>
     <string name="last_error_value">Laatste fout: %1$s</string>
     <string name="launcher_icon_value">Launchericoon: %1$s</string>

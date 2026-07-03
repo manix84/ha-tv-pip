@@ -112,6 +112,7 @@ class ReceiverCapabilities:
     styled_notifications: bool
     media_with_notification_text: bool
     launcher_management: bool
+    receiver_name_management: bool
     local_pairing: bool
     remote_receiver_settings: bool
 
@@ -370,6 +371,40 @@ async def async_set_launcher_visible(
     return bool(response.get("launcherVisible", visible))
 
 
+async def async_set_receiver_name(
+    host: str,
+    port: int,
+    *,
+    token: str,
+    name: str,
+) -> str:
+    """Set the paired receiver display name."""
+
+    response = await asyncio.to_thread(
+        _post_json,
+        host,
+        port,
+        "/management/name",
+        {"name": name},
+        token,
+    )
+    return str(response.get("deviceName", name))
+
+
+async def async_clear_receiver_name(host: str, port: int, *, token: str) -> str:
+    """Reset the paired receiver display name to its Android device name."""
+
+    response = await asyncio.to_thread(
+        _post_json,
+        host,
+        port,
+        "/management/name",
+        {"clear": True},
+        token,
+    )
+    return str(response.get("deviceName", ""))
+
+
 async def async_set_remote_configuration(
     host: str,
     port: int,
@@ -569,6 +604,9 @@ def _parse_capabilities(value: Any) -> ReceiverCapabilities | None:
             value.get("mediaWithNotificationText", False)
         ),
         launcher_management=bool(value.get("launcherManagement", False)),
+        receiver_name_management=bool(
+            value.get("receiverNameManagement", False)
+        ),
         local_pairing=bool(value.get("localPairing", False)),
         remote_receiver_settings=bool(value.get("remoteReceiverSettings", False)),
     )
