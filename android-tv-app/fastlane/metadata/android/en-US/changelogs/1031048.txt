@@ -1,0 +1,3 @@
+- Disabled Android backdrop blur by default because it could leave camera video blank when a message footer was shown 📺
+- Kept translucent message footer and notification styling without applying the incompatible window blur effect 💬
+- Preserved blur behind an off-by-default experimental build flag for future device compatibility testing 🧪

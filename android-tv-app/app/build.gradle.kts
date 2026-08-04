@@ -20,6 +20,10 @@ val hasReleaseSigningConfig =
         releaseKeyAlias,
         releaseKeyPassword
     ).all { !it.isNullOrBlank() }
+val experimentalOverlayBackgroundBlur =
+    providers.gradleProperty("haTvPip.experimentalOverlayBackgroundBlur")
+        .map(String::toBoolean)
+        .orElse(false)
 
 android {
     namespace = "com.hatvpip.receiver"
@@ -34,8 +38,13 @@ android {
         applicationId = "com.hatvpip.receiver"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1031047
-        versionName = "1.31.47"
+        versionCode = 1031048
+        versionName = "1.31.48"
+        buildConfigField(
+            "boolean",
+            "EXPERIMENTAL_OVERLAY_BACKGROUND_BLUR",
+            experimentalOverlayBackgroundBlur.get().toString()
+        )
     }
 
     dependenciesInfo {

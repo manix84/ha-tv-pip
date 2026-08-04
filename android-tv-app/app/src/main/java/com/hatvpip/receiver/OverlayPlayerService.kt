@@ -276,6 +276,10 @@ class OverlayPlayerService : Service() {
         }
 
     private fun applyBackgroundBlur(params: WindowManager.LayoutParams) {
+        if (!BuildConfig.EXPERIMENTAL_OVERLAY_BACKGROUND_BLUR) {
+            return
+        }
+
         val backgroundColor = parseColorOrDefault(
             style.backgroundColor,
             DEFAULT_BACKGROUND_COLOR_INT
