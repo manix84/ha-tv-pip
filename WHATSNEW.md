@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.49 - Popup Corner Position Fix 📍
+
+- Honored `top_left`, `bottom_right`, and `bottom_left` camera popup positions on Android TV devices that support the floating overlay 📺
+- Kept `top_right` on native Android Picture-in-Picture while using the positionable overlay for corners Android PiP cannot control 🧭
+- Added Android TV 11 coverage for every supported popup corner and synchronized the Android release version code ✅
+
 ## 1.31.48 - Overlay Blur Compatibility Fix 🪟
 
 - Disabled Android backdrop blur by default because it could leave camera video blank when a message footer was shown 📺
