@@ -38,8 +38,8 @@ android {
         applicationId = "com.hatvpip.receiver"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1031050
-        versionName = "1.31.50"
+        versionCode = 1032000
+        versionName = "1.32.0"
         buildConfigField(
             "boolean",
             "EXPERIMENTAL_OVERLAY_BACKGROUND_BLUR",

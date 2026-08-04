@@ -115,6 +115,7 @@ class LocalControlService : Service() {
                     .putExtra(PlayerActivity.EXTRA_FALLBACK_URL, command.fallbackUrl)
                     .putExtra(PlayerActivity.EXTRA_FALLBACK_STREAM_TYPE, command.fallbackStreamType?.wireName)
                     .putExtra(PlayerActivity.EXTRA_SHOW_NOTIFICATION, command.showNotification)
+                    .putExtra(PlayerActivity.EXTRA_MUTED, command.muted)
                     .putExtra(PlayerActivity.EXTRA_MESSAGE, command.message)
                     .putExtra(PlayerActivity.EXTRA_POSITION, command.style.position.wireName)
                     .putExtra(PlayerActivity.EXTRA_TITLE_COLOR, command.style.titleColor)

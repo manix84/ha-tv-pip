@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.32.0 - Silent Camera PiP 🔇
+
+- Muted camera streams by default so PiP and overlay alerts do not interrupt the TV's current audio 📺
+- Added a Home Assistant `muted` option and receiver API field for explicitly enabling camera audio when wanted 🎧
+- Kept the audio preference consistent across local and remote commands, native PiP, and overlay playback ✅
+
 ## 1.31.50 - Popup Surface Transition Fix 🔄
 
 - Stopped the previous PiP or overlay surface before switching display modes between successive camera commands 📺

@@ -11,6 +11,7 @@ SERVICE_EXAMPLES: dict[str, set[str]] = {
     "show_camera": {
         "duration_seconds",
         "enter_pip",
+        "muted",
         "snapshot_fallback",
         "stream_type",
         "title",

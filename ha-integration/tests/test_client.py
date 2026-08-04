@@ -201,6 +201,7 @@ def test_show_camera_payload_includes_notification_style() -> None:
         "url": "",
         "streamType": "notification",
         "enterPip": True,
+        "muted": True,
         "durationSeconds": 15,
         "showNotification": True,
         "message": "Notifications can show text on the TV",
@@ -684,6 +685,7 @@ def test_show_camera_payload_matches_receiver_wire_shape() -> None:
         "url": "https://example.test/stream.m3u8",
         "streamType": "hls",
         "enterPip": True,
+        "muted": True,
         "durationSeconds": 30,
         "previewUrl": "https://example.test/snapshot.jpg",
     }
@@ -710,6 +712,7 @@ def test_show_camera_payload_can_enable_title_only_notification() -> None:
         "url": "https://example.test/stream.m3u8",
         "streamType": "hls",
         "enterPip": True,
+        "muted": True,
         "durationSeconds": 30,
         "showNotification": True,
         "position": "top_right",

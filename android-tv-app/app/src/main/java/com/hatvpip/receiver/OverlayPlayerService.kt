@@ -41,6 +41,7 @@ class OverlayPlayerService : Service() {
     private var fallbackUrl: String? = null
     private var fallbackStreamType: StreamType? = null
     private var showNotification: Boolean = false
+    private var muted: Boolean = true
     private var message: String? = null
     private var style: NotificationStyle = NotificationStyle()
     private var streamType: StreamType = StreamType.Hls
@@ -75,6 +76,7 @@ class OverlayPlayerService : Service() {
                     PlayerActivity.EXTRA_SHOW_NOTIFICATION,
                     false
                 ) ?: false
+                muted = intent?.getBooleanExtra(PlayerActivity.EXTRA_MUTED, true) ?: true
                 message = intent?.getStringExtra(PlayerActivity.EXTRA_MESSAGE)
                 style = NotificationStyle(
                     position = NotificationPosition.fromWire(
@@ -390,6 +392,7 @@ class OverlayPlayerService : Service() {
         lateinit var playerView: PlayerView
         var fallbackStarted = false
         val overlayPlayer = buildReceiverPlayer(this).also { exoPlayer ->
+            exoPlayer.volume = if (muted) 0f else 1f
             exoPlayer.addListener(
                 object : Player.Listener {
                     override fun onPlaybackStateChanged(playbackState: Int) {
