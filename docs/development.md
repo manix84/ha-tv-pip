@@ -454,6 +454,8 @@ The root `package.json` version remains the source of truth. When a bump happens
 - Android `versionName` in `android-tv-app/app/build.gradle.kts`
 - Home Assistant `manifest.json`, once it exists
 
+After an automatic bump, the hook pauses the commit and prompts for the release metadata that needs human-readable content. Add the matching `WHATSNEW.md` entry, run `npm run version:android-code` and `npm run fdroid:changelog`, stage the results, then retry the commit. The retry remains blocked until both the What's New entry and version-code-named F-Droid changelog are staged.
+
 Android Play `versionCode` is intentionally synced during release preparation rather than every pre-commit bump, so Play Console upload codes only advance when publishing release artifacts:
 
 ```sh
