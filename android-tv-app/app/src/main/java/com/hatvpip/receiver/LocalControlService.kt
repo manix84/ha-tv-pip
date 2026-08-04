@@ -104,13 +104,7 @@ class LocalControlService : Service() {
             .build()
 
     private fun showPlayer(command: ShowCommand) {
-        val compatibility = DeviceCompatibilityEvaluator.from(this)
-        if (
-            command.streamType == StreamType.Notification ||
-            command.streamType == StreamType.Mjpeg ||
-            command.streamType == StreamType.Snapshot ||
-            (command.enterPip && compatibility.recommendedMode == ReceiverDisplayMode.OverlayFallback)
-        ) {
+        if (command.startsDirectlyInOverlay()) {
             startService(
                 Intent(this, OverlayPlayerService::class.java)
                     .setAction(OverlayPlayerService.ACTION_SHOW)
@@ -140,6 +134,10 @@ class LocalControlService : Service() {
             return
         }
 
+        stopService(
+            Intent(this, OverlayPlayerService::class.java)
+                .setAction(OverlayPlayerService.ACTION_STOP)
+        )
         val intent = PlayerActivity.createShowIntent(
             context = this,
             command = command
@@ -217,3 +215,8 @@ class LocalControlService : Service() {
         private const val NOTIFICATION_CHANNEL_ID = "local_control"
     }
 }
+
+internal fun ShowCommand.startsDirectlyInOverlay(): Boolean =
+    streamType == StreamType.Notification ||
+        streamType == StreamType.Mjpeg ||
+        streamType == StreamType.Snapshot

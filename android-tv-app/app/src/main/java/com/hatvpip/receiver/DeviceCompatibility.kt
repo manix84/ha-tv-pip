@@ -24,6 +24,19 @@ data class DeviceCompatibility(
     val overlayPermission: CompatibilityState,
     val recommendedMode: ReceiverDisplayMode
 ) {
+    fun displayModeFor(position: NotificationPosition): ReceiverDisplayMode =
+        if (
+            nativePictureInPicture == CompatibilityState.Supported &&
+            overlayPermission == CompatibilityState.Granted &&
+            position != NotificationPosition.TopRight
+        ) {
+            // Android owns native PiP placement and exposes no API for choosing a corner.
+            // Use the app-controlled overlay when a non-default corner was requested.
+            ReceiverDisplayMode.OverlayFallback
+        } else {
+            recommendedMode
+        }
+
     val canRequestOverlayPermission: Boolean
         get() = overlayPermission == CompatibilityState.NotGranted
 
