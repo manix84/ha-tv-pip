@@ -138,6 +138,8 @@ curl -X POST http://ANDROID_TV_IP:8765/show \
   -d '{"title":"Front Door","url":"https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8","streamType":"hls","durationSeconds":30,"enterPip":true,"muted":true}'
 ```
 
+Replace `TOKEN` with the token returned during pairing, keeping the `Bearer ` prefix in the header.
+
 Camera playback is muted by default so PiP alerts do not interrupt the TV's current audio. Send `"muted": false` to opt in to camera audio.
 
 Close playback:
