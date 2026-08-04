@@ -109,7 +109,11 @@ class LocalControlService : Service() {
             command.streamType == StreamType.Notification ||
             command.streamType == StreamType.Mjpeg ||
             command.streamType == StreamType.Snapshot ||
-            (command.enterPip && compatibility.recommendedMode == ReceiverDisplayMode.OverlayFallback)
+            (
+                command.enterPip &&
+                    compatibility.displayModeFor(command.style.position) ==
+                    ReceiverDisplayMode.OverlayFallback
+            )
         ) {
             startService(
                 Intent(this, OverlayPlayerService::class.java)

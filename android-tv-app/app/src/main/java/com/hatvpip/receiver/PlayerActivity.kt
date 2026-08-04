@@ -76,6 +76,7 @@ class PlayerActivity : ComponentActivity() {
                     player = player,
                     playbackState = viewModel.playbackState,
                     compatibility = compatibility,
+                    position = command.style.position,
                     isInPip = viewModel.isInPip,
                     onEnterPip = { enterPip(trigger = "button") }
                 )
@@ -130,7 +131,10 @@ class PlayerActivity : ComponentActivity() {
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
         if (!isFinishing && !viewModel.isInPip) {
-            if (compatibility.recommendedMode == ReceiverDisplayMode.OverlayFallback) {
+            if (
+                compatibility.displayModeFor(command.style.position) ==
+                ReceiverDisplayMode.OverlayFallback
+            ) {
                 enterPip(trigger = "home")
             } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
                 enterPip(trigger = "home")
@@ -219,7 +223,10 @@ class PlayerActivity : ComponentActivity() {
     }
 
     private fun enterPip(trigger: String) {
-        if (compatibility.recommendedMode == ReceiverDisplayMode.OverlayFallback) {
+        if (
+            compatibility.displayModeFor(command.style.position) ==
+            ReceiverDisplayMode.OverlayFallback
+        ) {
             enterOverlayFallback()
             return
         }
@@ -448,11 +455,12 @@ private fun PlayerScreen(
     player: Player?,
     playbackState: PlayerPlaybackState,
     compatibility: DeviceCompatibility,
+    position: NotificationPosition,
     isInPip: Boolean,
     onEnterPip: () -> Unit
 ) {
     val pipButtonFocusRequester = remember { FocusRequester() }
-    val displayActionLabel = when (compatibility.recommendedMode) {
+    val displayActionLabel = when (compatibility.displayModeFor(position)) {
         ReceiverDisplayMode.NativePictureInPicture -> stringResource(R.string.action_enter_pip)
         ReceiverDisplayMode.OverlayFallback -> stringResource(R.string.action_show_overlay)
         ReceiverDisplayMode.FullScreenFallback -> stringResource(R.string.action_try_pip)

@@ -702,13 +702,7 @@ class OverlayPlayerService : Service() {
         autoCloseHandler.postDelayed({ stopSelf() }, duration * 1_000L)
     }
 
-    private fun overlayGravity(): Int =
-        when (style.position) {
-            NotificationPosition.TopRight -> Gravity.TOP or Gravity.END
-            NotificationPosition.TopLeft -> Gravity.TOP or Gravity.START
-            NotificationPosition.BottomRight -> Gravity.BOTTOM or Gravity.END
-            NotificationPosition.BottomLeft -> Gravity.BOTTOM or Gravity.START
-        }
+    private fun overlayGravity(): Int = overlayGravityFor(style.position)
 
     private fun isBottomPosition(): Boolean =
         style.position == NotificationPosition.BottomRight ||
@@ -769,6 +763,14 @@ class OverlayPlayerService : Service() {
         private val DEFAULT_BACKGROUND_COLOR_INT = 0xB30F0E0E.toInt()
     }
 }
+
+internal fun overlayGravityFor(position: NotificationPosition): Int =
+    when (position) {
+        NotificationPosition.TopRight -> Gravity.TOP or Gravity.END
+        NotificationPosition.TopLeft -> Gravity.TOP or Gravity.START
+        NotificationPosition.BottomRight -> Gravity.BOTTOM or Gravity.END
+        NotificationPosition.BottomLeft -> Gravity.BOTTOM or Gravity.START
+    }
 
 private fun parseColorOrDefault(value: String, defaultColor: Int): Int =
     runCatching { Color.parseColor(value) }.getOrDefault(defaultColor)
