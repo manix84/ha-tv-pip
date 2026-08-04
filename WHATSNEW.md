@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.50 - Popup Surface Transition Fix 🔄
+
+- Stopped the previous PiP or overlay surface before switching display modes between successive camera commands 📺
+- Disabled Android 12 native PiP auto-entry when the requested corner requires the positionable overlay 🧭
+- Kept the player action label synchronized when a running receiver activity accepts a new camera command ✅
+
 ## 1.31.49 - Popup Corner Position Fix 📍
 
 - Honored `top_left`, `bottom_right`, and `bottom_left` camera popup positions on Android TV devices that support the floating overlay 📺
