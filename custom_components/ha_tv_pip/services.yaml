@@ -48,6 +48,13 @@ show_camera:
       name: Enter PiP
       description: Ask the receiver to use PiP or overlay mode when available.
       example: true
+    muted:
+      default: true
+      selector:
+        boolean:
+      name: Mute camera audio
+      description: Keep the camera stream silent so the popup does not interrupt TV audio.
+      example: true
     snapshot_fallback:
       selector:
         boolean:

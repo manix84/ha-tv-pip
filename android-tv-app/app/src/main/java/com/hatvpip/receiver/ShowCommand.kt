@@ -21,7 +21,8 @@ data class ShowCommand(
     val fallbackStreamType: StreamType?,
     val showNotification: Boolean,
     val message: String?,
-    val style: NotificationStyle
+    val style: NotificationStyle,
+    val muted: Boolean = true
 ) {
     companion object {
         fun testVideo(title: String = "Test Video"): ShowCommand =
@@ -36,7 +37,8 @@ data class ShowCommand(
                 fallbackStreamType = null,
                 showNotification = false,
                 message = null,
-                style = NotificationStyle()
+                style = NotificationStyle(),
+                muted = true
             )
 
         fun fromJson(body: String): Result<ShowCommand> =
@@ -103,7 +105,8 @@ data class ShowCommand(
                         streamType == StreamType.Notification || json.has("message")
                     ),
                     message = json.optString("message").trim().ifBlank { null },
-                    style = NotificationStyle.fromJson(json)
+                    style = NotificationStyle.fromJson(json),
+                    muted = json.optBoolean("muted", true)
                 )
             }.recoverCatching { error ->
                 if (error is JSONException) {

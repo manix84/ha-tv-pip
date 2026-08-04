@@ -90,6 +90,7 @@ def test_remote_registry_sends_show_command_event() -> None:
                         "url": "https://home.example.test/api/hls/front-door",
                         "streamType": "hls",
                         "enterPip": True,
+                        "muted": True,
                         "durationSeconds": 30,
                     },
                 },

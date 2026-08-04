@@ -54,6 +54,7 @@ class ShowCameraCommand:
     background_color: str | None = None
     width: int | None = None
     height: int | None = None
+    muted: bool = True
 
 
 def show_camera_payload(command: ShowCameraCommand) -> dict[str, Any]:
@@ -64,6 +65,7 @@ def show_camera_payload(command: ShowCameraCommand) -> dict[str, Any]:
         "url": command.url,
         "streamType": command.stream_type,
         "enterPip": command.enter_pip,
+        "muted": command.muted,
     }
     if command.duration_seconds is not None:
         payload["durationSeconds"] = command.duration_seconds

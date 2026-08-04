@@ -101,6 +101,7 @@ class PlayerActivity : ComponentActivity() {
         setIntent(intent)
         command = intent.toShowCommand()
         updatePictureInPictureParams()
+        player?.volume = command.playerVolume
         player?.setMediaItem(MediaItem.fromUri(command.url))
         player?.prepare()
         player?.play()
@@ -167,6 +168,7 @@ class PlayerActivity : ComponentActivity() {
         if (player != null) return
 
         player = buildReceiverPlayer(this).also { exoPlayer ->
+            exoPlayer.volume = command.playerVolume
             exoPlayer.addListener(
                 object : Player.Listener {
                     override fun onPlaybackStateChanged(playbackStateValue: Int) {
@@ -289,6 +291,7 @@ class PlayerActivity : ComponentActivity() {
                     .putExtra(EXTRA_FALLBACK_URL, command.fallbackUrl)
                     .putExtra(EXTRA_FALLBACK_STREAM_TYPE, command.fallbackStreamType?.wireName)
                     .putExtra(EXTRA_SHOW_NOTIFICATION, command.showNotification)
+                    .putExtra(EXTRA_MUTED, command.muted)
                     .putExtra(EXTRA_MESSAGE, command.message)
                     .putExtra(EXTRA_POSITION, command.style.position.wireName)
                     .putExtra(EXTRA_TITLE_COLOR, command.style.titleColor)
@@ -373,6 +376,7 @@ class PlayerActivity : ComponentActivity() {
         const val EXTRA_FALLBACK_URL = "com.hatvpip.receiver.extra.FALLBACK_URL"
         const val EXTRA_FALLBACK_STREAM_TYPE = "com.hatvpip.receiver.extra.FALLBACK_STREAM_TYPE"
         const val EXTRA_SHOW_NOTIFICATION = "com.hatvpip.receiver.extra.SHOW_NOTIFICATION"
+        const val EXTRA_MUTED = "com.hatvpip.receiver.extra.MUTED"
         const val EXTRA_MESSAGE = "com.hatvpip.receiver.extra.MESSAGE"
         const val EXTRA_POSITION = "com.hatvpip.receiver.extra.POSITION"
         const val EXTRA_TITLE_COLOR = "com.hatvpip.receiver.extra.TITLE_COLOR"
@@ -397,6 +401,7 @@ class PlayerActivity : ComponentActivity() {
                 putExtra(EXTRA_FALLBACK_URL, command.fallbackUrl)
                 putExtra(EXTRA_FALLBACK_STREAM_TYPE, command.fallbackStreamType?.wireName)
                 putExtra(EXTRA_SHOW_NOTIFICATION, command.showNotification)
+                putExtra(EXTRA_MUTED, command.muted)
                 putExtra(EXTRA_MESSAGE, command.message)
                 putExtra(EXTRA_POSITION, command.style.position.wireName)
                 putExtra(EXTRA_TITLE_COLOR, command.style.titleColor)
@@ -432,6 +437,7 @@ private fun Intent.toShowCommand(): ShowCommand =
             else -> null
         },
         showNotification = getBooleanExtra(PlayerActivity.EXTRA_SHOW_NOTIFICATION, false),
+        muted = getBooleanExtra(PlayerActivity.EXTRA_MUTED, true),
         message = getStringExtra(PlayerActivity.EXTRA_MESSAGE),
         style = NotificationStyle(
             position = NotificationPosition.fromWire(
@@ -461,6 +467,9 @@ private fun Intent.toShowCommand(): ShowCommand =
         },
         enterPip = getBooleanExtra(PlayerActivity.EXTRA_ENTER_PIP, false)
     )
+
+private val ShowCommand.playerVolume: Float
+    get() = if (muted) 0f else 1f
 
 @Composable
 @androidx.annotation.OptIn(UnstableApi::class)

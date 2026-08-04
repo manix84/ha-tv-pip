@@ -40,6 +40,7 @@ from custom_components.ha_tv_pip.services import (
     ATTR_MESSAGE,
     ATTR_MESSAGE_COLOR,
     ATTR_MESSAGE_SIZE,
+    ATTR_MUTED,
     ATTR_POSITION,
     ATTR_RESTREAM_BASE_URL,
     ATTR_RESTREAM_PROVIDER,
@@ -655,6 +656,7 @@ def test_show_camera_command_auto_prefers_hls(
                         ATTR_CAMERA_ENTITY: "camera.front_door",
                         ATTR_WIDTH: 800,
                         ATTR_HEIGHT: 450,
+                        ATTR_MUTED: False,
                     }
                 )
             ),
@@ -675,6 +677,7 @@ def test_show_camera_command_auto_prefers_hls(
     assert command.fallback_stream_type == "mjpeg"
     assert command.width == 800
     assert command.height == 450
+    assert command.muted is False
     assert command.message is None
     assert command.show_notification is False
 

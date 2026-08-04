@@ -89,6 +89,7 @@ ATTR_LABEL_ID = "label_id"
 ATTR_MESSAGE = "message"
 ATTR_MESSAGE_COLOR = "message_color"
 ATTR_MESSAGE_SIZE = "message_size"
+ATTR_MUTED = "muted"
 ATTR_POSITION = "position"
 ATTR_SNAPSHOT_CAMERA_ENTITY = "snapshot_camera_entity"
 ATTR_SNAPSHOT_FALLBACK = "snapshot_fallback"
@@ -199,6 +200,7 @@ class ShowCameraRequest:
     camera_entity: str
     duration_seconds: int | None
     enter_pip: bool
+    muted: bool
     message: str | None
     position: str
     title_color: str
@@ -281,6 +283,7 @@ async def async_register_services(hass: Any) -> None:
         **target_schema,
         vol.Required(ATTR_CAMERA_ENTITY): cv.entity_id,
         vol.Optional(ATTR_ENTER_PIP, default=True): bool,
+        vol.Optional(ATTR_MUTED, default=True): bool,
         vol.Optional(ATTR_TITLE): str,
         vol.Optional(ATTR_MESSAGE): str,
         vol.Optional(ATTR_POSITION): vol.Any(*NOTIFICATION_POSITIONS),
@@ -1273,6 +1276,7 @@ def _request_from_call(call: Any) -> ShowCameraRequest:
         camera_entity=camera_entity,
         duration_seconds=duration_seconds,
         enter_pip=bool(data.get(ATTR_ENTER_PIP, True)),
+        muted=bool(data.get(ATTR_MUTED, True)),
         message=_optional_text(data.get(ATTR_MESSAGE)),
         position=_notification_position(data),
         title_color=_validated_color(
@@ -3545,7 +3549,7 @@ def _notification_size(value: Any, minimum: int, maximum: int) -> int:
 
 
 def _presentation_payload(request: ShowCameraRequest) -> dict[str, Any]:
-    payload: dict[str, Any] = {}
+    payload: dict[str, Any] = {"muted": request.muted}
     show_notification = request.title is not None or request.message is not None
     if show_notification:
         payload["show_notification"] = True
