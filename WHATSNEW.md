@@ -1,5 +1,11 @@
 # What's New ✨
 
+## 1.31.48 - Overlay Blur Compatibility Fix 🪟
+
+- Disabled Android backdrop blur by default because it could leave camera video blank when a message footer was shown 📺
+- Kept translucent message footer and notification styling without applying the incompatible window blur effect 💬
+- Preserved blur behind an off-by-default experimental build flag for future device compatibility testing 🧪
+
 ## 1.31.47 - Receiver Rename Controls 📺
 
 - Added TV-side receiver name controls so duplicate Android device names like `Living Room TV` can be disambiguated directly in the receiver dashboard 🏷️
