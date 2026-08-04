@@ -1,0 +1,3 @@
+- Stopped the previous PiP or overlay surface before switching display modes between successive camera commands 📺
+- Disabled Android 12 native PiP auto-entry when the requested corner requires the positionable overlay 🧭
+- Kept the player action label synchronized when a running receiver activity accepts a new camera command ✅

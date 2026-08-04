@@ -27,7 +27,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -49,7 +52,7 @@ class PlayerActivity : ComponentActivity() {
     private val viewModel: PlayerViewModel by viewModels()
     private var player: ExoPlayer? = null
     private lateinit var compatibility: DeviceCompatibility
-    private var command: ShowCommand = ShowCommand.testVideo()
+    private var command by mutableStateOf(ShowCommand.testVideo())
     private var currentDisplayMode: ReceiverPlaybackMode = ReceiverPlaybackMode.Idle
     private val autoCloseHandler = Handler(Looper.getMainLooper())
 
@@ -76,6 +79,7 @@ class PlayerActivity : ComponentActivity() {
                     player = player,
                     playbackState = viewModel.playbackState,
                     compatibility = compatibility,
+                    position = command.style.position,
                     isInPip = viewModel.isInPip,
                     onEnterPip = { enterPip(trigger = "button") }
                 )
@@ -96,6 +100,7 @@ class PlayerActivity : ComponentActivity() {
 
         setIntent(intent)
         command = intent.toShowCommand()
+        updatePictureInPictureParams()
         player?.setMediaItem(MediaItem.fromUri(command.url))
         player?.prepare()
         player?.play()
@@ -130,7 +135,10 @@ class PlayerActivity : ComponentActivity() {
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
         if (!isFinishing && !viewModel.isInPip) {
-            if (compatibility.recommendedMode == ReceiverDisplayMode.OverlayFallback) {
+            if (
+                compatibility.displayModeFor(command.style.position) ==
+                ReceiverDisplayMode.OverlayFallback
+            ) {
                 enterPip(trigger = "home")
             } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
                 enterPip(trigger = "home")
@@ -210,7 +218,10 @@ class PlayerActivity : ComponentActivity() {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            paramsBuilder.setAutoEnterEnabled(true)
+            paramsBuilder.setAutoEnterEnabled(
+                compatibility.displayModeFor(command.style.position) ==
+                    ReceiverDisplayMode.NativePictureInPicture
+            )
         }
 
         val params = paramsBuilder.build()
@@ -219,7 +230,10 @@ class PlayerActivity : ComponentActivity() {
     }
 
     private fun enterPip(trigger: String) {
-        if (compatibility.recommendedMode == ReceiverDisplayMode.OverlayFallback) {
+        if (
+            compatibility.displayModeFor(command.style.position) ==
+            ReceiverDisplayMode.OverlayFallback
+        ) {
             enterOverlayFallback()
             return
         }
@@ -260,6 +274,11 @@ class PlayerActivity : ComponentActivity() {
 
     private fun enterOverlayFallback() {
         runCatching {
+            player?.pause()
+            val wasInPip = viewModel.isInPip
+            if (wasInPip) {
+                finishAndRemoveTask()
+            }
             startService(
                 Intent(this, OverlayPlayerService::class.java)
                     .setAction(OverlayPlayerService.ACTION_SHOW)
@@ -284,10 +303,11 @@ class PlayerActivity : ComponentActivity() {
                         command.durationSeconds?.let { putExtra(EXTRA_DURATION_SECONDS, it) }
                     }
             )
-            player?.pause()
             updateRuntimeState(mode = ReceiverPlaybackMode.Overlay)
             AppLog.playbackStop(reason = "overlay_fallback_started")
-            moveTaskToBack(true)
+            if (!wasInPip) {
+                moveTaskToBack(true)
+            }
         }.onFailure { error ->
             val message = getString(
                 R.string.error_overlay_fallback_failed,
@@ -448,11 +468,12 @@ private fun PlayerScreen(
     player: Player?,
     playbackState: PlayerPlaybackState,
     compatibility: DeviceCompatibility,
+    position: NotificationPosition,
     isInPip: Boolean,
     onEnterPip: () -> Unit
 ) {
     val pipButtonFocusRequester = remember { FocusRequester() }
-    val displayActionLabel = when (compatibility.recommendedMode) {
+    val displayActionLabel = when (compatibility.displayModeFor(position)) {
         ReceiverDisplayMode.NativePictureInPicture -> stringResource(R.string.action_enter_pip)
         ReceiverDisplayMode.OverlayFallback -> stringResource(R.string.action_show_overlay)
         ReceiverDisplayMode.FullScreenFallback -> stringResource(R.string.action_try_pip)

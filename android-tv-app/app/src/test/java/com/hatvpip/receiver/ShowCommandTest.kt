@@ -1,10 +1,34 @@
 package com.hatvpip.receiver
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ShowCommandTest {
+    @Test
+    fun hlsCommandsTransitionThroughPlayerActivityForEveryPosition() {
+        NotificationPosition.entries.forEach { position ->
+            val command = ShowCommand.testVideo().copy(
+                style = NotificationStyle(position = position),
+                enterPip = true
+            )
+
+            assertFalse(position.wireName, command.startsDirectlyInOverlay())
+        }
+    }
+
+    @Test
+    fun nonHlsSurfacesStillStartDirectlyInOverlay() {
+        listOf(StreamType.Mjpeg, StreamType.Snapshot, StreamType.Notification)
+            .forEach { streamType ->
+                assertTrue(
+                    streamType.wireName,
+                    ShowCommand.testVideo().copy(streamType = streamType).startsDirectlyInOverlay()
+                )
+            }
+    }
+
     @Test
     fun parsesValidShowRequest() {
         val command = ShowCommand.fromJson(
