@@ -655,6 +655,7 @@ def test_show_camera_command_auto_prefers_hls(
                         ATTR_CAMERA_ENTITY: "camera.front_door",
                         ATTR_WIDTH: 800,
                         ATTR_HEIGHT: 450,
+                        "muted": False,
                     }
                 )
             ),
@@ -675,6 +676,7 @@ def test_show_camera_command_auto_prefers_hls(
     assert command.fallback_stream_type == "mjpeg"
     assert command.width == 800
     assert command.height == 450
+    assert command.muted is False
     assert command.message is None
     assert command.show_notification is False
 

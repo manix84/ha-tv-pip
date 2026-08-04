@@ -57,7 +57,17 @@ class ShowCommandTest {
         assertEquals(StreamType.Hls, command.streamType)
         assertEquals(30, command.durationSeconds)
         assertTrue(command.enterPip)
+        assertTrue(command.muted)
         assertEquals(false, command.showNotification)
+    }
+
+    @Test
+    fun cameraAudioCanBeEnabledExplicitly() {
+        val command = ShowCommand.fromJson(
+            """{"url":"https://example.com/video.m3u8","muted":false}"""
+        ).getOrThrow()
+
+        assertFalse(command.muted)
     }
 
     @Test

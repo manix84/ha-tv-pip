@@ -39,7 +39,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 1031050
-        versionName = "1.31.50"
+        versionName = "1.32.0"
         buildConfigField(
             "boolean",
             "EXPERIMENTAL_OVERLAY_BACKGROUND_BLUR",
